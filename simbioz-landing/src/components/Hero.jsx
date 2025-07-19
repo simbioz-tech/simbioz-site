@@ -93,7 +93,9 @@ const MainButton = styled(motion.a)`
     transform: translateY(-2px) scale(1.04);
   }
   @media (max-width: 700px) {
-    width: 100%;
+    width: 90vw;
+    max-width: 340px;
+    min-width: 200px;
     padding: 14px 0;
     font-size: 1.08rem;
     border-radius: 16px;
@@ -122,7 +124,9 @@ const OutlineButton = styled(motion.a)`
     transform: translateY(-2px) scale(1.04);
   }
   @media (max-width: 700px) {
-    width: 100%;
+    width: 90vw;
+    max-width: 340px;
+    min-width: 200px;
     padding: 14px 0;
     font-size: 1.08rem;
     border-radius: 16px;

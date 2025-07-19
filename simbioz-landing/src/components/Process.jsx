@@ -31,6 +31,10 @@ const Steps = styled.div`
     flex-direction: column;
     gap: 18px;
     align-items: center;
+    width: 100vw;
+    max-width: 100vw;
+    box-sizing: border-box;
+    padding: 0 2vw;
   }
 `;
 const Step = styled(motion.div)`
@@ -56,8 +60,8 @@ const Step = styled(motion.div)`
     border-radius: 10px;
     font-size: 0.98rem;
     width: 100%;
-    min-width: 0;
-    max-width: 100%;
+    max-width: 340px;
+    min-width: 200px;
     margin: 0 auto;
   }
 `;

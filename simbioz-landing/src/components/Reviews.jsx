@@ -1,5 +1,6 @@
 import React from 'react';
 import styled, { keyframes } from 'styled-components';
+import InfiniteCarousel from './InfiniteCarousel';
 
 const Section = styled.section`
   padding: 64px 0 48px 0;
@@ -16,25 +17,6 @@ const Title = styled.h2`
   margin-bottom: 24px;
   text-align: center;
 `;
-const slide = keyframes`
-  0% { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
-`;
-const CarouselWrap = styled.div`
-  width: 100vw;
-  max-width: 100vw;
-  overflow: hidden;
-  position: relative;
-  left: 50%;
-  transform: translateX(-50%);
-`;
-const Carousel = styled.div`
-  display: flex;
-  width: 200%;
-  animation: ${slide} 12s linear infinite;
-  user-select: none;
-  pointer-events: none;
-`;
 const Card = styled.div`
   min-width: 320px;
   max-width: 340px;
@@ -49,12 +31,7 @@ const Card = styled.div`
   flex-shrink: 0;
   margin-right: 20px;
   transition: background 0.4s cubic-bezier(.4,0,.2,1), border-color 0.4s cubic-bezier(.4,0,.2,1), box-shadow 0.4s cubic-bezier(.4,0,.2,1), color 0s;
-  cursor: pointer;
-  &:hover {
-    box-shadow: 0 12px 36px 0 rgba(30,42,120,0.22);
-    transform: translateY(-8px) scale(1.08);
-    border-color: #3a7bd5;
-  }
+  cursor: default;
 `;
 const Name = styled.div`
   font-weight: 700;
@@ -80,17 +57,15 @@ const Reviews = () => {
     <Section>
       <Container>
         <Title>Отзывы</Title>
-        <CarouselWrap>
-          <Carousel>
-            {items.map((r, i) => (
-              <Card key={r.name + i}>
-                <Name>{r.name}</Name>
-                <Service>{r.service}</Service>
-                <p style={{ fontStyle: 'italic', marginBottom: 0 }}>&ldquo;{r.text}&rdquo;</p>
-              </Card>
-            ))}
-          </Carousel>
-        </CarouselWrap>
+        <InfiniteCarousel speed={80} gap={20}>
+          {reviews.map((r, i) => (
+            <Card key={r.name + i}>
+              <Name>{r.name}</Name>
+              <Service>{r.service}</Service>
+              <p style={{ fontStyle: 'italic', marginBottom: 0 }}>&ldquo;{r.text}&rdquo;</p>
+            </Card>
+          ))}
+        </InfiniteCarousel>
       </Container>
     </Section>
   );

@@ -1,5 +1,6 @@
 import React from 'react';
 import styled, { keyframes } from 'styled-components';
+import InfiniteCarousel from './InfiniteCarousel';
 
 const Section = styled.section`
   padding: 64px 0 48px 0;
@@ -15,10 +16,6 @@ const Title = styled.h2`
   text-align: center;
 `;
 // --- Технологии ---
-const techSlide = keyframes`
-  0% { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
-`;
 const TechCarouselWrap = styled.div`
   width: 100vw;
   max-width: 100vw;
@@ -27,16 +24,8 @@ const TechCarouselWrap = styled.div`
   left: 50%;
   transform: translateX(-50%);
   margin-bottom: 32px;
-  /* fade-out по краям (ещё шире) */
   mask-image: linear-gradient(to right, transparent 0%, #000 30%, #000 70%, transparent 100%);
   -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 30%, #000 70%, transparent 100%);
-`;
-const TechCarousel = styled.div`
-  display: flex;
-  width: 200%;
-  animation: ${techSlide} 14s linear infinite;
-  user-select: none;
-  pointer-events: none;
 `;
 const TechCard = styled.div`
   min-width: 100px;
@@ -200,11 +189,11 @@ const Portfolio = () => {
       <Container>
         <Title>Проекты</Title>
         <TechCarouselWrap>
-          <TechCarousel>
-            {techItems.map((t, i) => (
+          <InfiniteCarousel speed={50} gap={12}>
+            {techs.map((t, i) => (
               <TechCard key={t + i}>{t}</TechCard>
             ))}
-          </TechCarousel>
+          </InfiniteCarousel>
         </TechCarouselWrap>
         <CardGrid>
           {projects.map((p, i) => (

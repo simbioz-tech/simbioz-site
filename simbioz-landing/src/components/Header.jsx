@@ -338,7 +338,7 @@ const Header = ({ theme, onToggleTheme }) => {
   return (
     <HeaderWrap>
       <Container>
-        <Logo href="#hero"><LogoImg src={logo} alt="logo" /> <span>Сибиоз</span></Logo>
+        <Logo href="#hero"><LogoImg src={logo} alt="logo" /> <span>Симбиоз</span></Logo>
         <Nav>
           <NavLink href="#services">Услуги</NavLink>
           <NavLink href="#prices">Тарифы</NavLink>

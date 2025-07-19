@@ -10,12 +10,16 @@ const Section = styled.section`
 const Container = styled.div`
   max-width: 1100px;
   margin: 0 auto;
-  padding: 0 24px;
+  padding: 0 16px;
   @media (max-width: 700px) {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    width: 100vw;
+    max-width: 100vw;
+    box-sizing: border-box;
+    padding: 0 4vw;
   }
 `;
 const Title = styled.h2`
@@ -25,43 +29,49 @@ const Title = styled.h2`
 `;
 const CardGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 64px;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 32px;
+  box-sizing: border-box;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 16px;
   @media (max-width: 700px) {
     grid-template-columns: 1fr;
-    gap: 18px;
+    gap: 12px;
     align-items: center;
     justify-content: center;
     justify-items: center;
-    padding: 0;
+    padding: 0 4vw;
   }
 `;
 const Card = styled(motion.div)`
   background: ${({ theme }) => theme.background};
-  border-radius: 18px;
+  border-radius: 16px;
   box-shadow: 0 4px 24px 0 rgba(30,42,120,0.08);
-  padding: 32px 24px;
+  padding: 28px 18px;
   border: 1px solid ${({ theme }) => theme.border};
   display: flex;
   flex-direction: column;
   align-items: center;
-  min-height: 260px;
+  min-height: 220px;
+  font-size: 1.05rem;
   transition: background 0.4s cubic-bezier(.4,0,.2,1), border-color 0.4s cubic-bezier(.4,0,.2,1), box-shadow 0.4s cubic-bezier(.4,0,.2,1), color 0s;
   cursor: pointer;
+  min-width: 0;
   &:hover {
     box-shadow: 0 12px 36px 0 rgba(30,42,120,0.22);
     transform: translateY(-8px) scale(1.08);
     border-color: #3a7bd5;
   }
-  min-width: 0;
-  width: 100%;
   @media (max-width: 700px) {
-    padding: 16px 8px;
-    border-radius: 10px;
+    padding: 18px 8px;
+    border-radius: 12px;
     font-size: 0.98rem;
     min-height: 0;
     margin: 0 auto;
-    max-width: 340px;
+    max-width: 380px;
+    min-width: 220px;
+    box-sizing: border-box;
   }
 `;
 const IconWrap = styled.div`  font-size: 2.5rem;

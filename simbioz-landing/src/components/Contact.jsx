@@ -17,6 +17,10 @@ const Container = styled.div`
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    width: 100vw;
+    max-width: 100vw;
+    box-sizing: border-box;
+    padding: 0 2vw;
   }
 `;
 const Title = styled.h2`
@@ -35,18 +39,35 @@ const FormWrap = styled.form`
   box-shadow: 0 6px 32px 0 rgba(30,42,120,0.13);
   border-radius: 16px;
   padding: 40px 36px 32px 36px;
+  grid-template-areas:
+    'name email'
+    'service file'
+    'message message'
+    'checkbox checkbox'
+    'button button';
   @media (max-width: 700px) {
     display: flex;
     flex-direction: column;
     gap: 12px;
+    width: 100%;
+    max-width: 420px;
+    margin: 0 auto;
+    box-sizing: border-box;
     padding: 12px 4vw;
-    align-items: center;
+    align-items: stretch;
   }
 `;
 const Field = styled.div`
   display: flex;
   flex-direction: column;
   gap: 8px;
+  width: 100%;
+  &[data-area='name'] { grid-area: name; }
+  &[data-area='email'] { grid-area: email; }
+  &[data-area='service'] { grid-area: service; }
+  &[data-area='file'] { grid-area: file; }
+  &[data-area='message'] { grid-area: message; }
+  &[data-area='checkbox'] { grid-area: checkbox; }
 `;
 const Label = styled.label`
   font-size: 1.04rem;
@@ -64,10 +85,16 @@ const Input = styled.input`
   font-size: 1rem;
   transition: border-color 0.22s, box-shadow 0.22s;
   box-shadow: 0 0 0 0 rgba(58,123,213,0);
+  box-sizing: border-box;
+  max-width: 100%;
   &:focus {
     border-color: ${({ theme }) => theme.accent};
     box-shadow: 0 0 0 2px ${({ theme }) => theme.accent + '33'};
     outline: none;
+  }
+  @media (max-width: 700px) {
+    width: 100%;
+    box-sizing: border-box;
   }
 `;
 const SelectWrap = styled.div`
@@ -89,6 +116,8 @@ const Select = styled.select`
   appearance: none;
   -webkit-appearance: none;
   -moz-appearance: none;
+  box-sizing: border-box;
+  max-width: 100%;
   &:focus {
     border-color: ${({ theme }) => theme.accent};
     box-shadow: 0 0 0 2px ${({ theme }) => theme.accent + '33'};
@@ -99,6 +128,8 @@ const Select = styled.select`
     border-radius: 7px;
     font-size: 0.97rem;
     height: 40px;
+    width: 100%;
+    box-sizing: border-box;
   }
 `;
 const SelectArrow = styled.span`
@@ -124,6 +155,8 @@ const FileInputWrap = styled.label`
   font-size: 1rem;
   cursor: pointer;
   transition: border-color 0.22s, background 0.22s;
+  box-sizing: border-box;
+  max-width: 100%;
   &:hover {
     border-color: ${({ theme }) => theme.accent};
     background: ${({ theme }) => theme.card + 'cc'};
@@ -132,6 +165,8 @@ const FileInputWrap = styled.label`
     padding: 9px 6px;
     border-radius: 7px;
     font-size: 0.97rem;
+    width: 100%;
+    box-sizing: border-box;
   }
 `;
 const FileInput = styled.input`
@@ -148,6 +183,9 @@ const Textarea = styled.textarea`
   min-height: 100px;
   transition: border-color 0.22s, box-shadow 0.22s;
   box-shadow: 0 0 0 0 rgba(58,123,213,0);
+  resize: none;
+  box-sizing: border-box;
+  max-width: 100%;
   &:focus {
     border-color: ${({ theme }) => theme.accent};
     box-shadow: 0 0 0 2px ${({ theme }) => theme.accent + '33'};
@@ -158,6 +196,8 @@ const Textarea = styled.textarea`
     font-size: 0.98rem;
     border-radius: 7px;
     min-height: 70px;
+    width: 100%;
+    box-sizing: border-box;
   }
 `;
 const CheckboxWrap = styled.label`
@@ -179,19 +219,24 @@ const CheckboxWrap = styled.label`
     align-items: flex-start;
   }
 `;
-const ButtonRow = styled.div`
-  display: flex;
+const ButtonRow = styled.div`  display: flex;
   gap: 18px;
   width: 100%;
   justify-content: center;
+  grid-area: button;
+  @media (min-width: 701px) {
+    max-width: 340px;
+    margin: 0 auto;
+  }
   @media (max-width: 700px) {
     flex-direction: column;
     gap: 8px;
+    width: 100%;
   }
 `;
 const Button = styled.button`
   flex: 1 1 0;
-  padding: 18px 100px;
+  padding: 18px 0;
   border-radius: 32px;
   background: ${({ secondary }) => secondary ? 'transparent' : 'linear-gradient(90deg, #3a7bd5 0%, #1e2a78 100%)'};
   color: ${({ secondary }) => secondary ? '#fff' : '#fff'};
@@ -218,6 +263,7 @@ const Button = styled.button`
     padding: 12px 0;
     font-size: 1rem;
     border-radius: 16px;
+    width: 100%;
   }
 `;
 const Checkbox = styled.input`
@@ -264,15 +310,15 @@ const Contact = () => {
           </motion.p>
         ) : (
           <FormWrap onSubmit={handleSubmit}>
-            <Field>
+            <Field data-area="name">
               <Label htmlFor="name">Ваше имя *</Label>
               <Input id="name" name="name" type="text" placeholder="Иван Иванов" value={form.name} onChange={handleChange} required />
             </Field>
-            <Field>
+            <Field data-area="email">
               <Label htmlFor="email">Email *</Label>
               <Input id="email" name="email" type="email" placeholder="example@mail.com" value={form.email} onChange={handleChange} required />
             </Field>
-            <Field>
+            <Field data-area="service">
               <Label htmlFor="service">Услуга *</Label>
               <SelectWrap>
                 <Select id="service" name="service" value={form.service} onChange={handleChange} required>
@@ -287,7 +333,7 @@ const Contact = () => {
                 <SelectArrow />
               </SelectWrap>
             </Field>
-            <Field>
+            <Field data-area="file">
               <Label htmlFor="file">Прикрепить файл (PDF, Word)</Label>
               <FileInputWrap>
                 <FaUpload />
@@ -295,11 +341,11 @@ const Contact = () => {
                 <FileInput id="file" type="file" accept=".pdf,.doc,.docx" onChange={e => setForm(f => ({ ...f, fileName: e.target.files[0]?.name || '' }))} />
               </FileInputWrap>
             </Field>
-            <Field style={{ gridColumn: '1/3' }}>
+            <Field data-area="message">
               <Label htmlFor="message">Описание проекта *</Label>
               <Textarea id="message" name="message" placeholder="Расскажите о вашем проекте, целях и пожеланиях..." value={form.message} onChange={handleChange} required />
             </Field>
-            <Field style={{ gridColumn: '1/3', alignItems: 'center' }}>
+            <Field data-area="checkbox">
               <CheckboxWrap>
                 <Checkbox type="checkbox" checked={agree} onChange={e => setAgree(e.target.checked)} required />
                 Я соглашаюсь с <a href="#" style={{ color: '#3a7bd5', textDecoration: 'underline' }}>политикой конфиденциальности</a> и даю согласие на обработку персональных данных

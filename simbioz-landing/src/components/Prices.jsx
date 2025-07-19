@@ -29,9 +29,9 @@ const CardGrid = styled.div`
   @media (max-width: 700px) {
     grid-template-columns: 1fr;
     gap: 18px;
-    align-items: center;
-    justify-content: center;
     justify-items: center;
+    align-items: stretch;
+    grid-auto-rows: 1fr;
   }
 `;
 const Card = styled(motion.div)`
@@ -52,6 +52,11 @@ const Card = styled(motion.div)`
     padding: 16px 8px;
     border-radius: 10px;
     font-size: 0.98rem;
+    width: 340px;
+    max-width: 90vw;
+    min-width: 240px;
+    margin: 0 auto;
+    min-height: 420px;
   }
 `;
 const CardContent = styled.div`
@@ -94,6 +99,7 @@ const Button = styled.a`
     padding: 12px 0;
     font-size: 0.98rem;
     border-radius: 12px;
+    text-align: center;
   }
 `;
 

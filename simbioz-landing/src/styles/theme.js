@@ -26,6 +26,11 @@ export const lightTheme = {
 };
 
 const GlobalStyle = createGlobalStyle`
+  html, body, #root {
+    max-width: 100vw;
+    overflow-x: hidden;
+    box-sizing: border-box;
+  }
   html {
     scroll-behavior: smooth;
   }
