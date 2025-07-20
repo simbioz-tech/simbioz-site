@@ -287,7 +287,7 @@ const Contact = () => {
       return;
     }
     setLoading(true);
-    emailjs.send('service_59s2dmm', 'template_pw6tm97', form, 'KxtJzTzRKUHJ1pswJ')
+    emailjs.send('service_xxx', 'template_xxx', form, 'user_xxx')
       .then(() => {
         setSent(true);
         setLoading(false);
