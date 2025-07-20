@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "@uploadcare/react-widget": "^2.4.7"
+  }
+}

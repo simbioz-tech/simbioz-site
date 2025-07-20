@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
 import { FaEnvelope, FaGithub, FaLinkedin } from 'react-icons/fa';
 import { FaUpload } from 'react-icons/fa';
 import emailjs from 'emailjs-com';
+import { Widget } from '@uploadcare/react-widget';
 
 const Section = styled.section`
   padding: 64px 0 48px 0;
@@ -274,12 +275,14 @@ const Checkbox = styled.input`
 `;
 
 const Contact = () => {
-  const [form, setForm] = useState({ name: '', email: '', service: '', message: '', fileName: '' });
+  const formRef = useRef();
   const [agree, setAgree] = useState(false);
   const [sent, setSent] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [fileUrl, setFileUrl] = useState('');
+  const widgetRef = useRef();
+  const MAX_FILE_SIZE_MB = 2;
 
-  const handleChange = e => setForm({ ...form, [e.target.name]: e.target.value });
   const handleSubmit = e => {
     e.preventDefault();
     if (!agree) {
@@ -287,11 +290,16 @@ const Contact = () => {
       return;
     }
     setLoading(true);
-    emailjs.send('service_59s2dmm', 'template_pw6tm97', form, 'KxtJzTzRKUHJ1pswJ')
+    emailjs.sendForm(
+      'service_59s2dmm',
+      'template_fjvpm9v',
+      formRef.current,
+      'KxtJzTzRKUHJ1pswJ'
+    )
       .then(() => {
         setSent(true);
         setLoading(false);
-        setForm({ name: '', email: '', service: '', message: '', fileName: '' });
+        if (formRef.current) formRef.current.reset();
         setAgree(false);
       })
       .catch(() => {
@@ -303,25 +311,25 @@ const Contact = () => {
   return (
     <Section id="contact">
       <Container>
-        <Title>Оставьте заявку на проект</Title>
+        {!sent && <Title>Оставьте заявку на проект</Title>}
         {sent ? (
           <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ textAlign: 'center', color: '#3a7bd5', fontWeight: 600, fontSize: '1.2rem' }}>
             Спасибо! Мы свяжемся с вами для обсуждения деталей.
           </motion.p>
         ) : (
-          <FormWrap onSubmit={handleSubmit}>
+          <FormWrap ref={formRef} onSubmit={handleSubmit}>
             <Field data-area="name">
               <Label htmlFor="name">Ваше имя *</Label>
-              <Input id="name" name="name" type="text" placeholder="Иван Иванов" value={form.name} onChange={handleChange} required />
+              <Input id="name" name="name" type="text" placeholder="Иван Иванов" required />
             </Field>
             <Field data-area="email">
               <Label htmlFor="email">Email *</Label>
-              <Input id="email" name="email" type="email" placeholder="example@mail.com" value={form.email} onChange={handleChange} required />
+              <Input id="email" name="email" type="email" placeholder="example@mail.com" required />
             </Field>
             <Field data-area="service">
               <Label htmlFor="service">Услуга *</Label>
               <SelectWrap>
-                <Select id="service" name="service" value={form.service} onChange={handleChange} required>
+                <Select id="service" name="service" required>
                   <option value="">Выберите услугу</option>
                   <option value="Backend">Backend-решение</option>
                   <option value="ML/AI">ML/AI проект</option>
@@ -334,16 +342,61 @@ const Contact = () => {
               </SelectWrap>
             </Field>
             <Field data-area="file">
-              <Label htmlFor="file">Прикрепить файл (PDF, Word)</Label>
-              <FileInputWrap>
-                <FaUpload />
-                <span>{form.fileName || 'Выберите файл'}</span>
-                <FileInput id="file" type="file" accept=".pdf,.doc,.docx" onChange={e => setForm(f => ({ ...f, fileName: e.target.files[0]?.name || '' }))} />
-              </FileInputWrap>
+              <style>{`.uploadcare--widget__button_type_open { display: none !important; }`}</style>
+              <Label>Прикрепить файл (до 2 МБ)</Label>
+              <button
+                type="button"
+                onClick={() => widgetRef.current.openDialog()}
+                style={{
+                  padding: '14px 32px',
+                  borderRadius: '28px',
+                  background: 'linear-gradient(90deg, #3a7bd5 0%, #1e2a78 100%)',
+                  color: '#fff',
+                  fontWeight: 700,
+                  fontSize: '1.08rem',
+                  border: 'none',
+                  cursor: 'pointer',
+                  boxShadow: '0 2px 8px 0 rgba(30,42,120,0.10)',
+                  letterSpacing: '0.02em',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 12,
+                  marginBottom: 8,
+                  marginTop: 2
+                }}
+              >
+                <FaUpload style={{ fontSize: 20 }} />
+                {fileUrl ? 'Загрузить другой файл' : 'Выбрать файл'}
+              </button>
+              <Widget
+                ref={widgetRef}
+                publicKey="d6630931d6e4524d5dd1"
+                locale="ru"
+                onChange={fileInfo => {
+                  // fileInfo.size в байтах
+                  if (fileInfo.size && fileInfo.size > MAX_FILE_SIZE_MB * 1024 * 1024) {
+                    alert('Файл слишком большой! Максимальный размер — 2 МБ.');
+                    setFileUrl('');
+                    return;
+                  }
+                  setFileUrl(fileInfo.cdnUrl || '');
+                }}
+                clearable
+                style={{ display: 'none' }}
+                tabs="file url"
+                systemDialog
+                onFileSelect={() => setFileUrl('')}
+              />
+              {fileUrl && (
+                <div style={{ color: '#3a7bd5', marginTop: 6, fontSize: 15, fontWeight: 500 }}>
+                  Файл загружен: <a href={fileUrl} target="_blank" rel="noopener noreferrer" style={{ color: '#1e2a78', textDecoration: 'underline' }}>ссылка</a>
+                </div>
+              )}
             </Field>
+            <input type="hidden" name="fileUrl" value={fileUrl} />
             <Field data-area="message">
               <Label htmlFor="message">Описание проекта *</Label>
-              <Textarea id="message" name="message" placeholder="Расскажите о вашем проекте, целях и пожеланиях..." value={form.message} onChange={handleChange} required />
+              <Textarea id="message" name="message" placeholder="Расскажите о вашем проекте, целях и пожеланиях..." required />
             </Field>
             <Field data-area="checkbox">
               <CheckboxWrap>
