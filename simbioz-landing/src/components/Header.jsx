@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import logo from '../assets/logo.jpg';
+import logo from '../assets/logo.png';
 import { FaSun, FaMoon, FaBars, FaTimes } from 'react-icons/fa';
 import { FaTelegramPlane, FaWhatsapp } from 'react-icons/fa';
 
@@ -376,7 +376,7 @@ const Header = ({ theme, onToggleTheme }) => {
       </Container>
       <MobileMenu open={open}>
         <MobileMenuHeader>
-          <MobileLogo href="#hero" onClick={() => setOpen(false)}><MobileLogoImg src={logo} alt="logo" /> <span>Сибиоз</span></MobileLogo>
+          <MobileLogo href="#hero" onClick={() => setOpen(false)}><MobileLogoImg src={logo} alt="logo" /> <span>Симбиоз</span></MobileLogo>
         </MobileMenuHeader>
         <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 16, padding: '2px 8px 0 8px', boxSizing: 'border-box' }}>
           <NavLink href="#services" onClick={() => setOpen(false)}>Услуги</NavLink>
