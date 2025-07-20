@@ -18,7 +18,7 @@ const Container = styled.div`
   align-items: center;
   justify-content: space-between;
   padding: 0 24px;
-  height: 64px;
+  height: 80px;
   background: ${({ theme }) => theme.background === '#0a0a23' ? theme.card : theme.background};
   border-radius: 36px;
   border: 1.5px solid ${({ theme }) => theme.border};
@@ -27,7 +27,7 @@ const Container = styled.div`
   @media (max-width: 700px) {
     padding: 0 2vw;
     margin: 10px 2vw 0 2vw;
-    height: 56px;
+    height: 64px;
     border-radius: 18px;
     gap: 0;
     justify-content: flex-start;
@@ -49,11 +49,15 @@ const Logo = styled.a`
   }
 `;
 const LogoImg = styled.img`
-  width: 32px;
-  height: 32px;
+  width: 64px;
+  height: 64px;
   object-fit: contain;
   border-radius: 8px;
   background: transparent;
+  @media (max-width: 700px) {
+    width: 48px;
+    height: 48px;
+  }
 `;
 const Nav = styled.nav`
   display: flex;
@@ -240,6 +244,7 @@ const MobileMenuHeader = styled.div`
   box-sizing: border-box;
   padding: 12px 8px 0px;
   border-bottom: 1.5px solid ${({ theme }) => theme.border};
+  min-height: 64px;
 `;
 const MobileLogo = styled.a`
   display: flex;
@@ -256,11 +261,15 @@ const MobileLogo = styled.a`
   min-height: 56px;
 `;
 const MobileLogoImg = styled.img`
-  width: 38px;
-  height: 38px;
+  width: 72px;
+  height: 72px;
   object-fit: contain;
   border-radius: 12px;
   background: transparent;
+  @media (max-width: 500px) {
+    width: 56px;
+    height: 56px;
+  }
 `;
 const CloseBtn = styled.button`
   background: transparent;
