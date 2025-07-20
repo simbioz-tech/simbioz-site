@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import logo from '../assets/logo.jpg';
+import logo from '../assets/logo.png';
 import { FaSun, FaMoon, FaBars, FaTimes } from 'react-icons/fa';
 import { FaTelegramPlane, FaWhatsapp } from 'react-icons/fa';
 
