@@ -69,8 +69,8 @@ const Nav = styled.nav`
 `;
 const NavLink = styled.a`
   color: ${({ theme }) => theme.text};
-  font-size: 1.08rem;
-  font-weight: 600;
+  font-size: 1.22rem;
+  font-weight: 700;
   text-decoration: none;
   position: relative;
   transition: color 0.2s;
@@ -94,8 +94,8 @@ const NavLink = styled.a`
   @media (max-width: 700px) {
     width: 100%;
     box-sizing: border-box;
-    font-size: 1.05rem;
-    padding: 10px 0;
+    font-size: 1.22rem;
+    padding: 18px 0 18px 18px;
     margin: 0;
   }
 `;
@@ -216,14 +216,14 @@ const MobileMenu = styled.div`
     top: 0;
     left: 0;
     height: 100vh;
-    width: 240px;
-    max-width: 240px;
+    width: 300px;
+    max-width: 90vw;
     background: ${({ theme }) => theme.background === '#0a0a23' ? theme.card : theme.background};
-    border-radius: 0 18px 18px 0;
-    box-shadow: 4px 0 32px 0 rgba(30,42,120,0.13);
+    border-radius: 0 22px 22px 0;
+    box-shadow: 8px 0 40px 0 rgba(30,42,120,0.18);
     z-index: 200;
-    padding: 0 0 18px 0;
-    gap: 24px;
+    padding: 0 0 28px 0;
+    gap: 32px;
     align-items: flex-start;
     animation: slideIn 0.22s;
   }
@@ -244,20 +244,22 @@ const MobileMenuHeader = styled.div`
 const MobileLogo = styled.a`
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 14px;
   width: 100%;
-  font-size: 0.95rem;
-  font-weight: 800;
+  font-size: 1.35rem;
+  font-weight: 900;
   color: ${({ theme }) => theme.text};
   text-decoration: none;
-  letter-spacing: 1px;
+  letter-spacing: 1.5px;
   word-break: break-word;
+  padding: 10px 0 10px 2px;
+  min-height: 56px;
 `;
 const MobileLogoImg = styled.img`
-  width: 20px;
-  height: 20px;
+  width: 38px;
+  height: 38px;
   object-fit: contain;
-  border-radius: 7px;
+  border-radius: 12px;
   background: transparent;
 `;
 const CloseBtn = styled.button`
