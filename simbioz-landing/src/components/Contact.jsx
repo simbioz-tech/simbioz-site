@@ -6,7 +6,11 @@ import * as emailjs from '@emailjs/browser';
 
 const Section = styled.section`
   padding: 64px 0 48px 0;
+  background: ${({ theme }) => theme.background === '#0a0a23'
+    ? 'linear-gradient(180deg, #0a0a23 0%, #1e2a78 100%)'
+    : theme.background};
 `;
+
 const Container = styled.div`
   max-width: 1100px;
   margin: 0 auto;
@@ -22,12 +26,16 @@ const Container = styled.div`
     padding: 0 2vw;
   }
 `;
-const Title = styled.h2`
+
+const Title = styled(motion.h2)`
   font-size: 2.5rem;
   margin-bottom: 24px;
   text-align: center;
+  color: ${({ theme }) => theme.text};
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 `;
-const FormWrap = styled.form`
+
+const FormWrap = styled(motion.form)`
   max-width: 900px;
   margin: 0 auto;
   width: 100%;
@@ -35,7 +43,7 @@ const FormWrap = styled.form`
   grid-template-columns: 1fr 1fr;
   gap: 24px 32px;
   background: ${({ theme }) => theme.background === '#0a0a23' ? '#18193a' : '#fff'};
-  box-shadow: 0 6px 32px 0 rgba(30,42,120,0.13);
+  box-shadow: 0 6px 32px 0 rgba(30, 42, 120, 0.2);
   border-radius: 16px;
   padding: 40px 36px 32px 36px;
   grid-template-areas:
@@ -55,8 +63,10 @@ const FormWrap = styled.form`
     box-sizing: border-box;
     padding: 12px 4vw;
     align-items: stretch;
+    border-radius: 12px;
   }
 `;
+
 const Field = styled.div`
   display: flex;
   flex-direction: column;
@@ -70,13 +80,15 @@ const Field = styled.div`
   &[data-area='message'] { grid-area: message; }
   &[data-area='checkbox'] { grid-area: checkbox; }
 `;
-const Label = styled.label`
+
+const Label = styled(motion.label)`
   font-size: 1.04rem;
   font-weight: 600;
   color: ${({ theme }) => theme.text};
   margin-bottom: 2px;
 `;
-const Input = styled.input`
+
+const Input = styled(motion.input)`
   width: 100%;
   padding: 13px 13px;
   border-radius: 10px;
@@ -84,25 +96,35 @@ const Input = styled.input`
   background: ${({ theme }) => theme.card};
   color: ${({ theme }) => theme.text};
   font-size: 1rem;
-  transition: border-color 0.22s, box-shadow 0.22s;
-  box-shadow: 0 0 0 0 rgba(58,123,213,0);
+  transition: all 0.3s ease;
+  box-shadow: 0 0 0 0 rgba(58, 123, 213, 0);
   box-sizing: border-box;
   max-width: 100%;
+  &:hover {
+    transform: scale(1.02);
+  }
   &:focus {
-    border-color: ${({ theme }) => theme.accent};
-    box-shadow: 0 0 0 2px ${({ theme }) => theme.accent + '33'};
+    border: 1.5px solid transparent;
+    background: linear-gradient(${({ theme }) => theme.card}, ${({ theme }) => theme.card}) 
+                padding-box,
+                linear-gradient(45deg, #3a7bd5, #1e2a78) border-box;
+    box-shadow: 0 0 8px rgba(58, 123, 213, 0.5);
     outline: none;
+    transform: scale(1.02);
   }
   @media (max-width: 700px) {
     width: 100%;
     box-sizing: border-box;
+    border-radius: 8px;
   }
 `;
+
 const SelectWrap = styled.div`
   width: 100%;
   position: relative;
 `;
-const Select = styled.select`
+
+const Select = styled(motion.select)`
   width: 100%;
   padding: 13px 38px 13px 13px;
   border-radius: 10px;
@@ -112,27 +134,33 @@ const Select = styled.select`
   font-size: 1rem;
   height: 48px;
   line-height: 1.2;
-  transition: border-color 0.22s, box-shadow 0.22s;
-  box-shadow: 0 0 0 0 rgba(58,123,213,0);
+  transition: all 0.3s ease;
+  box-shadow: 0 0 0 0 rgba(58, 123, 213, 0);
   appearance: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
   box-sizing: border-box;
   max-width: 100%;
+  &:hover {
+    transform: scale(1.02);
+  }
   &:focus {
-    border-color: ${({ theme }) => theme.accent};
-    box-shadow: 0 0 0 2px ${({ theme }) => theme.accent + '33'};
+    border: 1.5px solid transparent;
+    background: linear-gradient(${({ theme }) => theme.card}, ${({ theme }) => theme.card}) 
+                padding-box,
+                linear-gradient(45deg, #3a7bd5, #1e2a78) border-box;
+    box-shadow: 0 0 8px rgba(58, 123, 213, 0.5);
     outline: none;
+    transform: scale(1.02);
   }
   @media (max-width: 700px) {
     padding: 10px 32px 10px 8px;
-    border-radius: 7px;
+    border-radius: 8px;
     font-size: 0.97rem;
     height: 40px;
     width: 100%;
     box-sizing: border-box;
   }
 `;
+
 const SelectArrow = styled.span`
   position: absolute;
   right: 16px;
@@ -143,37 +171,56 @@ const SelectArrow = styled.span`
   transform: translateY(-50%);
   background: url('data:image/svg+xml;utf8,<svg fill="%237a88c9" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>') no-repeat center/contain;
   opacity: 0.7;
+  transition: transform 0.3s ease;
 `;
-const FileInputWrap = styled.label`
-  display: flex;
-  align-items: center;
-  gap: 10px;
+
+const FileInputWrap = styled(motion.div)`
+  width: 100%;
   padding: 13px 13px;
   border-radius: 10px;
-  border: 1.5px dashed ${({ theme }) => theme.border};
+  border: 1.5px solid ${({ theme }) => theme.border};
   background: ${({ theme }) => theme.card};
   color: ${({ theme }) => theme.text};
   font-size: 1rem;
-  cursor: pointer;
-  transition: border-color 0.22s, background 0.22s;
+  transition: all 0.3s ease;
+  box-shadow: 0 0 0 0 rgba(58, 123, 213, 0);
   box-sizing: border-box;
   max-width: 100%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  position: relative;
   &:hover {
-    border-color: ${({ theme }) => theme.accent};
-    background: ${({ theme }) => theme.card + 'cc'};
+    border: 1.5px solid transparent;
+    background: linear-gradient(${({ theme }) => theme.card}, ${({ theme }) => theme.card}) 
+                padding-box,
+                linear-gradient(45deg, #3a7bd5, #1e2a78) border-box;
+    box-shadow: 0 0 8px rgba(58, 123, 213, 0.5);
+    transform: scale(1.02);
   }
   @media (max-width: 700px) {
-    padding: 9px 6px;
-    border-radius: 7px;
+    padding: 10px 8px;
+    border-radius: 8px;
     font-size: 0.97rem;
     width: 100%;
     box-sizing: border-box;
   }
 `;
-const FileInput = styled.input`
-  display: none;
+
+const FileInputIcon = styled(motion.div)`
+  display: inline-flex;
 `;
-const Textarea = styled.textarea`
+
+const FileInput = styled.input`
+  opacity: 0;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+`;
+
+const Textarea = styled(motion.textarea)`
   width: 100%;
   padding: 13px 13px;
   border-radius: 10px;
@@ -182,25 +229,33 @@ const Textarea = styled.textarea`
   color: ${({ theme }) => theme.text};
   font-size: 1rem;
   min-height: 100px;
-  transition: border-color 0.22s, box-shadow 0.22s;
-  box-shadow: 0 0 0 0 rgba(58,123,213,0);
+  transition: all 0.3s ease;
+  box-shadow: 0 0 0 0 rgba(58, 123, 213, 0);
   resize: none;
   box-sizing: border-box;
   max-width: 100%;
+  &:hover {
+    transform: scale(1.02);
+  }
   &:focus {
-    border-color: ${({ theme }) => theme.accent};
-    box-shadow: 0 0 0 2px ${({ theme }) => theme.accent + '33'};
+    border: 1.5px solid transparent;
+    background: linear-gradient(${({ theme }) => theme.card}, ${({ theme }) => theme.card}) 
+                padding-box,
+                linear-gradient(45deg, #3a7bd5, #1e2a78) border-box;
+    box-shadow: 0 0 8px rgba(58, 123, 213, 0.5);
     outline: none;
+    transform: scale(1.02);
   }
   @media (max-width: 700px) {
     padding: 10px 6px;
     font-size: 0.98rem;
-    border-radius: 7px;
+    border-radius: 8px;
     min-height: 70px;
     width: 100%;
     box-sizing: border-box;
   }
 `;
+
 const CheckboxWrap = styled.label`
   display: flex;
   align-items: flex-start;
@@ -220,6 +275,7 @@ const CheckboxWrap = styled.label`
     align-items: flex-start;
   }
 `;
+
 const ButtonRow = styled.div`
   display: flex;
   gap: 18px;
@@ -236,18 +292,20 @@ const ButtonRow = styled.div`
     width: 100%;
   }
 `;
-const Button = styled.button`
+
+const Button = styled(motion.button)`
   flex: 1 1 0;
   padding: 18px 0;
   border-radius: 32px;
-  background: ${({ secondary }) => secondary ? 'transparent' : 'linear-gradient(90deg, #3a7bd5 0%, #1e2a78 100%)'};
-  color: ${({ secondary }) => secondary ? '#fff' : '#fff'};
+  background: linear-gradient(45deg, #3a7bd5, #1e2a78, #3a7bd5);
+  background-size: 200% 100%;
+  animation: gradientShift 5s ease infinite;
+  color: #fff;
   font-weight: 700;
   font-size: 1.18rem;
-  text-decoration: none;
-  border: ${({ secondary, theme }) => secondary ? '2px solid ' + theme.border : 'none'};
-  transition: background 0.22s, color 0.22s, box-shadow 0.18s, transform 0.18s;
-  box-shadow: 0 4px 24px 0 rgba(30,42,120,0.13);
+  border: none;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 24px 0 rgba(30, 42, 120, 0.3);
   letter-spacing: 0.02em;
   cursor: pointer;
   margin-top: 8px;
@@ -256,10 +314,19 @@ const Button = styled.button`
   justify-content: center;
   gap: 10px;
   &:hover {
-    background: ${({ secondary }) => secondary ? '#23234a' : 'linear-gradient(90deg, #1e2a78 0%, #3a7bd5 100%)'};
-    color: #fff;
-    box-shadow: 0 8px 32px 0 rgba(30,42,120,0.18);
-    transform: translateY(-2px) scale(1.04);
+    background-position: 100% 0;
+    box-shadow: 0 8px 32px 0 rgba(58, 123, 213, 0.5);
+    transform: translateY(-2px) scale(1.05);
+  }
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+  }
+  @keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
   }
   @media (max-width: 700px) {
     padding: 12px 0;
@@ -268,11 +335,18 @@ const Button = styled.button`
     width: 100%;
   }
 `;
+
 const Checkbox = styled.input`
   margin-right: 8px;
   width: 18px;
   height: 18px;
   accent-color: ${({ theme }) => theme.accent};
+`;
+
+const GithubLink = styled(motion.a)`
+  display: inline-flex;
+  margin: 0 12px;
+  color: #3a7bd5;
 `;
 
 const Contact = () => {
@@ -400,31 +474,104 @@ const Contact = () => {
   };
 
   return (
-      <Section id="contact">
+      <Section>
         <Container>
-          <Title>Оставьте заявку на проект</Title>
+          <Title
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+          >
+            Оставьте заявку на проект
+          </Title>
           {sent ? (
-              <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ textAlign: 'center', color: '#3a7bd5', fontWeight: 600, fontSize: '1.2rem' }}>
+              <motion.p
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.5, ease: 'easeOut' }}
+                  style={{ textAlign: 'center', color: '#3a7bd5', fontWeight: 600, fontSize: '1.2rem' }}
+              >
                 Спасибо! Мы свяжемся с вами для обсуждения деталей.
               </motion.p>
           ) : (
-              <FormWrap onSubmit={handleSubmit}>
+              <FormWrap
+                  initial={{ opacity: 0, y: 50 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.7, ease: 'easeOut' }}
+                  onSubmit={handleSubmit}
+              >
                 <Field data-area="name">
-                  <Label htmlFor="name">Ваше имя *</Label>
-                  <Input id="name" name="name" type="text" placeholder="Иван Иванов" value={form.name} onChange={handleChange} required />
+                  <Label
+                      initial={{ opacity: 0, x: -10 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ duration: 0.3, delay: 0.1 }}
+                      htmlFor="name"
+                  >
+                    Ваше имя *
+                  </Label>
+                  <Input
+                      id="name"
+                      name="name"
+                      type="text"
+                      placeholder="Иван Иванов"
+                      value={form.name}
+                      onChange={handleChange}
+                      required
+                  />
                 </Field>
                 <Field data-area="email">
-                  <Label htmlFor="email">Email *</Label>
-                  <Input id="email" name="email" type="email" placeholder="example@mail.com" value={form.email} onChange={handleChange} required />
+                  <Label
+                      initial={{ opacity: 0, x: -10 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ duration: 0.3, delay: 0.2 }}
+                      htmlFor="email"
+                  >
+                    Email *
+                  </Label>
+                  <Input
+                      id="email"
+                      name="email"
+                      type="email"
+                      placeholder="example@mail.com"
+                      value={form.email}
+                      onChange={handleChange}
+                      required
+                  />
                 </Field>
                 <Field data-area="telegram">
-                  <Label htmlFor="telegram">Telegram</Label>
-                  <Input id="telegram" name="telegram" type="text" placeholder="@username" value={form.telegram} onChange={handleChange} />
+                  <Label
+                      initial={{ opacity: 0, x: -10 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ duration: 0.3, delay: 0.3 }}
+                      htmlFor="telegram"
+                  >
+                    Telegram
+                  </Label>
+                  <Input
+                      id="telegram"
+                      name="telegram"
+                      type="text"
+                      placeholder="@username"
+                      value={form.telegram}
+                      onChange={handleChange}
+                  />
                 </Field>
                 <Field data-area="service">
-                  <Label htmlFor="service">Услуга *</Label>
+                  <Label
+                      initial={{ opacity: 0, x: -10 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ duration: 0.3, delay: 0.4 }}
+                      htmlFor="service"
+                  >
+                    Услуга *
+                  </Label>
                   <SelectWrap>
-                    <Select id="service" name="service" value={form.service} onChange={handleChange} required>
+                    <Select
+                        id="service"
+                        name="service"
+                        value={form.service}
+                        onChange={handleChange}
+                        required
+                    >
                       <option value="">Выберите услугу</option>
                       <option value="Backend">Backend-решение</option>
                       <option value="ML/AI">ML/AI проект</option>
@@ -437,16 +584,50 @@ const Contact = () => {
                   </SelectWrap>
                 </Field>
                 <Field data-area="file">
-                  <Label htmlFor="file">Прикрепить файл (PDF, Word, до 50 МБ)</Label>
-                  <FileInputWrap>
-                    <FaUpload />
+                  <Label
+                      initial={{ opacity: 0, x: -10 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ duration: 0.3, delay: 0.5 }}
+                      htmlFor="file"
+                  >
+                    Прикрепить файл (PDF, Word, до 50 МБ)
+                  </Label>
+                  <FileInputWrap
+                      whileTap={{ scale: 0.98 }}
+                  >
+                    <FileInputIcon
+                        animate={form.fileName ? { rotate: 360 } : { rotate: 0 }}
+                        transition={{ duration: 0.5 }}
+                    >
+                      <FaUpload />
+                    </FileInputIcon>
                     <span>{form.fileName || 'Выберите файл'}</span>
-                    <FileInput id="file" name="file" type="file" accept=".pdf,.doc,.docx" onChange={handleChange} />
+                    <FileInput
+                        id="file"
+                        name="file"
+                        type="file"
+                        accept=".pdf,.doc,.docx"
+                        onChange={handleChange}
+                    />
                   </FileInputWrap>
                 </Field>
                 <Field data-area="message">
-                  <Label htmlFor="message">Описание проекта *</Label>
-                  <Textarea id="message" name="message" placeholder="Расскажите о вашем проекте, целях и пожеланиях..." value={form.message} onChange={handleChange} required />
+                  <Label
+                      initial={{ opacity: 0, x: -10 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ duration: 0.3, delay: 0.6 }}
+                      htmlFor="message"
+                  >
+                    Описание проекта *
+                  </Label>
+                  <Textarea
+                      id="message"
+                      name="message"
+                      placeholder="Расскажите о вашем проекте, целях и пожеланиях..."
+                      value={form.message}
+                      onChange={handleChange}
+                      required
+                  />
                 </Field>
                 <Field data-area="checkbox">
                   <CheckboxWrap>
@@ -455,20 +636,38 @@ const Contact = () => {
                   </CheckboxWrap>
                 </Field>
                 <ButtonRow>
-                  <Button type="submit" disabled={loading}>
+                  <Button
+                      type="submit"
+                      disabled={loading}
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      transition={{ duration: 0.2 }}
+                  >
                     {loading ? 'Отправка...' : 'Отправить заявку'}
                     <span style={{ fontSize: 18, marginLeft: 4 }}>↗</span>
                   </Button>
                 </ButtonRow>
                 {errorMessage && (
-                    <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ textAlign: 'center', color: '#ff4444', fontWeight: 600, fontSize: '1rem', marginTop: '16px' }}>
+                    <motion.p
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.3 }}
+                        style={{ textAlign: 'center', color: '#ff4444', fontWeight: 600, fontSize: '1rem', marginTop: '16px' }}
+                    >
                       {errorMessage}
                     </motion.p>
                 )}
               </FormWrap>
           )}
           <div style={{ textAlign: 'center', marginTop: 32 }}>
-            <a href="https://github.com/simbioz-tech" style={{ margin: '0 12px', color: '#3a7bd5' }}><FaGithub size={28} /></a>
+            <GithubLink
+                href="https://github.com/simbioz-tech"
+                whileHover={{ scale: 1.2, rotate: 5 }}
+                whileTap={{ scale: 0.9 }}
+                transition={{ duration: 0.2 }}
+            >
+              <FaGithub size={28} />
+            </GithubLink>
           </div>
         </Container>
       </Section>
