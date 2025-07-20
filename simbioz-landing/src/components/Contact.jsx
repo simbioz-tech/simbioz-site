@@ -1,10 +1,8 @@
-import React, { useRef, useState } from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
-import { FaEnvelope, FaGithub, FaLinkedin } from 'react-icons/fa';
-import { FaUpload } from 'react-icons/fa';
-import emailjs from 'emailjs-com';
-import { Widget } from '@uploadcare/react-widget';
+import { FaGithub, FaUpload } from 'react-icons/fa';
+import * as emailjs from '@emailjs/browser';
 
 const Section = styled.section`
   padding: 64px 0 48px 0;
@@ -42,8 +40,9 @@ const FormWrap = styled.form`
   padding: 40px 36px 32px 36px;
   grid-template-areas:
     'name email'
-    'service file'
+    'telegram service'
     'message message'
+    'file file'
     'checkbox checkbox'
     'button button';
   @media (max-width: 700px) {
@@ -65,6 +64,7 @@ const Field = styled.div`
   width: 100%;
   &[data-area='name'] { grid-area: name; }
   &[data-area='email'] { grid-area: email; }
+  &[data-area='telegram'] { grid-area: telegram; }
   &[data-area='service'] { grid-area: service; }
   &[data-area='file'] { grid-area: file; }
   &[data-area='message'] { grid-area: message; }
@@ -220,7 +220,8 @@ const CheckboxWrap = styled.label`
     align-items: flex-start;
   }
 `;
-const ButtonRow = styled.div`  display: flex;
+const ButtonRow = styled.div`
+  display: flex;
   gap: 18px;
   width: 100%;
   justify-content: center;
@@ -275,151 +276,203 @@ const Checkbox = styled.input`
 `;
 
 const Contact = () => {
-  const formRef = useRef();
+  const [form, setForm] = useState({ name: '', email: '', telegram: '', service: '', message: '', fileName: '', file: null });
   const [agree, setAgree] = useState(false);
   const [sent, setSent] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [fileUrl, setFileUrl] = useState('');
-  const widgetRef = useRef();
-  const MAX_FILE_SIZE_MB = 2;
+  const [errorMessage, setErrorMessage] = useState('');
 
-  const handleSubmit = e => {
+  const handleChange = e => {
+    if (e.target.name === 'file') {
+      const file = e.target.files[0];
+      if (file && file.size > 50 * 1024 * 1024) {
+        alert('Файл слишком большой для Telegram (макс. 50 МБ).');
+        return;
+      }
+      setForm(f => ({ ...f, fileName: file?.name || '', file }));
+    } else if (e.target.name === 'telegram') {
+      const value = e.target.value;
+      if (value && !/^@[\w]{5,}$/.test(value)) {
+        console.warn('Telegram должен начинаться с @ и содержать минимум 5 символов');
+      }
+      setForm({ ...form, [e.target.name]: value });
+    } else {
+      setForm({ ...form, [e.target.name]: e.target.value });
+    }
+  };
+
+  const sendToTelegram = async () => {
+    const TELEGRAM_TOKEN = import.meta.env.VITE_TELEGRAM_TOKEN;
+    const CHAT_IDS = import.meta.env.VITE_CHAT_IDS?.split(',').filter(id => id.trim());
+
+    console.log('TELEGRAM_TOKEN:', TELEGRAM_TOKEN);
+    console.log('CHAT_IDS:', CHAT_IDS);
+
+    if (!TELEGRAM_TOKEN || !CHAT_IDS || CHAT_IDS.length === 0) {
+      const error = 'Ошибка: Не настроены VITE_TELEGRAM_TOKEN или VITE_CHAT_IDS в файле .env';
+      console.error(error);
+      throw new Error(error);
+    }
+
+    const text = `📩 Новая заявка на проект\n👤 Имя: ${form.name}\n📧 Email: ${form.email}\n📱 Telegram: ${form.telegram || 'Отсутствует'}\n🛠 Услуга: ${form.service}\n📄 Файл: ${form.fileName || 'Отсутствует'}\n💬 Сообщение: ${form.message}\n🕒 Дата: ${new Date().toLocaleString('ru-RU')}`;
+
+    let successCount = 0;
+    const errors = [];
+
+    for (const chatId of CHAT_IDS) {
+      try {
+        const textResponse = await fetch(
+            `https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(text)}`
+        );
+        const textResult = await textResponse.json();
+        if (!textResult.ok) {
+          throw new Error(`Ошибка Telegram: ${textResult.description} (Код: ${textResult.error_code})`);
+        }
+
+        if (form.file) {
+          const formData = new FormData();
+          formData.append('chat_id', chatId);
+          formData.append('document', form.file);
+          const fileResponse = await fetch(
+              `https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendDocument`,
+              { method: 'POST', body: formData }
+          );
+          const fileResult = await fileResponse.json();
+          if (!fileResult.ok) {
+            throw new Error(`Ошибка отправки файла в Telegram: ${fileResult.description} (Код: ${fileResult.error_code})`);
+          }
+        }
+        successCount++;
+      } catch (error) {
+        console.error(`Ошибка Telegram для chat_id ${chatId}:`, String(error));
+        errors.push(`chat_id ${chatId}: ${String(error)}`);
+      }
+    }
+
+    if (successCount === 0 && errors.length > 0) {
+      throw new Error(errors.join('; '));
+    }
+  };
+
+  const sendToEmailJS = async () => {
+    const templateParams = {
+      name: form.name,
+      email: form.email,
+      telegram: form.telegram || 'Отсутствует',
+      service: form.service,
+      message: form.message,
+      fileName: form.fileName || 'Отсутствует',
+    };
+
+    const response = await emailjs.send('service_59s2dmm', 'template_pw6tm97', templateParams, 'KxtJzTzRKUHJ1pswJ');
+    if (response.status !== 200) throw new Error(`Ошибка EmailJS: ${response.text || 'Неизвестная ошибка'} (Код: ${response.status})`);
+  };
+
+  const handleSubmit = async e => {
     e.preventDefault();
     if (!agree) {
       alert('Необходимо согласиться с политикой конфиденциальности.');
       return;
     }
     setLoading(true);
-    emailjs.sendForm(
-      'service_59s2dmm',
-      'template_fjvpm9v',
-      formRef.current,
-      'KxtJzTzRKUHJ1pswJ'
-    )
-      .then(() => {
-        setSent(true);
-        setLoading(false);
-        if (formRef.current) formRef.current.reset();
-        setAgree(false);
-      })
-      .catch(() => {
-        setLoading(false);
-        alert('Ошибка отправки. Попробуйте позже.');
-      });
+    setErrorMessage('');
+    try {
+      await sendToEmailJS();
+      await sendToTelegram();
+      setSent(true);
+      setForm({ name: '', email: '', telegram: '', service: '', message: '', fileName: '', file: null });
+      setAgree(false);
+      e.target.querySelector('#file').value = '';
+    } catch (error) {
+      const errorMsg = String(error);
+      console.error('Ошибка отправки:', errorMsg);
+      setErrorMessage(
+          `Ошибка отправки: ${
+              errorMsg.includes('VITE_TELEGRAM_TOKEN') ? 'Не настроены Telegram ключи в .env' :
+                  errorMsg.includes('EmailJS') ? 'Ошибка EmailJS (проверьте ключи, шаблон или лимит писем)' :
+                      errorMsg.includes('chat not found') ? 'Ошибка Telegram: Неверный chat_id в VITE_CHAT_IDS' :
+                          errorMsg
+          }. Попробуйте позже.`
+      );
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <Section id="contact">
-      <Container>
-        {!sent && <Title>Оставьте заявку на проект</Title>}
-        {sent ? (
-          <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ textAlign: 'center', color: '#3a7bd5', fontWeight: 600, fontSize: '1.2rem' }}>
-            Спасибо! Мы свяжемся с вами для обсуждения деталей.
-          </motion.p>
-        ) : (
-          <FormWrap ref={formRef} onSubmit={handleSubmit}>
-            <Field data-area="name">
-              <Label htmlFor="name">Ваше имя *</Label>
-              <Input id="name" name="name" type="text" placeholder="Иван Иванов" required />
-            </Field>
-            <Field data-area="email">
-              <Label htmlFor="email">Email *</Label>
-              <Input id="email" name="email" type="email" placeholder="example@mail.com" required />
-            </Field>
-            <Field data-area="service">
-              <Label htmlFor="service">Услуга *</Label>
-              <SelectWrap>
-                <Select id="service" name="service" required>
-                  <option value="">Выберите услугу</option>
-                  <option value="Backend">Backend-решение</option>
-                  <option value="ML/AI">ML/AI проект</option>
-                  <option value="Интеграция">Интеграция сервисов</option>
-                  <option value="DevOps">DevOps/CI-CD</option>
-                  <option value="Консалтинг">Консалтинг/Аудит</option>
-                  <option value="Другое">Другое</option>
-                </Select>
-                <SelectArrow />
-              </SelectWrap>
-            </Field>
-            <Field data-area="file">
-              <style>{`.uploadcare--widget__button_type_open { display: none !important; }`}</style>
-              <Label>Прикрепить файл (до 2 МБ)</Label>
-              <button
-                type="button"
-                onClick={() => widgetRef.current.openDialog()}
-                style={{
-                  padding: '14px 32px',
-                  borderRadius: '28px',
-                  background: 'linear-gradient(90deg, #3a7bd5 0%, #1e2a78 100%)',
-                  color: '#fff',
-                  fontWeight: 700,
-                  fontSize: '1.08rem',
-                  border: 'none',
-                  cursor: 'pointer',
-                  boxShadow: '0 2px 8px 0 rgba(30,42,120,0.10)',
-                  letterSpacing: '0.02em',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 12,
-                  marginBottom: 8,
-                  marginTop: 2
-                }}
-              >
-                <FaUpload style={{ fontSize: 20 }} />
-                {fileUrl ? 'Загрузить другой файл' : 'Выбрать файл'}
-              </button>
-              <Widget
-                ref={widgetRef}
-                publicKey="d6630931d6e4524d5dd1"
-                locale="ru"
-                onChange={fileInfo => {
-                  // fileInfo.size в байтах
-                  if (fileInfo.size && fileInfo.size > MAX_FILE_SIZE_MB * 1024 * 1024) {
-                    alert('Файл слишком большой! Максимальный размер — 2 МБ.');
-                    setFileUrl('');
-                    return;
-                  }
-                  setFileUrl(fileInfo.cdnUrl || '');
-                }}
-                clearable
-                style={{ display: 'none' }}
-                tabs="file url"
-                systemDialog
-                onFileSelect={() => setFileUrl('')}
-              />
-              {fileUrl && (
-                <div style={{ color: '#3a7bd5', marginTop: 6, fontSize: 15, fontWeight: 500 }}>
-                  Файл загружен: <a href={fileUrl} target="_blank" rel="noopener noreferrer" style={{ color: '#1e2a78', textDecoration: 'underline' }}>ссылка</a>
-                </div>
-              )}
-            </Field>
-            <input type="hidden" name="fileUrl" value={fileUrl} />
-            <Field data-area="message">
-              <Label htmlFor="message">Описание проекта *</Label>
-              <Textarea id="message" name="message" placeholder="Расскажите о вашем проекте, целях и пожеланиях..." required />
-            </Field>
-            <Field data-area="checkbox">
-              <CheckboxWrap>
-                <Checkbox type="checkbox" checked={agree} onChange={e => setAgree(e.target.checked)} required />
-                Я соглашаюсь с <a href="#" style={{ color: '#3a7bd5', textDecoration: 'underline' }}>политикой конфиденциальности</a> и даю согласие на обработку персональных данных
-              </CheckboxWrap>
-            </Field>
-            <ButtonRow>
-              <Button type="submit" disabled={loading}>
-                {loading ? 'Отправка...' : 'Отправить заявку'}
-                <span style={{ fontSize: 18, marginLeft: 4 }}>↗</span>
-              </Button>
-            </ButtonRow>
-          </FormWrap>
-        )}
-        <div style={{ textAlign: 'center', marginTop: 32 }}>
-          {/* <a href="mailto:info@simbioz.team" style={{ margin: '0 12px', color: '#3a7bd5' }}><FaEnvelope size={28} /></a> */}
-          <a href="https://github.com/simbioz-tech" style={{ margin: '0 12px', color: '#3a7bd5' }}><FaGithub size={28} /></a>
-          {/* <a href="#" style={{ margin: '0 12px', color: '#3a7bd5' }}><FaLinkedin size={28} /></a> */}
-        </div>
-      </Container>
-    </Section>
+      <Section id="contact">
+        <Container>
+          <Title>Оставьте заявку на проект</Title>
+          {sent ? (
+              <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ textAlign: 'center', color: '#3a7bd5', fontWeight: 600, fontSize: '1.2rem' }}>
+                Спасибо! Мы свяжемся с вами для обсуждения деталей.
+              </motion.p>
+          ) : (
+              <FormWrap onSubmit={handleSubmit}>
+                <Field data-area="name">
+                  <Label htmlFor="name">Ваше имя *</Label>
+                  <Input id="name" name="name" type="text" placeholder="Иван Иванов" value={form.name} onChange={handleChange} required />
+                </Field>
+                <Field data-area="email">
+                  <Label htmlFor="email">Email *</Label>
+                  <Input id="email" name="email" type="email" placeholder="example@mail.com" value={form.email} onChange={handleChange} required />
+                </Field>
+                <Field data-area="telegram">
+                  <Label htmlFor="telegram">Telegram</Label>
+                  <Input id="telegram" name="telegram" type="text" placeholder="@username" value={form.telegram} onChange={handleChange} />
+                </Field>
+                <Field data-area="service">
+                  <Label htmlFor="service">Услуга *</Label>
+                  <SelectWrap>
+                    <Select id="service" name="service" value={form.service} onChange={handleChange} required>
+                      <option value="">Выберите услугу</option>
+                      <option value="Backend">Backend-решение</option>
+                      <option value="ML/AI">ML/AI проект</option>
+                      <option value="Интеграция">Интеграция сервисов</option>
+                      <option value="DevOps">DevOps/CI-CD</option>
+                      <option value="Консалтинг">Консалтинг/Аудит</option>
+                      <option value="Другое">Другое</option>
+                    </Select>
+                    <SelectArrow />
+                  </SelectWrap>
+                </Field>
+                <Field data-area="file">
+                  <Label htmlFor="file">Прикрепить файл (PDF, Word, до 50 МБ)</Label>
+                  <FileInputWrap>
+                    <FaUpload />
+                    <span>{form.fileName || 'Выберите файл'}</span>
+                    <FileInput id="file" name="file" type="file" accept=".pdf,.doc,.docx" onChange={handleChange} />
+                  </FileInputWrap>
+                </Field>
+                <Field data-area="message">
+                  <Label htmlFor="message">Описание проекта *</Label>
+                  <Textarea id="message" name="message" placeholder="Расскажите о вашем проекте, целях и пожеланиях..." value={form.message} onChange={handleChange} required />
+                </Field>
+                <Field data-area="checkbox">
+                  <CheckboxWrap>
+                    <Checkbox type="checkbox" checked={agree} onChange={e => setAgree(e.target.checked)} required />
+                    Я соглашаюсь с <a href="#" style={{ color: '#3a7bd5', textDecoration: 'underline' }}>политикой конфиденциальности</a> и даю согласие на обработку персональных данных
+                  </CheckboxWrap>
+                </Field>
+                <ButtonRow>
+                  <Button type="submit" disabled={loading}>
+                    {loading ? 'Отправка...' : 'Отправить заявку'}
+                    <span style={{ fontSize: 18, marginLeft: 4 }}>↗</span>
+                  </Button>
+                </ButtonRow>
+                {errorMessage && (
+                    <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ textAlign: 'center', color: '#ff4444', fontWeight: 600, fontSize: '1rem', marginTop: '16px' }}>
+                      {errorMessage}
+                    </motion.p>
+                )}
+              </FormWrap>
+          )}
+          <div style={{ textAlign: 'center', marginTop: 32 }}>
+            <a href="https://github.com/simbioz-tech" style={{ margin: '0 12px', color: '#3a7bd5' }}><FaGithub size={28} /></a>
+          </div>
+        </Container>
+      </Section>
   );
 };
 
-export default Contact; 
+export default Contact;
