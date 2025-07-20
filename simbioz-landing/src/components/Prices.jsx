@@ -77,8 +77,8 @@ const Feature = styled.li`
 `;
 const Button = styled.a`
   display: inline-block;
-  padding: 14px 36px;
-  border-radius: 20px;
+  padding: 10px 18px;
+  border-radius: 28px;
   background: linear-gradient(90deg, #3a7bd5 0%, #1e2a78 100%);
   color: #fff;
   font-weight: 700;
@@ -111,8 +111,8 @@ const TabsWrap = styled.div`
   flex-wrap: wrap;
 `;
 const TabBtn = styled.button`
-  padding: 10px 28px;
-  border-radius: 32px;
+  padding: 7px 16px;
+  border-radius: 24px;
   border: none;
   background: ${({ active, theme }) => active ? (theme.background === '#0a0a23' ? '#23234a' : '#fff') : 'transparent'};
   color: ${({ active, theme }) => active ? (theme.background === '#0a0a23' ? '#fff' : '#23234a') : theme.text};

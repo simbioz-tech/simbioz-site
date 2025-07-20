@@ -111,8 +111,8 @@ const Right = styled.div`
   }
 `;
 const ThemeBtn = styled.button`
-  width: 40px;
-  height: 40px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   border: 1.5px solid ${({ theme }) => theme.border};
   background: transparent;
@@ -135,8 +135,8 @@ const ThemeBtn = styled.button`
   }
 `;
 const OutlineBtn = styled.a`
-  padding: 14px 32px;
-  border-radius: 18px;
+  padding: 9px 22px;
+  border-radius: 24px;
   border: 2px solid ${({ theme }) => theme.background === '#0a0a23' ? '#3a7bd5' : theme.accent};
   background: transparent;
   color: ${({ theme }) => theme.background === '#0a0a23' ? '#b3c0f7' : theme.accent};
@@ -162,8 +162,8 @@ const OutlineBtn = styled.a`
   }
 `;
 const FillBtn = styled.a`
-  padding: 14px 36px;
-  border-radius: 20px;
+  padding: 10px 22px;
+  border-radius: 28px;
   background: linear-gradient(90deg, #3a7bd5 0%, #1e2a78 100%);
   color: #fff;
   font-weight: 700;
@@ -185,16 +185,16 @@ const FillBtn = styled.a`
   }
 `;
 const Burger = styled.button`
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
   display: none;
   @media (max-width: 700px) {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 38px;
-    height: 38px;
     background: transparent;
     border: 1.5px solid ${({ theme }) => theme.border};
-    border-radius: 50%;
     color: ${({ theme }) => theme.text};
     font-size: 1.25rem;
     margin-left: 6px;
@@ -264,9 +264,9 @@ const CloseBtn = styled.button`
   background: transparent;
   border: none;
   color: ${({ theme }) => theme.text};
-  font-size: 1.5rem;
+  font-size: 1.2rem;
   cursor: pointer;
-  padding: 4px 8px;
+  padding: 2px 6px;
   border-radius: 50%;
   transition: background 0.2s, color 0.2s;
   &:hover {
@@ -300,16 +300,16 @@ const PopoverBtn = styled.a`
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 10px 18px;
+  padding: 7px 12px;
   color: ${({ theme }) => theme.text};
   text-decoration: none;
-  font-size: 1.05rem;
+  font-size: 0.98rem;
   font-weight: 600;
   border: none;
   background: none;
   cursor: pointer;
   transition: background 0.18s, color 0.18s;
-  border-radius: 8px;
+  border-radius: 20px;
   &:hover {
     background: ${({ theme }) => theme.accent + '22'};
     color: ${({ theme }) => theme.accent};
@@ -361,7 +361,7 @@ const Header = ({ theme, onToggleTheme }) => {
               {popover && (
                 <Popover className="contact-popover">
                   <PopoverBtn href="#tg" onClick={() => setPopover(false)}><FaTelegramPlane /> Telegram</PopoverBtn>
-                  <PopoverBtn href="#wa" onClick={() => setPopover(false)}><FaWhatsapp /> WhatsApp</PopoverBtn>
+                  {/*<PopoverBtn href="#wa" onClick={() => setPopover(false)}><FaWhatsapp /> WhatsApp</PopoverBtn>*/}
                 </Popover>
               )}
             </OutlineBtn>

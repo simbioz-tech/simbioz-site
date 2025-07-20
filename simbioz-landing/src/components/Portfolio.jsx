@@ -110,8 +110,8 @@ const MoreBtn = styled.a`
   background: #1e2a78;
   color: #fff;
   border: none;
-  border-radius: 8px;
-  padding: 14px 38px;
+  border-radius: 24px;
+  padding: 9px 18px;
   font-size: 1.15rem;
   font-weight: 700;
   text-align: center;
@@ -128,7 +128,7 @@ const MoreLink = styled.a`
   display: block;
   margin: 36px auto 0 auto;
   color: #3a7bd5;
-  font-size: 1.08rem;
+  font-size: 1.02rem;
   font-weight: 600;
   text-align: center;
   text-decoration: none;

@@ -74,8 +74,9 @@ const ButtonRow = styled.div`
 `;
 const MainButton = styled(motion.a)`
   display: inline-block;
-  padding: 14px 36px;
-  border-radius: 20px;
+  padding: 12px 36px;
+  min-width: 200px;
+  border-radius: 32px;
   background: linear-gradient(90deg, #3a7bd5 0%, #1e2a78 100%);
   color: #fff;
   font-weight: 700;
@@ -103,8 +104,9 @@ const MainButton = styled(motion.a)`
 `;
 const OutlineButton = styled(motion.a)`
   display: inline-block;
-  padding: 14px 32px;
-  border-radius: 18px;
+  padding: 12px 36px;
+  min-width: 200px;
+  border-radius: 32px;
   border: 2px solid ${({ theme }) => theme.background === '#0a0a23' ? '#3a7bd5' : theme.accent};
   background: transparent;
   color: ${({ theme }) => theme.background === '#0a0a23' ? '#b3c0f7' : theme.accent};
