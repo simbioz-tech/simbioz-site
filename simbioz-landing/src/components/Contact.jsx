@@ -130,7 +130,7 @@ const Select = styled(motion.select)`
   border-radius: 10px;
   border: 1.5px solid ${({ theme }) => theme.border};
   background: ${({ theme }) => theme.card};
-  color: ${({ theme }) => theme.text};
+  color: ${({ theme }) => theme.text || '#0a0a23'};
   font-size: 1rem;
   height: 48px;
   line-height: 1.2;
@@ -150,6 +150,12 @@ const Select = styled(motion.select)`
     box-shadow: 0 0 8px rgba(58, 123, 213, 0.5);
     outline: none;
     transform: scale(1.02);
+  }
+  option {
+    background: #1e2a78;
+    color: #fff;
+    padding: 10px;
+    font-size: 1rem;
   }
   @media (max-width: 700px) {
     padding: 10px 32px 10px 8px;
@@ -377,33 +383,40 @@ const Contact = () => {
 
   const sendToTelegram = async () => {
     const TELEGRAM_TOKEN = import.meta.env.VITE_TELEGRAM_TOKEN;
-    const CHAT_IDS = import.meta.env.VITE_CHAT_IDS?.split(',').filter(id => id.trim());
+    const CHAT_IDS = import.meta.env.VITE_CHAT_IDS?.split(',').map(id => id.trim()).filter(id => id) || [];
 
-    console.log('TELEGRAM_TOKEN:', TELEGRAM_TOKEN);
-    console.log('CHAT_IDS:', CHAT_IDS);
+    console.log('Attempting to send to Telegram. Token exists:', !!TELEGRAM_TOKEN, 'Chat IDs:', CHAT_IDS);
 
-    if (!TELEGRAM_TOKEN || !CHAT_IDS || CHAT_IDS.length === 0) {
-      const error = 'Ошибка: Не настроены VITE_TELEGRAM_TOKEN или VITE_CHAT_IDS в файле .env';
+    if (!TELEGRAM_TOKEN) {
+      const error = 'Ошибка: VITE_TELEGRAM_TOKEN не указан в .env или недействителен';
+      console.error(error);
+      throw new Error(error);
+    }
+    if (CHAT_IDS.length === 0) {
+      const error = 'Ошибка: VITE_CHAT_IDS пуст или не указан в .env';
       console.error(error);
       throw new Error(error);
     }
 
     const text = `📩 Новая заявка на проект\n👤 Имя: ${form.name}\n📧 Email: ${form.email}\n📱 Telegram: ${form.telegram || 'Отсутствует'}\n🛠 Услуга: ${form.service}\n📄 Файл: ${form.fileName || 'Отсутствует'}\n💬 Сообщение: ${form.message}\n🕒 Дата: ${new Date().toLocaleString('ru-RU')}`;
 
-    let successCount = 0;
     const errors = [];
+    let successCount = 0;
 
     for (const chatId of CHAT_IDS) {
       try {
+        console.log(`Sending message to chat_id: ${chatId}`);
         const textResponse = await fetch(
             `https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(text)}`
         );
         const textResult = await textResponse.json();
+        console.log(`Telegram response for chat_id ${chatId}:`, textResult);
         if (!textResult.ok) {
           throw new Error(`Ошибка Telegram: ${textResult.description} (Код: ${textResult.error_code})`);
         }
 
         if (form.file) {
+          console.log(`Sending file to chat_id: ${chatId}`);
           const formData = new FormData();
           formData.append('chat_id', chatId);
           formData.append('document', form.file);
@@ -412,19 +425,22 @@ const Contact = () => {
               { method: 'POST', body: formData }
           );
           const fileResult = await fileResponse.json();
+          console.log(`File response for chat_id ${chatId}:`, fileResult);
           if (!fileResult.ok) {
-            throw new Error(`Ошибка отправки файла в Telegram: ${fileResult.description} (Код: ${fileResult.error_code})`);
+            throw new Error(`Ошибка отправки файла: ${fileResult.description} (Код: ${fileResult.error_code})`);
           }
         }
         successCount++;
       } catch (error) {
-        console.error(`Ошибка Telegram для chat_id ${chatId}:`, String(error));
-        errors.push(`chat_id ${chatId}: ${String(error)}`);
+        console.error(`Ошибка для chat_id ${chatId}:`, error);
+        errors.push(`chat_id ${chatId}: ${error.message}`);
       }
     }
 
-    if (successCount === 0 && errors.length > 0) {
-      throw new Error(errors.join('; '));
+    if (successCount === 0) {
+      throw new Error(`Не удалось отправить уведомления: ${errors.join('; ')}`);
+    } else if (errors.length > 0) {
+      console.warn(`Частичные ошибки при отправке: ${errors.join('; ')}`);
     }
   };
 
@@ -438,8 +454,14 @@ const Contact = () => {
       fileName: form.fileName || 'Отсутствует',
     };
 
-    const response = await emailjs.send('service_59s2dmm', 'template_pw6tm97', templateParams, 'KxtJzTzRKUHJ1pswJ');
-    if (response.status !== 200) throw new Error(`Ошибка EmailJS: ${response.text || 'Неизвестная ошибка'} (Код: ${response.status})`);
+    const response = await emailjs.send(
+        import.meta.env.VITE_EMAILJS_SERVICE_ID,
+        import.meta.env.VITE_EMAILJS_TEMPLATE_ID,
+        templateParams,
+        import.meta.env.VITE_EMAILJS_PUBLIC_KEY
+    );
+    console.log('EmailJS response:', response);
+    if (response.status !== 200) throw new Error(`Ошибка EmailJS: ${response.text || 'Неизвестная ошибка'}`);
   };
 
   const handleSubmit = async e => {
@@ -451,22 +473,18 @@ const Contact = () => {
     setLoading(true);
     setErrorMessage('');
     try {
-      await sendToEmailJS();
-      await sendToTelegram();
+      await Promise.all([sendToEmailJS(), sendToTelegram()]);
       setSent(true);
       setForm({ name: '', email: '', telegram: '', service: '', message: '', fileName: '', file: null });
       setAgree(false);
       e.target.querySelector('#file').value = '';
     } catch (error) {
-      const errorMsg = String(error);
-      console.error('Ошибка отправки:', errorMsg);
+      console.error('Ошибка отправки:', error);
       setErrorMessage(
-          `Ошибка отправки: ${
-              errorMsg.includes('VITE_TELEGRAM_TOKEN') ? 'Не настроены Telegram ключи в .env' :
-                  errorMsg.includes('EmailJS') ? 'Ошибка EmailJS (проверьте ключи, шаблон или лимит писем)' :
-                      errorMsg.includes('chat not found') ? 'Ошибка Telegram: Неверный chat_id в VITE_CHAT_IDS' :
-                          errorMsg
-          }. Попробуйте позже.`
+          error.message.includes('VITE_TELEGRAM_TOKEN') ? 'Не настроены Telegram ключи в .env или токен недействителен' :
+              error.message.includes('chat not found') ? 'Неверный chat_id в VITE_CHAT_IDS. Проверьте ID в .env' :
+                  error.message.includes('EmailJS') ? 'Ошибка EmailJS: проверьте ключи или лимит' :
+                      `Ошибка: ${error.message}`
       );
     } finally {
       setLoading(false);
@@ -474,7 +492,7 @@ const Contact = () => {
   };
 
   return (
-      <Section>
+      <Section id="contact">
         <Container>
           <Title
               initial={{ opacity: 0, y: 20 }}
