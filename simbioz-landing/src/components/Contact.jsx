@@ -412,8 +412,8 @@ const Contact = () => {
       setForm(f => ({ ...f, fileName: file?.name || '', file }));
     } else if (e.target.name === 'telegram') {
       const value = e.target.value;
-      if (value && !/^@[\w]{5,}$/.test(value)) {
-        console.warn('Telegram должен начинаться с @ и содержать минимум 5 символов');
+      if (value && !/^\w{5,}$/.test(value)) {
+        console.warn('Telegram username должен содержать минимум 5 символов');
       }
       setForm({ ...form, [e.target.name]: value });
     } else {
@@ -438,7 +438,8 @@ const Contact = () => {
       throw new Error(error);
     }
 
-    const text = `📩 Новая заявка на проект\n👤 Имя: ${form.name}\n📧 Email: ${form.email}\n📱 Telegram: ${form.telegram || 'Отсутствует'}\n🛠 Услуга: ${form.service}\n📄 Файл: ${form.fileName || 'Отсутствует'}\n💬 Сообщение: ${form.message}\n🕒 Дата: ${new Date().toLocaleString('ru-RU')}`;
+    const telegramLink = form.telegram ? `https://t.me/${form.telegram}` : 'Отсутствует';
+    const text = `📩 Новая заявка на проект\n👤 Имя: ${form.name}\n📧 Email: ${form.email}\n📱 Telegram: ${telegramLink}\n🛠 Услуга: ${form.service}\n📄 Файл: ${form.fileName || 'Отсутствует'}\n💬 Сообщение: ${form.message}\n🕒 Дата: ${new Date().toLocaleString('ru-RU')}`;
 
     const errors = [];
     let successCount = 0;
@@ -485,10 +486,11 @@ const Contact = () => {
   };
 
   const sendToEmailJS = async () => {
+    const telegramLink = form.telegram ? `https://t.me/${form.telegram}` : 'Отсутствует';
     const templateParams = {
       name: form.name,
       email: form.email,
-      telegram: form.telegram || 'Отсутствует',
+      telegram: telegramLink,
       service: form.service,
       message: form.message,
       fileName: form.fileName || 'Отсутствует',
@@ -608,7 +610,7 @@ const Contact = () => {
                       id="telegram"
                       name="telegram"
                       type="text"
-                      placeholder="@username"
+                      placeholder="username (без @)"
                       value={form.telegram}
                       onChange={handleChange}
                   />
