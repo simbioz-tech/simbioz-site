@@ -71,7 +71,7 @@ const Footer = () => (
       <Policy to="/privacy">Политика конфиденциальности</Policy>
     </Row>
     <Copyright>
-      &copy; {new Date().getFullYear()} Simbioz Team. Все права защищены.
+      &copy; {new Date().getFullYear()} Simbioz Tech. Все права защищены.
     </Copyright>
   </FooterWrap>
 );
