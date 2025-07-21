@@ -34,6 +34,21 @@ const Title = styled(motion.h2)`
   text-align: center;
   color: ${({ theme }) => theme.text};
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  @media (max-width: 700px) {
+    font-size: 2rem;
+  }
+`;
+
+const SuccessMessage = styled(motion.h2)`
+  font-size: 2.5rem;
+  margin-bottom: 24px;
+  text-align: center;
+  color: #3a7bd5;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  font-weight: 600;
+  @media (max-width: 700px) {
+    font-size: 2rem;
+  }
 `;
 
 const FormWrap = styled(motion.form)`
@@ -536,22 +551,23 @@ const Contact = () => {
   return (
       <Section id="contact">
         <Container>
-          <Title
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-          >
-            Оставьте заявку на проект
-          </Title>
+          {!sent && (
+              <Title
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5 }}
+              >
+                Оставьте заявку на проект
+              </Title>
+          )}
           {sent ? (
-              <motion.p
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.5, ease: 'easeOut' }}
-                  style={{ textAlign: 'center', color: '#3a7bd5', fontWeight: 600, fontSize: '1.2rem' }}
+              <SuccessMessage
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5 }}
               >
                 Спасибо! Мы свяжемся с вами для обсуждения деталей.
-              </motion.p>
+              </SuccessMessage>
           ) : (
               <FormWrap
                   initial={{ opacity: 0, y: 50 }}
