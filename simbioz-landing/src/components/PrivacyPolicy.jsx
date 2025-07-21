@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
+import { useNavigate } from 'react-router-dom';
 
 const Page = styled.div`
   max-width: 800px;
@@ -11,7 +12,7 @@ const Page = styled.div`
   color: ${({ theme }) => theme.text};
   font-size: 1.08rem;
   box-sizing: border-box;
-  text-align: center; /* Center all text content */
+  text-align: center;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -44,11 +45,11 @@ const SubTitle = styled.h2`
 
 const List = styled.ul`
   margin: 0 0 18px 0;
-  padding-left: 20px; /* Use padding for indentation instead of margin */
-  list-style-position: inside; /* Ensure bullets are aligned with text */
-  text-align: left; /* Align list items to the left for readability */
+  padding-left: 20px;
+  list-style-position: inside;
+  text-align: left;
   width: 100%;
-  max-width: 700px; /* Prevent lists from stretching too wide */
+  max-width: 700px;
   @media (max-width: 700px) {
     padding-left: 15px;
   }
@@ -72,9 +73,65 @@ const UpdateInfo = styled.div`
   }
 `;
 
+const BackButton = styled.button`
+  padding: 9px 22px;
+  border-radius: 24px;
+  border: 2px solid ${({ theme }) => theme.background === '#0a0a23' ? '#3a7bd5' : theme.accent};
+  background: transparent;
+  color: ${({ theme }) => theme.background === '#0a0a23' ? '#b3c0f7' : theme.accent};
+  font-weight: 700;
+  font-size: 1.08rem;
+  text-decoration: none;
+  margin-bottom: 24px;
+  transition: background 0.22s, color 0.22s, border-color 0.22s, box-shadow 0.18s, transform 0.18s;
+  letter-spacing: 0.02em;
+  box-shadow: 0 2px 8px 0 rgba(30,42,120,0.06);
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  align-self: center;
+  @media (max-width: 700px) {
+    padding: 8px 14px;
+    font-size: 0.98rem;
+  }
+  &:hover {
+    background: ${({ theme }) => theme.background === '#0a0a23' ? '#23234a' : '#e3e8fa'};
+    color: ${({ theme }) => theme.background === '#0a0a23' ? '#fff' : theme.accent2};
+    border-color: ${({ theme }) => theme.accent2};
+    box-shadow: 0 6px 24px 0 rgba(30,42,120,0.13);
+    transform: translateY(-2px) scale(1.04);
+    animation: pulse 1.5s infinite;
+  }
+  @keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(58,123,213,0.5); }
+    70% { box-shadow: 0 0 0 10px rgba(58,123,213,0); }
+    100% { box-shadow: 0 0 0 0 rgba(58,123,213,0); }
+  }
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+    transition: left 0.5s;
+  }
+  &:hover::before {
+    left: 100%;
+  }
+`;
+
 export default function PrivacyPolicy() {
+    const navigate = useNavigate();
+
+    const handleBack = () => {
+        navigate(-1); // Go back to the previous page
+    };
+
     return (
         <Page>
+            <BackButton onClick={handleBack}>Назад</BackButton>
             <Title>Политика конфиденциальности</Title>
             <UpdateInfo>Последнее обновление: 21 июля 2025 г.</UpdateInfo>
             <p>Настоящая Политика конфиденциальности определяет порядок обработки и защиты персональных данных пользователей сайта simbioz-tech (далее — «Сайт»).</p>
