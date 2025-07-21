@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
-import { motion } from 'framer-motion';
+import { motion, useAnimation } from 'framer-motion';
 import { FaServer, FaBrain, FaPlug, FaCogs, FaChartLine, FaTools } from 'react-icons/fa';
 
 const Section = styled.section`
@@ -74,36 +74,66 @@ const Card = styled(motion.div)`
     box-sizing: border-box;
   }
 `;
-const IconWrap = styled.div`  font-size: 2.5rem;
+const IconWrap = styled.div`
+  font-size: 2.5rem;
   margin-bottom: 16px;
   color: #3a7bd5;
-`;const services = [
-  { icon: <FaServer />, title: 'Backend на Java', desc: 'Проектирование и разработка микросервисов, REST/gRPC API, интеграции, отказоустойчивые системы.' },
-  { icon: <FaBrain />, title: 'ML/AI решения', desc: 'Машинное обучение, Data Science, автоматизация, предиктивная аналитика, внедрение моделей.' },
-  { icon: <FaPlug />, title: 'Интеграция сервисов', desc: 'Интеграция с внешними API, платёжными системами, корпоративными платформами.' },
-  { icon: <FaCogs />, title: 'DevOps и CI/CD', desc: 'Автоматизация процессов, настройка CI/CD, контейнеризация, мониторинг.' },
-  { icon: <FaChartLine />, title: 'Консалтинг и аудит', desc: 'Аудит архитектуры, оптимизация, подбор технологий, техническое интервью.' },
-  { icon: <FaTools />, title: 'Поддержка и сопровождение', desc: 'Техническая поддержка, развитие и оптимизация существующих решений.' },
+`;
+
+const services = [
+    { icon: <FaServer />, title: 'Backend на Java', desc: 'Проектирование и разработка микросервисов, REST/gRPC API, интеграции, отказоустойчивые системы.' },
+    { icon: <FaBrain />, title: 'ML/AI решения', desc: 'Машинное обучение, Data Science, автоматизация, предиктивная аналитика, внедрение моделей.' },
+    { icon: <FaPlug />, title: 'Интеграция сервисов', desc: 'Интеграция с внешними API, платёжными системами, корпоративными платформами.' },
+    { icon: <FaCogs />, title: 'DevOps и CI/CD', desc: 'Автоматизация процессов, настройка CI/CD, контейнеризация, мониторинг.' },
+    { icon: <FaChartLine />, title: 'Консалтинг и аудит', desc: 'Аудит архитектуры, оптимизация, подбор технологий, техническое интервью.' },
+    { icon: <FaTools />, title: 'Поддержка и сопровождение', desc: 'Техническая поддержка, развитие и оптимизация существующих решений.' },
 ];
 
-const Services = () => (
-  <Section id="services">
-    <Container>
-      <Title>Наши услуги</Title>
-      <CardGrid>
-        {services.map((s, i) => (
-          <Card key={s.title} initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }}>
-            <IconWrap>{s.icon}</IconWrap>
-            <h3 style={{ marginBottom: 8 }}>{s.title}</h3>
-            <p style={{ textAlign: 'center' }}>{s.desc}</p>
-          </Card>
-        ))}
-      </CardGrid>
-    </Container>
-  </Section>
-);
+const Services = () => {
+    const controls = services.map(() => useAnimation());
+    const refs = services.map(() => useRef(null));
+
+    useEffect(() => {
+        const observers = refs.map((ref, index) => {
+            const observer = new IntersectionObserver(
+                ([entry]) => {
+                    if (entry.isIntersecting) {
+                        controls[index].start({ opacity: 1, y: 0 });
+                        observer.unobserve(ref.current); // Stop observing once animated
+                    }
+                },
+                { threshold: 0.2 } // Trigger when 20% of the card is visible
+            );
+
+            if (ref.current) observer.observe(ref.current);
+            return observer;
+        });
+
+        return () => observers.forEach(observer => observer.disconnect());
+    }, [controls, refs]);
+
+    return (
+        <Section id="services">
+            <Container>
+                <Title>Наши услуги</Title>
+                <CardGrid>
+                    {services.map((s, i) => (
+                        <Card
+                            key={s.title}
+                            ref={refs[i]}
+                            animate={controls[i]}
+                            initial={{ opacity: 0, y: 30 }}
+                            transition={{ duration: 0.6, ease: 'easeOut', delay: i * 0.15 }}
+                        >
+                            <IconWrap>{s.icon}</IconWrap>
+                            <h3 style={{ marginBottom: 8 }}>{s.title}</h3>
+                            <p style={{ textAlign: 'center' }}>{s.desc}</p>
+                        </Card>
+                    ))}
+                </CardGrid>
+            </Container>
+        </Section>
+    );
+};
 
 export default Services;
-
-
- 

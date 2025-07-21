@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
-import { motion } from 'framer-motion';
+import { motion, useAnimation } from 'framer-motion';
 import { FaSearch, FaProjectDiagram, FaCode, FaPlug, FaRocket, FaTools } from 'react-icons/fa';
 
 const Section = styled.section`
@@ -70,6 +70,7 @@ const IconWrap = styled.div`
   color: #3a7bd5;
   margin-bottom: 12px;
 `;
+
 const steps = [
   { icon: <FaSearch />, title: 'Анализ задачи', desc: 'Погружаемся в бизнес-процесс, выявляем цели и требования.' },
   { icon: <FaProjectDiagram />, title: 'Проектирование архитектуры', desc: 'Разрабатываем архитектуру backend/ML-решения, выбираем технологии.' },
@@ -79,21 +80,51 @@ const steps = [
   { icon: <FaTools />, title: 'Поддержка', desc: 'Мониторинг, сопровождение, развитие и оптимизация.' },
 ];
 
-const Process = () => (
-  <Section>
-    <Container>
-      <Title>Процесс работы</Title>
-      <Steps>
-        {steps.map((s, i) => (
-          <Step key={s.title} initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }}>
-            <IconWrap>{s.icon}</IconWrap>
-            <h4 style={{ marginBottom: 8 }}>{s.title}</h4>
-            <p style={{ textAlign: 'center', color: '#7a88c9' }}>{s.desc}</p>
-          </Step>
-        ))}
-      </Steps>
-    </Container>
-  </Section>
-);
+const Process = () => {
+  const controls = steps.map(() => useAnimation());
+  const refs = steps.map(() => useRef(null));
 
-export default Process; 
+  useEffect(() => {
+    const observers = refs.map((ref, index) => {
+      const observer = new IntersectionObserver(
+          ([entry]) => {
+            if (entry.isIntersecting) {
+              controls[index].start({ opacity: 1, y: 0 });
+              observer.unobserve(ref.current); // Stop observing once animated
+            }
+          },
+          { threshold: 0.2 }
+      );
+
+      if (ref.current) observer.observe(ref.current);
+      return observer;
+    });
+
+    return () => observers.forEach(observer => observer.disconnect());
+  }, [controls, refs]);
+
+  return (
+      <Section>
+        <Container>
+          <Title>Процесс работы</Title>
+          <Steps>
+            {steps.map((s, i) => (
+                <Step
+                    key={s.title}
+                    ref={refs[i]}
+                    animate={controls[i]}
+                    initial={{ opacity: 0, y: 30 }}
+                    transition={{ duration: 0.6, ease: 'easeOut', delay: i * 0.15 }}
+                >
+                  <IconWrap>{s.icon}</IconWrap>
+                  <h4 style={{ marginBottom: 8 }}>{s.title}</h4>
+                  <p style={{ textAlign: 'center', color: '#7a88c9' }}>{s.desc}</p>
+                </Step>
+            ))}
+          </Steps>
+        </Container>
+      </Section>
+  );
+};
+
+export default Process;

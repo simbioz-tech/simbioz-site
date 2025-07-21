@@ -1,5 +1,6 @@
-import React from 'react';
-import styled, { keyframes } from 'styled-components';
+import React, { useEffect, useRef } from 'react';
+import styled from 'styled-components';
+import { motion, useAnimation } from 'framer-motion';
 import InfiniteCarousel from './InfiniteCarousel';
 
 const Section = styled.section`
@@ -15,7 +16,6 @@ const Title = styled.h2`
   margin-bottom: 24px;
   text-align: center;
 `;
-// --- Технологии ---
 const TechCarouselWrap = styled.div`
   width: 100vw;
   max-width: 100vw;
@@ -51,21 +51,12 @@ const TechCard = styled.div`
     box-shadow: 0 2px 12px 0 rgba(30,42,120,0.10);
   }
 `;
-const TechTitle = styled.div`
-  font-size: 1.08rem;
-  color: #7a88c9;
-  font-weight: 600;
-  margin-bottom: 14px;
-  text-align: center;
-  letter-spacing: 0.2px;
-`;
-// --- Проекты ---
 const CardGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
   gap: 32px;
 `;
-const Card = styled.a`
+const Card = styled(motion.a)`
   background: ${({ theme }) => theme.card};
   border-radius: 18px;
   box-shadow: 0 4px 24px 0 rgba(30,42,120,0.08);
@@ -102,26 +93,6 @@ const Tag = styled.span`
     color: #fff;
     transform: scale(1.08);
     box-shadow: 0 2px 8px 0 rgba(30,42,120,0.10);
-  }
-`;
-const MoreBtn = styled.a`
-  display: block;
-  margin: 36px auto 0 auto;
-  background: #1e2a78;
-  color: #fff;
-  border: none;
-  border-radius: 24px;
-  padding: 9px 18px;
-  font-size: 1.15rem;
-  font-weight: 700;
-  text-align: center;
-  text-decoration: none;
-  transition: background 0.2s, transform 0.2s;
-  cursor: pointer;
-  box-shadow: 0 2px 16px 0 rgba(30,42,120,0.10);
-  &:hover {
-    background: #2e3a8c;
-    transform: scale(1.04);
   }
 `;
 const MoreLink = styled.a`
@@ -182,36 +153,65 @@ const projects = [
 ];
 
 const Portfolio = () => {
-  // Для бесшовного скролла дублируем массив techs
-  const techItems = [...techs, ...techs];
+  const controls = projects.map(() => useAnimation());
+  const refs = projects.map(() => useRef(null));
+
+  useEffect(() => {
+    const observers = refs.map((ref, index) => {
+      const observer = new IntersectionObserver(
+          ([entry]) => {
+            if (entry.isIntersecting) {
+              controls[index].start({ opacity: 1, y: 0 });
+              observer.unobserve(ref.current); // Stop observing once animated
+            }
+          },
+          { threshold: 0.2 } // Trigger when 20% of the card is visible
+      );
+
+      if (ref.current) observer.observe(ref.current);
+      return observer;
+    });
+
+    return () => observers.forEach(observer => observer.disconnect());
+  }, [controls, refs]);
+
   return (
-    <Section>
-      <Container>
-        <Title>Проекты</Title>
-        <TechCarouselWrap>
-          <InfiniteCarousel speed={50} gap={12}>
-            {techs.map((t, i) => (
-              <TechCard key={t + i}>{t}</TechCard>
+      <Section>
+        <Container>
+          <Title>Проекты</Title>
+          <TechCarouselWrap>
+            <InfiniteCarousel speed={50} gap={12}>
+              {techs.map((t, i) => (
+                  <TechCard key={t + i}>{t}</TechCard>
+              ))}
+            </InfiniteCarousel>
+          </TechCarouselWrap>
+          <CardGrid>
+            {projects.map((p, i) => (
+                <Card
+                    href={p.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    key={p.title}
+                    ref={refs[i]}
+                    animate={controls[i]}
+                    initial={{ opacity: 0, y: 30 }}
+                    transition={{ duration: 0.6, ease: 'easeOut', delay: i * 0.15 }}
+                >
+                  <h3 style={{ marginBottom: 8 }}>{p.title}</h3>
+                  <p style={{ color: '#7a88c9', marginBottom: 8 }}>{p.desc}</p>
+                  <Tags>
+                    {p.tags.map(tag => <Tag key={tag}>{tag}</Tag>)}
+                  </Tags>
+                </Card>
             ))}
-          </InfiniteCarousel>
-        </TechCarouselWrap>
-        <CardGrid>
-          {projects.map((p, i) => (
-            <Card href={p.link} target="_blank" rel="noopener noreferrer" key={p.title}>
-              <h3 style={{ marginBottom: 8 }}>{p.title}</h3>
-              <p style={{ color: '#7a88c9', marginBottom: 8 }}>{p.desc}</p>
-              <Tags>
-                {p.tags.map(tag => <Tag key={tag}>{tag}</Tag>)}
-              </Tags>
-            </Card>
-          ))}
-        </CardGrid>
-        <MoreLink href="#" onClick={e => { e.preventDefault(); alert('Показать все проекты — скоро!'); }}>
-          Смотреть все проекты
-        </MoreLink>
-      </Container>
-    </Section>
+          </CardGrid>
+          <MoreLink href="#" onClick={e => { e.preventDefault(); alert('Показать все проекты — скоро!'); }}>
+            Смотреть все проекты
+          </MoreLink>
+        </Container>
+      </Section>
   );
 };
 
-export default Portfolio; 
+export default Portfolio;

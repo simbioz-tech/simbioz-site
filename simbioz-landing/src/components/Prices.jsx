@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
-import { motion } from 'framer-motion';
+import { motion, useAnimation } from 'framer-motion';
 
 const Section = styled.section`
   padding: 64px 0 48px 0;
@@ -102,7 +102,6 @@ const Button = styled.a`
     text-align: center;
   }
 `;
-
 const TabsWrap = styled.div`
   display: flex;
   justify-content: center;
@@ -321,7 +320,7 @@ const prices = [
     ],
     popular: false,
   },
-  // Поддержка и сопровождение (оставить как есть)
+  // Поддержка и сопровождение
   {
     section: 'Поддержка и сопровождение',
     title: 'Базовый',
@@ -367,42 +366,78 @@ const getSections = (prices) => {
 };
 
 const Prices = () => {
-  const [active, setActive] = React.useState(prices[0].section);
+  const [active, setActive] = useState(prices[0].section);
   const sections = getSections(prices);
+  const controls = useRef(prices.map(() => useAnimation())).current;
+  const refs = useRef(prices.map(() => useRef(null))).current;
+
+  useEffect(() => {
+    const observers = refs.map((ref, index) => {
+      const observer = new IntersectionObserver(
+          ([entry]) => {
+            if (entry.isIntersecting) {
+              controls[index].start({ opacity: 1, y: 0 });
+              observer.unobserve(ref.current); // Stop observing once animated
+            }
+          },
+          { threshold: 0.2 }
+      );
+
+      if (ref.current) observer.observe(ref.current);
+      return observer;
+    });
+
+    return () => observers.forEach(observer => observer.disconnect());
+  }, [controls, refs, active]);
+
+  // Reset animations when switching tabs
+  useEffect(() => {
+    controls.forEach(control => control.set({ opacity: 0, y: 30 }));
+  }, [active, controls]);
+
   return (
-    <Section>
-      <Container>
-        <Title>Тарифы и цены</Title>
-        <TabsWrap>
-          {sections.map(section => (
-            <TabBtn
-              key={section}
-              active={active === section}
-              onClick={() => setActive(section)}
-            >
-              {section}
-            </TabBtn>
-          ))}
-        </TabsWrap>
-        <CardGrid>
-          {prices.filter(p => p.section === active).map((p, i) => (
-            <Card key={p.title} initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }} style={p.popular ? { border: '2.5px solid #3a7bd5', boxShadow: '0 8px 32px 0 rgba(30,42,120,0.13)' } : {}}>
-              <CardContent>
-                <div style={{ fontWeight: 700, color: '#7a88c9', marginBottom: 4, fontSize: '1.02rem' }}>{p.section}</div>
-                <h3 style={{ marginBottom: 8 }}>{p.title}</h3>
-                <Price>{p.price}</Price>
-                {p.subtitle && <div style={{ color: '#b3b3b3', fontSize: '1.08rem', marginBottom: 18 }}>{p.subtitle}</div>}
-                <ul style={{ paddingLeft: 18, marginBottom: 12, marginTop: p.subtitle ? 0 : 18 }}>
-                  {p.features.map(f => <Feature key={f}>{f}</Feature>)}
-                </ul>
-              </CardContent>
-              <Button href="#contact" style={{ marginTop: 'auto', width: '100%', boxSizing: 'border-box' }}>{p.section === 'Поддержка и сопровождение' ? 'Заказать' : 'Обсудить проект'}</Button>
-            </Card>
-          ))}
-        </CardGrid>
-      </Container>
-    </Section>
+      <Section>
+        <Container>
+          <Title>Тарифы и цены</Title>
+          <TabsWrap>
+            {sections.map(section => (
+                <TabBtn
+                    key={section}
+                    active={active === section}
+                    onClick={() => setActive(section)}
+                >
+                  {section}
+                </TabBtn>
+            ))}
+          </TabsWrap>
+          <CardGrid>
+            {prices.filter(p => p.section === active).map((p, i) => (
+                <Card
+                    key={p.title}
+                    ref={refs[prices.findIndex(price => price.title === p.title)]}
+                    animate={controls[prices.findIndex(price => price.title === p.title)]}
+                    initial={{ opacity: 0, y: 30 }}
+                    transition={{ duration: 0.6, ease: 'easeOut', delay: i * 0.15 }}
+                    style={p.popular ? { border: '2.5px solid #3a7bd5', boxShadow: '0 8px 32px 0 rgba(30,42,120,0.13)' } : {}}
+                >
+                  <CardContent>
+                    <div style={{ fontWeight: 700, color: '#7a88c9', marginBottom: 4, fontSize: '1.02rem' }}>{p.section}</div>
+                    <h3 style={{ marginBottom: 8 }}>{p.title}</h3>
+                    <Price>{p.price}</Price>
+                    {p.subtitle && <div style={{ color: '#b3b3b3', fontSize: '1.08rem', marginBottom: 18 }}>{p.subtitle}</div>}
+                    <ul style={{ paddingLeft: 18, marginBottom: 12, marginTop: p.subtitle ? 0 : 18 }}>
+                      {p.features.map(f => <Feature key={f}>{f}</Feature>)}
+                    </ul>
+                  </CardContent>
+                  <Button href="#contact" style={{ marginTop: 'auto', width: '100%', boxSizing: 'border-box' }}>
+                    {p.section === 'Поддержка и сопровождение' ? 'Заказать' : 'Обсудить проект'}
+                  </Button>
+                </Card>
+            ))}
+          </CardGrid>
+        </Container>
+      </Section>
   );
 };
 
-export default Prices; 
+export default Prices;

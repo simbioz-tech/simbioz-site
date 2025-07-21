@@ -310,7 +310,7 @@ const Button = styled(motion.button)`
   font-weight: 700;
   font-size: 1.18rem;
   border: none;
-  transition: all 0.3s ease;
+  transition: background 0.3s, box-shadow 0.2s, transform 0.2s;
   box-shadow: 0 4px 24px 0 rgba(30, 42, 120, 0.3);
   letter-spacing: 0.02em;
   cursor: pointer;
@@ -319,10 +319,12 @@ const Button = styled(motion.button)`
   align-items: center;
   justify-content: center;
   gap: 10px;
+  position: relative;
+  overflow: hidden;
   &:hover {
     background-position: 100% 0;
     box-shadow: 0 8px 32px 0 rgba(58, 123, 213, 0.5);
-    transform: translateY(-2px) scale(1.05);
+    transform: translateY(-2px) scale(1.05) rotate(2deg);
   }
   &:disabled {
     opacity: 0.6;
@@ -333,6 +335,19 @@ const Button = styled(motion.button)`
     0% { background-position: 0% 50%; }
     50% { background-position: 100% 50%; }
     100% { background-position: 0% 50%; }
+  }
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+    transition: left 0.5s;
+  }
+  &:hover::before {
+    left: 100%;
   }
   @media (max-width: 700px) {
     padding: 12px 0;
@@ -353,6 +368,30 @@ const GithubLink = styled(motion.a)`
   display: inline-flex;
   margin: 0 12px;
   color: #3a7bd5;
+  position: relative;
+  overflow: hidden;
+  &:hover {
+    color: #2e3a8c;
+    animation: pulse 1.5s infinite;
+  }
+  @keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(58,123,213,0.5); }
+    70% { box-shadow: 0 0 0 10px rgba(58,123,213,0); }
+    100% { box-shadow: 0 0 0 0 rgba(58,123,213,0); }
+  }
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+    transition: left 0.5s;
+  }
+  &:hover::before {
+    left: 100%;
+  }
 `;
 
 const Contact = () => {
