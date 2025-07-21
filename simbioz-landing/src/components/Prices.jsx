@@ -79,27 +79,49 @@ const Button = styled.a`
   display: inline-block;
   padding: 10px 18px;
   border-radius: 28px;
-  background: linear-gradient(90deg, #3a7bd5 0%, #1e2a78 100%);
+  background: linear-gradient(45deg, #3a7bd5, #1e2a78, #3a7bd5);
+  background-size: 200% 100%;
+  animation: gradientShift 5s ease infinite;
   color: #fff;
   font-weight: 700;
   font-size: 1.08rem;
   text-decoration: none;
   border: none;
-  transition: background 0.22s, color 0.22s, box-shadow 0.18s, transform 0.18s;
+  transition: background 0.3s, box-shadow 0.2s, transform 0.2s;
   box-shadow: 0 4px 24px 0 rgba(30,42,120,0.13);
   letter-spacing: 0.02em;
   cursor: pointer;
+  position: relative;
+  overflow: hidden;
   &:hover {
-    background: linear-gradient(90deg, #1e2a78 0%, #3a7bd5 100%);
-    color: #fff;
-    box-shadow: 0 8px 32px 0 rgba(30,42,120,0.18);
-    transform: translateY(-2px) scale(1.04);
+    background-position: 100% 0;
+    box-shadow: 0 8px 32px 0 rgba(58, 123, 213, 0.5);
+    transform: translateY(-2px) scale(1.05);
+  }
+  @keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+    transition: left 0.5s;
+  }
+  &:hover::before {
+    left: 100%;
   }
   @media (max-width: 700px) {
     padding: 12px 0;
     font-size: 0.98rem;
     border-radius: 12px;
     text-align: center;
+    /* hover уже обработан выше */
   }
 `;
 const TabsWrap = styled.div`
@@ -123,7 +145,7 @@ const TabBtn = styled.button`
   transition: background 0.18s, color 0.18s, border 0.18s;
   &:hover {
     background: ${({ theme }) => theme.background === '#0a0a23' ? '#23234a' : '#e3e8fa'};
-    color: ${({ theme }) => theme.accent};
+    color: ${({ theme }) => theme.background === '#0a0a23' ? '#b3c0f7' : '#1e2a78'};
   }
 `;
 

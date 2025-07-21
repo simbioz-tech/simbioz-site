@@ -10,6 +10,8 @@ import Process from './components/Process';
 import Reviews from './components/Reviews';
 import Contact from './components/Contact';
 import Footer from './components/Footer';
+import PrivacyPolicy from './components/PrivacyPolicy';
+import { Routes, Route } from 'react-router-dom';
 
 function App() {
   const [theme, setTheme] = useState('dark');
@@ -18,15 +20,22 @@ function App() {
   return (
     <ThemeProvider theme={theme === 'dark' ? darkTheme : lightTheme}>
       <GlobalStyle />
-      <Header theme={theme} onToggleTheme={handleTheme} />
-      <div id="hero"><Hero /></div>
-      <Services />
-      <Portfolio />
-      <div id="prices"><Prices /></div>
-      <Process />
-      <div id="reviews"><Reviews /></div>
-      <Contact />
-      <Footer />
+      <Routes>
+        <Route path="/" element={
+          <>
+            <Header theme={theme} onToggleTheme={handleTheme} />
+            <div id="hero"><Hero /></div>
+            <Services />
+            <Portfolio />
+            <div id="prices"><Prices /></div>
+            <Process />
+            <div id="reviews"><Reviews /></div>
+            <Contact />
+            <Footer />
+          </>
+        } />
+        <Route path="/privacy" element={<PrivacyPolicy />} />
+      </Routes>
     </ThemeProvider>
   );
 }

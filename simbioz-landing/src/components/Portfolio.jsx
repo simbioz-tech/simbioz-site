@@ -56,7 +56,7 @@ const CardGrid = styled.div`
   grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
   gap: 32px;
 `;
-const Card = styled(motion.a)`
+const Card = styled(motion.div)`
   background: ${({ theme }) => theme.card};
   border-radius: 18px;
   box-shadow: 0 4px 24px 0 rgba(30,42,120,0.08);
@@ -70,8 +70,8 @@ const Card = styled(motion.a)`
   transition: background 0.4s cubic-bezier(.4,0,.2,1), border-color 0.4s cubic-bezier(.4,0,.2,1), box-shadow 0.4s cubic-bezier(.4,0,.2,1), color 0s;
   cursor: pointer;
   &:hover {
-    box-shadow: 0 8px 32px 0 rgba(30,42,120,0.18);
-    transform: translateY(-4px) scale(1.04);
+    box-shadow: 0 12px 48px 0 rgba(58,123,213,0.35), 0 2px 24px 0 rgba(30,42,120,0.18);
+    transform: translateY(-6px) scale(1.06);
   }
 `;
 const Tags = styled.div`
@@ -81,8 +81,8 @@ const Tags = styled.div`
   margin-top: 16px;
 `;
 const Tag = styled.span`
-  background: #23234a;
-  color: #b3c0f7;
+  background: ${({ theme }) => theme.background === '#0a0a23' ? '#23234a' : '#e3e8fa'};
+  color: ${({ theme }) => theme.background === '#0a0a23' ? '#b3c0f7' : '#3a7bd5'};
   border-radius: 6px;
   padding: 4px 12px;
   font-size: 0.95rem;
@@ -136,19 +136,16 @@ const projects = [
     title: 'ML-платформа для логистики',
     desc: 'Оптимизация маршрутов, прогнозирование спроса, автоматизация логистики.',
     tags: ['ML', 'Python', 'MLOps', 'Logistics'],
-    link: 'https://github.com/example/ml-logistics',
   },
   {
     title: 'Финтех API',
     desc: 'Высоконагруженные сервисы для банков и финтех-компаний.',
     tags: ['Java', 'Spring', 'Kafka', 'Fintech'],
-    link: 'https://github.com/example/fintech-api',
   },
   {
     title: 'AI-бот для поддержки',
     desc: 'Автоматизация поддержки клиентов, чат-боты, интеграция с CRM.',
     tags: ['AI', 'NLP', 'Integration'],
-    link: 'https://github.com/example/ai-support-bot',
   },
 ];
 
@@ -189,9 +186,6 @@ const Portfolio = () => {
           <CardGrid>
             {projects.map((p, i) => (
                 <Card
-                    href={p.link}
-                    target="_blank"
-                    rel="noopener noreferrer"
                     key={p.title}
                     ref={refs[i]}
                     animate={controls[i]}

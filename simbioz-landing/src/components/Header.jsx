@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import logo from '../assets/logo.png';
 import { FaSun, FaMoon, FaBars, FaTimes } from 'react-icons/fa';
 import { FaTelegramPlane, FaWhatsapp } from 'react-icons/fa';
+import { createPortal } from 'react-dom';
 
 const HeaderWrap = styled.header`
 position: fixed;
@@ -361,11 +362,12 @@ border: 1.5px solid ${({ theme }) => theme.border};
 border-radius: 14px;
 box-shadow: 0 6px 32px 0 rgba(30,42,120,0.13);
 padding: 10px 0;
-z-index: 999;
+z-index: 99999;
 display: flex;
 flex-direction: column;
 gap: 2px;
 animation: fadeInY 0.68s;
+pointer-events: all;
 @keyframes fadeInY {
   from { opacity: 0; transform: translateX(-50%) translateY(-10px); }
   to { opacity: 1; transform: translateX(-50%) translateY(0); }
@@ -413,9 +415,28 @@ display: none;
 }
 `;
 
+// PortalPopover: рендерит popover в body
+const PortalPopover = ({ children, open, anchorRef }) => {
+  if (!open || !anchorRef?.current) return null;
+  const rect = anchorRef.current.getBoundingClientRect();
+  const style = {
+    position: 'fixed',
+    top: rect.bottom + 8,
+    left: rect.left + rect.width / 2,
+    transform: 'translateX(-50%)',
+    zIndex: 99999,
+    minWidth: 170,
+  };
+  return createPortal(
+    <Popover style={style} className="contact-popover">{children}</Popover>,
+    document.body
+  );
+};
+
 const Header = ({ theme, onToggleTheme }) => {
   const [open, setOpen] = useState(false);
   const [popover, setPopover] = useState(false);
+  const contactBtnRef = React.useRef();
   React.useEffect(() => {
     if (!popover) return;
     const close = (e) => {
@@ -442,18 +463,17 @@ const Header = ({ theme, onToggleTheme }) => {
             <OutlineBtn
               as="button"
               className="contact-btn"
+              ref={contactBtnRef}
               onClick={() => setPopover((v) => !v)}
               aria-haspopup="true"
               aria-expanded={popover}
             >
               Связаться
-              {popover && (
-                <Popover className="contact-popover">
-                  <PopoverBtn href="#tg" onClick={() => setPopover(false)}><FaTelegramPlane /> Telegram</PopoverBtn>
-                  {/*<PopoverBtn href="#wa" onClick={() => setPopover(false)}><FaWhatsapp /> WhatsApp</PopoverBtn>*/}
-                </Popover>
-              )}
             </OutlineBtn>
+            <PortalPopover open={popover} anchorRef={contactBtnRef}>
+              <PopoverBtn href="https://t.me/simbioztech" onClick={() => setPopover(false)}><FaTelegramPlane /> Telegram</PopoverBtn>
+              {/*<PopoverBtn href="#wa" onClick={() => setPopover(false)}><FaWhatsapp /> WhatsApp</PopoverBtn>*/}
+            </PortalPopover>
           </div>
           <FillBtn href="#contact">Начать проект</FillBtn>
           <Burger onClick={() => setOpen(o => !o)} aria-label="Меню">

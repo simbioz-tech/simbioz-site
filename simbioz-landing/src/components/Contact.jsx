@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import { motion } from 'framer-motion';
 import { FaGithub, FaUpload } from 'react-icons/fa';
 import * as emailjs from '@emailjs/browser';
+import { Link } from 'react-router-dom';
 
 const Section = styled.section`
   padding: 64px 0 48px 0;
@@ -350,9 +351,9 @@ const Button = styled(motion.button)`
     left: 100%;
   }
   @media (max-width: 700px) {
-    padding: 12px 0;
+    padding: 28px 0;
     font-size: 1rem;
-    border-radius: 16px;
+    border-radius: 20px;
     width: 100%;
   }
 `;
@@ -689,7 +690,7 @@ const Contact = () => {
                 <Field data-area="checkbox">
                   <CheckboxWrap>
                     <Checkbox type="checkbox" checked={agree} onChange={e => setAgree(e.target.checked)} required />
-                    Я соглашаюсь с <a href="#" style={{ color: '#3a7bd5', textDecoration: 'underline' }}>политикой конфиденциальности</a> и даю согласие на обработку персональных данных
+                    Я соглашаюсь с <Link to="/privacy" style={{ color: '#3a7bd5', textDecoration: 'underline' }} target="_blank" rel="noopener noreferrer">политикой конфиденциальности</Link> и даю согласие на обработку персональных данных
                   </CheckboxWrap>
                 </Field>
                 <ButtonRow>
@@ -716,16 +717,6 @@ const Contact = () => {
                 )}
               </FormWrap>
           )}
-          <div style={{ textAlign: 'center', marginTop: 32 }}>
-            <GithubLink
-                href="https://github.com/simbioz-tech"
-                whileHover={{ scale: 1.2, rotate: 5 }}
-                whileTap={{ scale: 0.9 }}
-                transition={{ duration: 0.2 }}
-            >
-              <FaGithub size={28} />
-            </GithubLink>
-          </div>
         </Container>
       </Section>
   );

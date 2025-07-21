@@ -1,5 +1,8 @@
 {
   "dependencies": {
     "@uploadcare/react-widget": "^2.4.7"
+  },
+  "devDependencies": {
+    "@emailjs/browser": "^4.4.1"
   }
 }
