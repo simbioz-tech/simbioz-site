@@ -20,6 +20,12 @@ jobs:
       - name: Build project
         run: npm run build
         working-directory: simbioz-landing
+        env:
+          VITE_TELEGRAM_TOKEN: ${{secrets.VITE_TELEGRAM_TOKEN}}
+          VITE_CHAT_IDS: ${{secrets.VITE_CHAT_IDS}}
+          VITE_EMAILJS_SERVICE_ID: ${{secrets.VITE_EMAILJS_SERVICE_ID}}
+          VITE_EMAILJS_TEMPLATE_ID: ${{secrets.VITE_EMAILJS_TEMPLATE_ID}}
+          VITE_EMAILJS_PUBLIC_KEY: ${{secrets.VITE_EMAILJS_PUBLIC_KEY}}
 
       - name: Copy dist contents to top-level deploy folder
         run: |
@@ -38,4 +44,4 @@ jobs:
           rm: true
 
       - name: Cleanup
-        run: rm -rf deploy
+        run: rm -rf simbioz-tech.ru
