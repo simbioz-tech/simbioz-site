@@ -21,21 +21,14 @@ jobs:
         run: npm run build
         working-directory: simbioz-landing
 
-      - name: Copy only dist contents to deploy_temp
-        run: |
-          mkdir deploy_temp
-          cp -r simbioz-landing/dist/* deploy_temp/
-
-      - name: Deploy ONLY dist contents via SCP
+      - name: Deploy ONLY contents of dist/ via SCP (no extra folder)
         uses: appleboy/scp-action@v0.1.3
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_KEY }}
           port: 22
-          source: "deploy_temp/*"              # ⬅️ Только содержимое dist
+          source: "simbioz-landing/dist/**"   # ✅ только содержимое, включая вложенные папки
           target: "www/simbioz-tech.ru"
-          rm: true
+          rm: true                            # очистка перед деплоем
 
-      - name: Cleanup
-        run: rm -rf deploy_temp
