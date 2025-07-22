@@ -240,7 +240,7 @@ const Hero = () => {
         'Автоматизируем процессы, внедряем ML, создаём надёжные сервисы.'
     ];
 
-    const TYPEWRITER_DELAY = 0.02;
+    const TYPEWRITER_DELAY = 0.015;
 
     const typewriterVariants = {
         hidden: { opacity: 0 },
