@@ -21,24 +21,16 @@ jobs:
         run: npm run build
         working-directory: simbioz-landing
 
-      - name: Check build output
-        run: ls -la simbioz-landing/dist
-
-      - name: Prepare dist contents
-        run: |
-          mkdir -p deploy_temp
-          cp -r simbioz-landing/dist/* deploy_temp/
-
-      - name: Deploy via SCP to REG.RU
+      - name: Deploy only contents of dist/ via SCP to REG.RU
         uses: appleboy/scp-action@v0.1.3
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_KEY }}
           port: 22
-          source: "deploy_temp/*"
+          source: "simbioz-landing/dist/*"     # ⚠️ Только содержимое dist
           target: "www/simbioz-tech.ru"
-          rm: true
+          rm: true                              # Удалить старые файлы перед загрузкой
 
-      - name: Cleanup
-        run: rm -rf deploy_temp
+      - name: Done
+        run: echo "✅ Deployment complete"
