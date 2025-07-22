@@ -234,7 +234,6 @@ const Hero = () => {
     const [vacanciesOpen, setVacanciesOpen] = useState(false);
 
     const titleText = 'Backend & ML-экспертиза для вашего бизнеса';
-    // Разделяем подзаголовок на массив из двух строк
     const subtitleLines = [
         'Мы — команда инженеров, специализирующихся на сложных системах и AI.',
         'Автоматизируем процессы, внедряем ML, создаём надёжные сервисы.'
@@ -253,15 +252,14 @@ const Hero = () => {
         }),
     };
 
-    const containerVariants = {
-        hidden: { opacity: 0 },
-        visible: {
-            opacity: 1,
-            transition: {
-                staggerChildren: TYPEWRITER_DELAY,
-            },
-        },
-    };
+    // Combine all characters into a single array with line break markers
+    const allChars = subtitleLines.reduce((acc, line, lineIndex) => {
+        const chars = line.split('');
+        if (lineIndex < subtitleLines.length - 1) {
+            chars.push('\n'); // Use \n as a marker for line breaks
+        }
+        return [...acc, ...chars];
+    }, []);
 
     return (
         <Section
@@ -278,20 +276,19 @@ const Hero = () => {
                 >
                     {titleText}
                 </Title>
-                <Subtitle variants={containerVariants} initial="hidden" animate="visible">
-                    {subtitleLines.map((line, lineIndex) => (
-                        <span key={lineIndex}>
-                            {line.split('').map((char, charIndex) => (
-                                <Letter
-                                    key={`${lineIndex}-${charIndex}`}
-                                    variants={typewriterVariants}
-                                    custom={lineIndex * 100 + charIndex} // Уникальный индекс для анимации
-                                >
-                                    {char === ' ' ? '\u00A0' : char}
-                                </Letter>
-                            ))}
-                            {lineIndex < subtitleLines.length - 1 && <br />} {/* Добавляем <br /> между строками */}
-                        </span>
+                <Subtitle as={motion.div} initial="hidden" animate="visible">
+                    {allChars.map((char, index) => (
+                        char === '\n' ? (
+                            <br key={`br-${index}`} />
+                        ) : (
+                            <Letter
+                                key={`char-${index}`}
+                                variants={typewriterVariants}
+                                custom={index} // Continuous index for all characters
+                            >
+                                {char === ' ' ? '\u00A0' : char}
+                            </Letter>
+                        )
                     ))}
                 </Subtitle>
                 <ButtonRow>
