@@ -33,7 +33,7 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_KEY }}
           port: 22
-          source: "deploy/*"                # ✅ только содержимое папки dist
+          source: "simbioz-tech.ru/*"                # ✅ только содержимое папки dist
           target: "www/"
           rm: true
 
