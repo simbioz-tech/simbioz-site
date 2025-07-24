@@ -248,9 +248,6 @@ display: none;
   font-size: 1.25rem;
   cursor: pointer;
   transition: background 0.2s, color 0.2s, border-color 0.2s;
-    svg {
-        margin-left: 0.5px;
-    }  
 &:hover {
     background: ${({ theme }) => theme.accent};
     color: #fff;
