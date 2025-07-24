@@ -126,7 +126,11 @@ export default function PrivacyPolicy() {
     const navigate = useNavigate();
 
     const handleBack = () => {
-        navigate(-1); // Go back to the previous page
+        if (window.history.length > 2) {
+            navigate(-1);
+        } else {
+            navigate('/');
+        }
     };
 
     return (

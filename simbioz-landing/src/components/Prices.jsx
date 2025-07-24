@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { motion, useAnimation } from 'framer-motion';
+import { FaGraduationCap } from 'react-icons/fa';
 
 const Section = styled.section`
   padding: 64px 0 48px 0;
@@ -34,10 +35,49 @@ const CardGrid = styled.div`
     grid-auto-rows: 1fr;
   }
 `;
+const HitRibbon = styled.div`
+  position: absolute;
+  top: 14px;
+  right: -32px;
+  transform: rotate(45deg);
+  background: linear-gradient(90deg, #23234a 0%, #3a7bd5 40%, #6e8efb 100%);
+  background-size: 200% 100%;
+  animation: ribbonGradientShift 4s ease-in-out infinite, hitPulse 2.2s infinite;
+  color: #fff;
+  font-weight: 800;
+  font-size: 0.98rem;
+  padding: 10px 22px;
+  border-radius: 10px;
+  box-shadow: 0 2px 12px 0 rgba(30, 42, 120, 0.18);
+  letter-spacing: 0.03em;
+  z-index: 10;
+  user-select: none;
+  text-align: center;
+  @keyframes ribbonGradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+  @keyframes hitPulse {
+    0% { box-shadow: 0 2px 12px 0 rgba(30, 42, 120, 0.18); }
+    50% { box-shadow: 0 4px 32px 0 rgba(30, 42, 120, 0.32); }
+    100% { box-shadow: 0 2px 12px 0 rgba(30, 42, 120, 0.18); }
+  }
+  @media (max-width: 700px) {
+    font-size: 0.75rem;
+    padding: 1.5px 18px 1.5px 22px;
+    border-radius: 2px;
+    top: 22px;
+    left: 54%;
+    right: auto;
+    transform: translateX(-50%) rotate(45deg);
+  }
+`;
+
 const Card = styled(motion.div)`
   background: ${({ theme }) => theme.background};
   border-radius: 18px;
-  box-shadow: 0 4px 24px 0 rgba(30,42,120,0.08);
+  box-shadow: 0 2px 8px 0 rgba(30,42,120,0.08);
   padding: 24px 18px;
   display: flex;
   flex-direction: column;
@@ -46,23 +86,31 @@ const Card = styled(motion.div)`
   max-width: 340px;
   box-sizing: border-box;
   overflow: hidden;
-  transition: background 0.4s cubic-bezier(.4,0,.2,1), border-color 0.4s cubic-bezier(.4,0,.2,1), box-shadow 0.4s cubic-bezier(.4,0,.2,1), color 0s, transform 0.25s cubic-bezier(.4,0,.2,1);
+  transition: background 0.4s cubic-bezier(.4,0,.2,1), box-shadow 0.4s cubic-bezier(.4,0,.2,1), color 0s, transform 0.25s cubic-bezier(.4,0,.2,1);
   position: relative;
   cursor: pointer;
+  border: 2.5px solid #3a7bd5;
+  box-shadow: 0 2px 16px 0 rgba(58,123,213,0.10);
+  &.standard {
+    transform: none;
+    z-index: auto;
+  }
   &:hover {
-    box-shadow: 0 8px 28px 0 rgba(58,123,213,0.09);
-    transform: translateY(-10px);
-    border-color: #3a7bd5;
+    box-shadow: 0 0 0 4px #3a7bd5, 0 0 18px 4px #3a7bd5aa;
+    transform: translateY(-10px) scale(1.10);
     z-index: 2;
+  }
+  &:hover.standard {
+    transform: translateY(-10px) scale(1.12);
   }
   &:hover::after {
     content: '';
     position: absolute;
-    inset: -8px;
-    border-radius: 22px;
+    top: 0; left: 0; right: 0; bottom: 0;
+    border-radius: 20px;
     pointer-events: none;
-    box-shadow: 0 0 36px 10px #3a7bd5aa;
-    opacity: 0.5;
+    box-shadow: 0 0 0 4px #3a7bd5, 0 0 18px 4px #3a7bd5aa;
+    opacity: 1;
     transition: opacity 0.3s;
     z-index: 1;
   }
@@ -73,6 +121,19 @@ const Card = styled(motion.div)`
     min-width: 90vw;
     max-width: 95vw;
     margin: 0 auto;
+    transition: none !important;
+    transform: none !important;
+    &.standard {
+      transform: none !important;
+      z-index: auto;
+    }
+    &:active, &:focus, &:active::after, &:focus::after, &:focus-visible {
+      box-shadow: none !important;
+      outline: none !important;
+      background: inherit !important;
+      transform: none !important;
+      transition: none !important;
+    }
   }
 `;
 const CardContent = styled.div`
@@ -110,35 +171,21 @@ const Button = styled.a`
   cursor: pointer;
   position: relative;
   overflow: hidden;
-  &:hover {
-    background-position: 100% 0;
-    box-shadow: 0 8px 32px 0 rgba(58, 123, 213, 0.5);
-    transform: translateY(-2px) scale(1.05);
-  }
   @keyframes gradientShift {
     0% { background-position: 0% 50%; }
     50% { background-position: 100% 50%; }
     100% { background-position: 0% 50%; }
   }
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-    transition: left 0.5s;
-  }
-  &:hover::before {
-    left: 100%;
+  &:hover {
+    background-position: 100% 0;
+    box-shadow: 0 8px 32px 0 rgba(58, 123, 213, 0.5);
+    transform: translateY(-2px) scale(1.05);
   }
   @media (max-width: 700px) {
     padding: 12px 0;
     font-size: 0.98rem;
     border-radius: 12px;
     text-align: center;
-    /* hover уже обработан выше */
   }
 `;
 const TabsWrap = styled.div`
@@ -164,6 +211,128 @@ const TabBtn = styled.button`
     background: ${({ theme }) => theme.background === '#0a0a23' ? '#23234a' : '#e3e8fa'};
     color: ${({ theme }) => theme.background === '#0a0a23' ? '#b3c0f7' : '#1e2a78'};
   }
+`;
+
+const StudentBanner = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  background: linear-gradient(90deg, #2a4a8c 0%, #3a7bd5 50%, #1e2a78 100%);
+  color: #fff;
+  border-radius: 18px;
+  padding: 22px 32px;
+  margin: 32px 0 24px 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  box-shadow: 0 4px 24px 0 rgba(30,42,120,0.13);
+  position: relative;
+  background-size: 200% 100%;
+  animation: studentGradientShift 7s ease-in-out infinite;
+  @keyframes studentGradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+  @media (max-width: 700px) {
+    flex-direction: column;
+    font-size: 1.05rem;
+    padding: 16px 12px;
+    gap: 10px;
+    text-align: center;
+  }
+`;
+const StudentIcon = styled(FaGraduationCap)`
+  font-size: 2.5rem;
+  color: #fff;
+`;
+const StudentBtn = styled.button`
+  margin-left: 32px;
+  background: #fff;
+  color: #3a7bd5;
+  border: none;
+  border-radius: 24px;
+  padding: 10px 22px;
+  font-size: 1.08rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 2px 12px 0 rgba(30,42,120,0.10);
+  transition: background 0.22s, color 0.22s, box-shadow 0.22s, transform 0.18s;
+  position: relative;
+  overflow: hidden;
+  &:hover {
+    background: #e3e8fa;
+    color: #1e2a78;
+    box-shadow: 0 6px 24px 0 rgba(58,123,213,0.18);
+    transform: scale(1.06) translateY(-2px);
+  }
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(58,123,213,0.13), transparent);
+    transition: left 0.5s;
+    pointer-events: none;
+  }
+  &:hover::before {
+    left: 100%;
+  }
+  @media (max-width: 700px) {
+    margin-left: 0;
+    margin-top: 12px;
+    width: 100%;
+    padding: 12px 0;
+    font-size: 1rem;
+  }
+`;
+const StudentModalOverlay = styled.div`
+  position: fixed;
+  z-index: 9999;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(10,16,40,0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+const StudentModalContent = styled.div`
+  background: ${({ theme }) => theme.background};
+  color: ${({ theme }) => theme.text};
+  border-radius: 18px;
+  box-shadow: 0 8px 32px 0 rgba(30,42,120,0.18);
+  padding: 32px 24px 24px 24px;
+  max-width: 420px;
+  width: 96vw;
+  position: relative;
+  text-align: left;
+  @media (max-width: 700px) {
+    padding: 18px 8px 12px 8px;
+    font-size: 0.98rem;
+  }
+`;
+const StudentModalTitle = styled.h3`
+  font-size: 1.35rem;
+  font-weight: 800;
+  margin-bottom: 14px;
+  color: #3a7bd5;
+  text-align: center;
+`;
+const StudentModalList = styled.ul`
+  margin: 0 0 18px 0;
+  padding-left: 20px;
+  list-style-position: inside;
+  text-align: left;
+`;
+const StudentModalClose = styled.button`
+  position: absolute;
+  top: 12px; right: 18px;
+  background: transparent;
+  border: none;
+  font-size: 2rem;
+  color: ${({ theme }) => theme.text};
+  cursor: pointer;
+  &:hover { color: #3a7bd5; }
 `;
 
 const prices = [
@@ -411,6 +580,7 @@ const getSections = (prices) => {
 
 const Prices = () => {
   const [active, setActive] = useState(prices[0].section);
+  const [studentOpen, setStudentOpen] = useState(false);
   const sections = getSections(prices);
   const controls = useRef(prices.map(() => useAnimation())).current;
   const refs = useRef(prices.map(() => useRef(null))).current;
@@ -459,7 +629,10 @@ const Prices = () => {
                 <Card
                     key={p.title}
                     ref={refs[prices.findIndex(price => price.title === p.title)]}
-                    style={p.popular ? { border: '2.5px solid #3a7bd5', boxShadow: '0 8px 32px 0 rgba(30,42,120,0.13)' } : {}}
+                    className={p.title === 'Стандарт' ? 'standard' : ''}
+                    initial={{ opacity: 0, y: 30 }}
+                    animate={controls[i]}
+                    transition={{ duration: 0.7, ease: 'easeOut' }}
                 >
                   <CardContent>
                     <div style={{ fontWeight: 700, color: '#7a88c9', marginBottom: 4, fontSize: '1.02rem' }}>{p.section}</div>
@@ -470,12 +643,44 @@ const Prices = () => {
                       {p.features.map(f => <Feature key={f}>{f}</Feature>)}
                     </ul>
                   </CardContent>
-                  <Button href="#contact" style={{ marginTop: 'auto', width: '100%', boxSizing: 'border-box' }}>
+                  <Button
+                    href="#contact"
+                    style={{ marginTop: 'auto', width: '100%', boxSizing: 'border-box' }}
+                  >
                     {p.section === 'Поддержка и сопровождение' ? 'Заказать' : 'Обсудить проект'}
                   </Button>
                 </Card>
             ))}
           </CardGrid>
+          <StudentBanner>
+            <StudentIcon />
+            <span>
+              <b>Студентам — скидка 25% на тариф “Базовый”!</b><br />
+              Учишься в вузе? Просто приложи фото действующего студенческого при заказе — и получи выгодное предложение на старт карьеры в IT.
+            </span>
+            <StudentBtn onClick={() => setStudentOpen(true)}>
+              Подробнее об условиях
+            </StudentBtn>
+          </StudentBanner>
+          {studentOpen && (
+            <StudentModalOverlay onClick={() => setStudentOpen(false)}>
+              <StudentModalContent onClick={e => e.stopPropagation()}>
+                <StudentModalClose onClick={() => setStudentOpen(false)} aria-label="Закрыть">×</StudentModalClose>
+                <StudentModalTitle>Условия студенческой скидки 25%</StudentModalTitle>
+                <StudentModalList>
+                  <li>Скидка действует только на тарифы “Базовый” во всех категориях услуг.</li>
+                  <li>Для получения скидки необходимо приложить фото или скан действующего студенческого билета при оформлении заявки.</li>
+                  <li>Мы проверим действительность студенческого (годен ли, совпадает ли ФИО).</li>
+                  <li>Скидка не суммируется с другими акциями и спецпредложениями.</li>
+                  <li>Срок действия скидки — до окончания обучения (или до отмены акции).</li>
+                  <li>В случае сомнений мы можем запросить дополнительное подтверждение статуса студента.</li>
+                </StudentModalList>
+                <div style={{ textAlign: 'center', color: '#3a7bd5', fontWeight: 700, fontSize: '1.08rem' }}>
+                  Начни свой путь в IT с выгодой!
+                </div>
+              </StudentModalContent>
+            </StudentModalOverlay>
+          )}
         </Container>
       </Section>
   );

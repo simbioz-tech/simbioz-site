@@ -47,7 +47,7 @@ const CardGrid = styled.div`
 const Card = styled(motion.div)`
   background: ${({ theme }) => theme.background};
   border-radius: 16px;
-  box-shadow: 0 4px 24px 0 rgba(30,42,120,0.08);
+  box-shadow: 0 2px 8px 0 rgba(30,42,120,0.08);
   padding: 28px 18px;
   display: flex;
   flex-direction: column;
@@ -56,27 +56,27 @@ const Card = styled(motion.div)`
   min-width: 320px;
   max-width: 340px;
   font-size: 1.05rem;
-  transition: background 0.4s cubic-bezier(.4,0,.2,1), border-color 0.4s cubic-bezier(.4,0,.2,1), box-shadow 0.4s cubic-bezier(.4,0,.2,1), color 0s, transform 0.25s cubic-bezier(.4,0,.2,1);
+  transition: background 0.4s cubic-bezier(.4,0,.2,1), box-shadow 0.4s cubic-bezier(.4,0,.2,1), color 0s, transform 0.25s cubic-bezier(.4,0,.2,1);
   cursor: pointer;
   position: relative;
   overflow: visible;
   box-sizing: border-box;
   width: 100%;
   max-width: 340px;
+  border: none;
   &:hover {
-    box-shadow: 0 7px 24px 0 rgba(58,123,213,0.10);
+    box-shadow: 0 0 0 4px #3a7bd5, 0 0 18px 4px #3a7bd5aa;
     transform: translateY(-10px) scale(1.10);
-    border-color: #3a7bd5;
     z-index: 2;
   }
   &:hover::after {
     content: '';
     position: absolute;
-    inset: -6px;
+    inset: 0;
     border-radius: 20px;
     pointer-events: none;
-    box-shadow: 0 0 32px 8px #3a7bd5aa;
-    opacity: 0.5;
+    box-shadow: 0 0 0 4px #3a7bd5, 0 0 18px 4px #3a7bd5aa;
+    opacity: 1;
     transition: opacity 0.3s;
     z-index: 1;
   }

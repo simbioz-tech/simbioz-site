@@ -67,14 +67,14 @@ const CardGrid = styled.div`
 const Card = styled(motion.div)`
   background: ${({ theme }) => theme.card};
   border-radius: 18px;
-  box-shadow: 0 4px 24px 0 rgba(30,42,120,0.08);
+  box-shadow: 0 2px 8px 0 rgba(30,42,120,0.08);
   padding: 32px 24px;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   text-decoration: none;
   color: inherit;
-  transition: background 0.4s cubic-bezier(.4,0,.2,1), border-color 0.4s cubic-bezier(.4,0,.2,1), box-shadow 0.4s cubic-bezier(.4,0,.2,1), color 0s, transform 0.25s cubic-bezier(.4,0,.2,1);
+  transition: background 0.4s cubic-bezier(.4,0,.2,1), box-shadow 0.4s cubic-bezier(.4,0,.2,1), color 0s, transform 0.25s cubic-bezier(.4,0,.2,1);
   cursor: pointer;
   position: relative;
   overflow: visible;
@@ -82,6 +82,23 @@ const Card = styled(motion.div)`
   max-width: 340px;
   box-sizing: border-box;
   width: 100%;
+  border: none;
+  &:hover {
+    box-shadow: 0 0 32px 8px #3a7bd5cc;
+    transform: translateY(-10px) scale(1.08);
+    z-index: 2;
+  }
+  &:hover::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 22px;
+    pointer-events: none;
+    box-shadow: 0 0 32px 8px #3a7bd5cc;
+    opacity: 1;
+    transition: opacity 0.3s;
+    z-index: 1;
+  }
   @media (max-width: 700px) {
     width: 100%;
     max-width: 340px;
@@ -89,23 +106,6 @@ const Card = styled(motion.div)`
     margin-right: auto;
     min-width: unset;
     padding: 18px 10px;
-  }
-  &:hover {
-    box-shadow: 0 8px 28px 0 rgba(58,123,213,0.11);
-    transform: translateY(-10px) scale(1.08);
-    border-color: #3a7bd5;
-    z-index: 2;
-  }
-  &:hover::after {
-    content: '';
-    position: absolute;
-    inset: -8px;
-    border-radius: 22px;
-    pointer-events: none;
-    box-shadow: 0 0 36px 10px #3a7bd5aa;
-    opacity: 0.5;
-    transition: opacity 0.3s;
-    z-index: 1;
   }
 `;
 const Tags = styled.div`
