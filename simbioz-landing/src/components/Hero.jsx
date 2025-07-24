@@ -310,7 +310,7 @@ const Hero = () => {
       };
     }, [isMobile]);
 
-    const titleText = 'Комплексная разработка и автоматизация для бизнеса';
+    const titleText = ' Полный цикл IT-решений для роста вашего бизнеса';
 
     return (
         <Section

@@ -171,7 +171,7 @@ const prices = [
   {
     section: 'Frontend и клиентская логика',
     title: 'Базовый',
-    price: 'от 12 000₽',
+    price: 'от 14 000₽',
     subtitle: 'Лендинг или простое приложение',
     features: [
       'Адаптивная верстка',
@@ -183,7 +183,7 @@ const prices = [
   {
     section: 'Frontend и клиентская логика',
     title: 'Стандарт',
-    price: 'от 19 000₽',
+    price: 'от 22 000₽',
     subtitle: 'Корпоративный сайт или SPA',
     features: [
       'Современный дизайн',
@@ -196,7 +196,7 @@ const prices = [
   {
     section: 'Frontend и клиентская логика',
     title: 'Премиум',
-    price: 'от 29 000₽',
+    price: 'от 65 000₽',
     subtitle: 'Сложные интерфейсы, кастомные решения',
     features: [
       'Индивидуальный UI/UX',
@@ -222,7 +222,7 @@ const prices = [
   {
     section: 'Backend и архитектура',
     title: 'Стандарт',
-    price: 'от 24 000₽',
+    price: 'от 30 000₽',
     subtitle: 'Корпоративный backend',
     features: [
       'Проектирование архитектуры',
@@ -235,7 +235,7 @@ const prices = [
   {
     section: 'Backend и архитектура',
     title: 'Премиум',
-    price: 'от 39 000₽',
+    price: 'от 105 000₽',
     subtitle: 'Высоконагруженные системы',
     features: [
       'Микросервисная архитектура',
@@ -249,7 +249,7 @@ const prices = [
   {
     section: 'DevOps и инфраструктура',
     title: 'Базовый',
-    price: 'от 7 000₽',
+    price: 'от 8 000₽',
     subtitle: 'Автоматизация деплоя',
     features: [
       'Настройка CI/CD',
@@ -261,7 +261,7 @@ const prices = [
   {
     section: 'DevOps и инфраструктура',
     title: 'Стандарт',
-    price: 'от 12 000₽',
+    price: 'от 14 000₽',
     subtitle: 'Контейнеризация и мониторинг',
     features: [
       'Docker/Kubernetes',
@@ -274,7 +274,7 @@ const prices = [
   {
     section: 'DevOps и инфраструктура',
     title: 'Премиум',
-    price: 'от 19 000₽',
+    price: 'от 25 000₽',
     subtitle: 'Инфраструктура под ключ',
     features: [
       'Инфраструктура как код',
@@ -313,7 +313,7 @@ const prices = [
   {
     section: 'Машинное обучение и автоматизация',
     title: 'Премиум',
-    price: 'от 49 000₽',
+    price: 'от 69 000₽',
     subtitle: 'Комплексная автоматизация',
     features: [
       'Сложные ML-модели',
@@ -327,7 +327,7 @@ const prices = [
   {
     section: 'Интеграции и поддержка',
     title: 'Базовый',
-    price: 'от 5 000₽',
+    price: 'от 10 000₽',
     subtitle: 'Интеграция с одним сервисом',
     features: [
       'Интеграция с API/CRM',
@@ -339,7 +339,7 @@ const prices = [
   {
     section: 'Интеграции и поддержка',
     title: 'Стандарт',
-    price: 'от 9 000₽',
+    price: 'от 15 000₽',
     subtitle: 'Комплексная интеграция',
     features: [
       'Интеграция с несколькими сервисами',
@@ -352,7 +352,7 @@ const prices = [
   {
     section: 'Интеграции и поддержка',
     title: 'Премиум',
-    price: 'от 15 000₽',
+    price: 'от 25 000₽',
     subtitle: 'Поддержка и развитие',
     features: [
       'Мониторинг интеграций',
@@ -366,7 +366,7 @@ const prices = [
   {
     section: 'Аудит и консалтинг',
     title: 'Базовый',
-    price: 'от 3 000₽',
+    price: 'от 5 000₽',
     subtitle: 'Быстрый аудит',
     features: [
       'Анализ архитектуры',
@@ -378,7 +378,7 @@ const prices = [
   {
     section: 'Аудит и консалтинг',
     title: 'Стандарт',
-    price: 'от 7 000₽',
+    price: 'от 10 000₽',
     subtitle: 'Код-ревью и аудит',
     features: [
       'Код-ревью',
@@ -391,7 +391,7 @@ const prices = [
   {
     section: 'Аудит и консалтинг',
     title: 'Премиум',
-    price: 'от 12 000₽',
+    price: 'от 30 000₽',
     subtitle: 'Комплексный консалтинг',
     features: [
       'Аудит архитектуры и процессов',
