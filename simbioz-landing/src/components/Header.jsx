@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import logo from '../assets/logo.png';
 import { FaSun, FaMoon, FaBars, FaTimes } from 'react-icons/fa';
-import { FaTelegramPlane, FaWhatsapp } from 'react-icons/fa';
+import { FaTelegramPlane } from 'react-icons/fa';
 import { createPortal } from 'react-dom';
 
 const HeaderWrap = styled.header`
@@ -306,7 +306,7 @@ const MobileMenuHeader = styled.div`
 width: 100%;
 display: flex;
 align-items: center;
-justify-content: space-between;
+justify-content: flex-start;
 box-sizing: border-box;
 padding: 12px 8px 0px;
 border-bottom: 1.5px solid ${({ theme }) => theme.border};
@@ -335,20 +335,6 @@ background: transparent;
 @media (max-width: 500px) {
   width: 56px;
   height: 56px;
-}
-`;
-const CloseBtn = styled.button`
-background: transparent;
-border: none;
-color: ${({ theme }) => theme.text};
-font-size: 1.2rem;
-cursor: pointer;
-padding: 2px 6px;
-border-radius: 50%;
-transition: background 0.2s, color 0.2s;
-&:hover {
-  background: ${({ theme }) => theme.accent2};
-  color: #fff;
 }
 `;
 const Popover = styled.div`
@@ -416,81 +402,81 @@ display: none;
 `;
 
 const PortalPopover = ({ children, open, anchorRef }) => {
-  if (!open || !anchorRef?.current) return null;
-  const rect = anchorRef.current.getBoundingClientRect();
-  const style = {
-    position: 'fixed',
-    top: rect.bottom + 8,
-    left: rect.left + rect.width / 2,
-    transform: 'translateX(-50%)',
-    zIndex: 99999,
-    minWidth: 170,
-  };
-  return createPortal(
-      <Popover style={style} className="contact-popover">{children}</Popover>,
-      document.body
-  );
+    if (!open || !anchorRef?.current) return null;
+    const rect = anchorRef.current.getBoundingClientRect();
+    const style = {
+        position: 'fixed',
+        top: rect.bottom + 8,
+        left: rect.left + rect.width / 2,
+        transform: 'translateX(-50%)',
+        zIndex: 99999,
+        minWidth: 170,
+    };
+    return createPortal(
+        <Popover style={style} className="contact-popover">{children}</Popover>,
+        document.body
+    );
 };
 
 const Header = ({ theme, onToggleTheme }) => {
-  const [open, setOpen] = useState(false);
-  const [popover, setPopover] = useState(false);
-  const contactBtnRef = React.useRef();
-  React.useEffect(() => {
-    if (!popover) return;
-    const close = (e) => {
-      if (!e.target.closest('.contact-popover') && !e.target.closest('.contact-btn')) setPopover(false);
-    };
-    document.addEventListener('mousedown', close);
-    return () => document.removeEventListener('mousedown', close);
-  }, [popover]);
-  return (
-      <HeaderWrap>
-        <Container>
-          <Logo href="#hero"><LogoImg src={logo} alt="logo" /> <span>Симбиоз</span></Logo>
-          <Nav>
-            <NavLink href="#services">Услуги</NavLink>
-            <NavLink href="#prices">Тарифы</NavLink>
-            <NavLink href="#reviews">Отзывы</NavLink>
-          </Nav>
-          <MobileSpacer />
-          <Right>
-            <ThemeBtn onClick={onToggleTheme} aria-label="Переключить тему">
-              {theme === 'dark' ? <FaSun /> : <FaMoon />}
-            </ThemeBtn>
-            <div style={{ position: 'relative', display: 'inline-block' }}>
-              <OutlineBtn
-                  as="button"
-                  className="contact-btn"
-                  ref={contactBtnRef}
-                  onClick={() => setPopover((v) => !v)}
-                  aria-haspopup="true"
-                  aria-expanded={popover}
-              >
-                Связаться
-              </OutlineBtn>
-              <PortalPopover open={popover} anchorRef={contactBtnRef}>
-                <PopoverBtn href="https://t.me/simbioz_tech_bot" onClick={() => setPopover(false)}><FaTelegramPlane /> Telegram</PopoverBtn>
-              </PortalPopover>
-            </div>
-            <FillBtn href="#contact">Начать проект</FillBtn>
-            <Burger onClick={() => setOpen(o => !o)} aria-label="Меню">
-              {open ? <FaTimes /> : <FaBars />}
-            </Burger>
-          </Right>
-        </Container>
-        <MobileMenu open={open}>
-          <MobileMenuHeader>
-            <MobileLogo href="#hero" onClick={() => setOpen(false)}><MobileLogoImg src={logo} alt="logo" /> <span>Симбиоз</span></MobileLogo>
-          </MobileMenuHeader>
-          <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 16, padding: '2px 8px 0 8px', boxSizing: 'border-box' }}>
-            <NavLink href="#services" onClick={() => setOpen(false)}>Услуги</NavLink>
-            <NavLink href="#prices" onClick={() => setOpen(false)}>Тарифы</NavLink>
-            <NavLink href="#reviews" onClick={() => setOpen(false)}>Отзывы</NavLink>
-          </div>
-        </MobileMenu>
-      </HeaderWrap>
-  );
+    const [open, setOpen] = useState(false);
+    const [popover, setPopover] = useState(false);
+    const contactBtnRef = React.useRef();
+    React.useEffect(() => {
+        if (!popover) return;
+        const close = (e) => {
+            if (!e.target.closest('.contact-popover') && !e.target.closest('.contact-btn')) setPopover(false);
+        };
+        document.addEventListener('mousedown', close);
+        return () => document.removeEventListener('mousedown', close);
+    }, [popover]);
+    return (
+        <HeaderWrap>
+            <Container>
+                <Logo href="#hero"><LogoImg src={logo} alt="logo" /> <span>Симбиоз</span></Logo>
+                <Nav>
+                    <NavLink href="#services">Услуги</NavLink>
+                    <NavLink href="#prices">Тарифы</NavLink>
+                    <NavLink href="#reviews">Отзывы</NavLink>
+                </Nav>
+                <MobileSpacer />
+                <Right>
+                    <ThemeBtn onClick={onToggleTheme} aria-label="Переключить тему">
+                        {theme === 'dark' ? <FaSun /> : <FaMoon />}
+                    </ThemeBtn>
+                    <div style={{ position: 'relative', display: 'inline-block' }}>
+                        <OutlineBtn
+                            as="button"
+                            className="contact-btn"
+                            ref={contactBtnRef}
+                            onClick={() => setPopover((v) => !v)}
+                            aria-haspopup="true"
+                            aria-expanded={popover}
+                        >
+                            Связаться
+                        </OutlineBtn>
+                        <PortalPopover open={popover} anchorRef={contactBtnRef}>
+                            <PopoverBtn href="https://t.me/simbioz_tech_bot" onClick={() => setPopover(false)}><FaTelegramPlane /> Telegram</PopoverBtn>
+                        </PortalPopover>
+                    </div>
+                    <FillBtn href="#contact">Начать проект</FillBtn>
+                    <Burger onClick={() => setOpen(o => !o)} aria-label={open ? "Закрыть меню" : "Открыть меню"}>
+                        {open ? <FaTimes /> : <FaBars />}
+                    </Burger>
+                </Right>
+            </Container>
+            <MobileMenu open={open}>
+                <MobileMenuHeader>
+                    <MobileLogo href="#hero" onClick={() => setOpen(false)}><MobileLogoImg src={logo} alt="logo" /> <span>Симбиоз</span></MobileLogo>
+                </MobileMenuHeader>
+                <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 16, padding: '2px 8px 0 8px', boxSizing: 'border-box' }}>
+                    <NavLink href="#services" onClick={() => setOpen(false)}>Услуги</NavLink>
+                    <NavLink href="#prices" onClick={() => setOpen(false)}>Тарифы</NavLink>
+                    <NavLink href="#reviews" onClick={() => setOpen(false)}>Отзывы</NavLink>
+                </div>
+            </MobileMenu>
+        </HeaderWrap>
+    );
 };
 
 export default Header;

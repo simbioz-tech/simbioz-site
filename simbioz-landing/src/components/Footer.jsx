@@ -15,17 +15,12 @@ const Row = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 10px;
-  @media (min-width: 700px) {
-    flex-direction: row;
-    justify-content: center;
-    gap: 32px;
-  }
+  gap: 4px;
 `;
 const Socials = styled.div`
   display: flex;
   gap: 18px;
-  margin: 8px 0 0 0;
+  margin: 4px 0 0 0;
 `;
 const SocialLink = styled.a`
   color: #7a88c9;
@@ -44,36 +39,31 @@ const Policy = styled(Link)`
   color: #7a88c9;
   font-size: 1.01rem;
   text-decoration: underline;
-  margin-left: 8px;
+  margin: 4px 0;
   &:hover {
     color: #3a7bd5;
   }
 `;
 const Copyright = styled.div`
-  margin-top: 10px;
+  margin-top: 4px;
   font-size: 1.01rem;
   color: #7a88c9;
 `;
-const Contacts = styled.div`
-  font-size: 1.08rem;
-  color: ${({ theme }) => theme.text};
-  margin-top: 4px;
-`;
 
 const Footer = () => (
-  <FooterWrap>
-    <Row>
-      <Socials>
-        <SocialLink href="https://t.me/simbioztech" target="_blank" rel="noopener noreferrer" aria-label="Telegram"><FaTelegramPlane /></SocialLink>
-        <SocialLink href="https://github.com/simbioz-tech" target="_blank" rel="noopener noreferrer" aria-label="GitHub"><FaGithub /></SocialLink>
-        <SocialLink href="mailto:simbioztech@yandex.ru" aria-label="Email"><FaEnvelope /></SocialLink>
-      </Socials>
-      <Policy to="/privacy">Политика конфиденциальности</Policy>
-    </Row>
-    <Copyright>
-      &copy; {new Date().getFullYear()} Simbioz Tech. Все права защищены.
-    </Copyright>
-  </FooterWrap>
+    <FooterWrap>
+        <Row>
+            <Socials>
+                <SocialLink href="https://t.me/simbioztech" target="_blank" rel="noopener noreferrer" aria-label="Telegram"><FaTelegramPlane /></SocialLink>
+                <SocialLink href="https://github.com/simbioz-tech" target="_blank" rel="noopener noreferrer" aria-label="GitHub"><FaGithub /></SocialLink>
+                <SocialLink href="mailto:simbioztech@yandex.ru" aria-label="Email"><FaEnvelope /></SocialLink>
+            </Socials>
+            <Policy to="/privacy">Политика конфиденциальности</Policy>
+            <Copyright>
+                © {new Date().getFullYear()} Simbioz Tech. Все права защищены.
+            </Copyright>
+        </Row>
+    </FooterWrap>
 );
 
-export default Footer; 
+export default Footer;

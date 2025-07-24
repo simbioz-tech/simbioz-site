@@ -67,11 +67,34 @@ const Card = styled(motion.div)`
   align-items: flex-start;
   text-decoration: none;
   color: inherit;
-  transition: background 0.4s cubic-bezier(.4,0,.2,1), border-color 0.4s cubic-bezier(.4,0,.2,1), box-shadow 0.4s cubic-bezier(.4,0,.2,1), color 0s;
+  transition: background 0.4s cubic-bezier(.4,0,.2,1), border-color 0.4s cubic-bezier(.4,0,.2,1), box-shadow 0.4s cubic-bezier(.4,0,.2,1), color 0s, transform 0.25s cubic-bezier(.4,0,.2,1);
   cursor: pointer;
+  position: relative;
+  overflow: visible;
+  min-width: 320px;
+  max-width: 340px;
+  box-sizing: border-box;
+  @media (max-width: 700px) {
+    min-width: 90vw;
+    max-width: 95vw;
+    padding: 18px 10px;
+  }
   &:hover {
-    box-shadow: 0 12px 48px 0 rgba(58,123,213,0.35), 0 2px 24px 0 rgba(30,42,120,0.18);
-    transform: translateY(-6px) scale(1.06);
+    box-shadow: 0 20px 60px 0 rgba(58,123,213,0.38), 0 2px 24px 0 rgba(30,42,120,0.18);
+    transform: translateY(-10px) scale(1.08);
+    border-color: #3a7bd5;
+    z-index: 2;
+  }
+  &:hover::after {
+    content: '';
+    position: absolute;
+    inset: -8px;
+    border-radius: 22px;
+    pointer-events: none;
+    box-shadow: 0 0 36px 10px #3a7bd5aa;
+    opacity: 0.5;
+    transition: opacity 0.3s;
+    z-index: 1;
   }
 `;
 const Tags = styled.div`
@@ -127,25 +150,29 @@ const MoreLink = styled.a`
   }
 `;
 
+// Update techs array to match new stack
 const techs = [
-  'Java', 'Spring Boot', 'Python', 'FastAPI', 'PostgreSQL', 'MongoDB', 'Kafka', 'RabbitMQ', 'Docker', 'Kubernetes', 'AWS', 'GCP', 'MLOps', 'PyTorch', 'TensorFlow', 'scikit-learn', 'gRPC', 'REST', 'CI/CD', 'GitLab', 'Prometheus', 'Grafana', 'Redis', 'Elasticsearch', 'Airflow', 'Pandas', 'Numpy', 'OpenAI', 'LangChain', 'S3', 'Terraform', 'Ansible', 'Linux'
+  'Java', 'Spring Boot', 'Python', 'FastAPI', 'PostgreSQL', 'MongoDB', 'Kafka', 'RabbitMQ', 'Docker', 'Kubernetes', 'AWS', 'GCP', 'MLOps', 'PyTorch', 'TensorFlow', 'scikit-learn', 'gRPC', 'REST', 'CI/CD', 'GitLab', 'Prometheus', 'Grafana', 'Redis', 'Elasticsearch', 'Airflow', 'Pandas', 'Numpy', 'OpenAI', 'LangChain', 'S3', 'Terraform', 'Ansible', 'Linux',
+  // New/modern additions:
+  'TypeScript', 'Telegram Bot', 'MLOps', 'NLU', 'LangChain'
 ];
 
+// Update projects to be simpler and more realistic
 const projects = [
   {
-    title: 'ML-платформа для логистики',
-    desc: 'Оптимизация маршрутов, прогнозирование спроса, автоматизация логистики.',
-    tags: ['ML', 'Python', 'MLOps', 'Logistics'],
+    title: 'Сайт для малого бизнеса',
+    desc: 'Разработка адаптивного сайта-визитки с формой обратной связи и интеграцией с Telegram.',
+    tags: ['React', 'Telegram Bot', 'Backend', 'Интеграция'],
   },
   {
-    title: 'Финтех API',
-    desc: 'Высоконагруженные сервисы для банков и финтех-компаний.',
-    tags: ['Java', 'Spring', 'Kafka', 'Fintech'],
+    title: 'Автоматизация отчётности',
+    desc: 'Скрипт для автоматической генерации и отправки отчётов в Telegram и на email.',
+    tags: ['Python', 'Telegram Bot', 'Автоматизация'],
   },
   {
-    title: 'AI-бот для поддержки',
-    desc: 'Автоматизация поддержки клиентов, чат-боты, интеграция с CRM.',
-    tags: ['AI', 'NLP', 'Integration'],
+    title: 'Мини-CRM для заявок',
+    desc: 'Веб-приложение для учёта и обработки заявок с базовой аналитикой.',
+    tags: ['Vue', 'Java', 'PostgreSQL', 'Backend'],
   },
 ];
 
@@ -189,7 +216,7 @@ const Portfolio = () => {
                     key={p.title}
                     ref={refs[i]}
                     animate={controls[i]}
-                    initial={{ opacity: 0, y: 30 }}
+                    initial={{ opacity: 0 }}
                     transition={{ duration: 0.6, ease: 'easeOut', delay: i * 0.15 }}
                 >
                   <h3 style={{ marginBottom: 8 }}>{p.title}</h3>
@@ -200,9 +227,11 @@ const Portfolio = () => {
                 </Card>
             ))}
           </CardGrid>
+          {/*
           <MoreLink href="#" onClick={e => { e.preventDefault(); alert('Показать все проекты — скоро!'); }}>
             Смотреть все проекты
           </MoreLink>
+          */}
         </Container>
       </Section>
   );

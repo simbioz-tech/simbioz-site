@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { motion, useAnimation } from 'framer-motion';
-import { FaServer, FaBrain, FaPlug, FaCogs, FaChartLine, FaTools } from 'react-icons/fa';
+import { FaLaptopCode, FaServer, FaCogs, FaRobot, FaPlug, FaUserCheck } from 'react-icons/fa';
 
 const Section = styled.section`
   padding: 64px 0 48px 0;
@@ -54,23 +54,39 @@ const Card = styled(motion.div)`
   flex-direction: column;
   align-items: center;
   min-height: 220px;
+  min-width: 320px;
+  max-width: 340px;
   font-size: 1.05rem;
-  transition: background 0.4s cubic-bezier(.4,0,.2,1), border-color 0.4s cubic-bezier(.4,0,.2,1), box-shadow 0.4s cubic-bezier(.4,0,.2,1), color 0s;
+  transition: background 0.4s cubic-bezier(.4,0,.2,1), border-color 0.4s cubic-bezier(.4,0,.2,1), box-shadow 0.4s cubic-bezier(.4,0,.2,1), color 0s, transform 0.25s cubic-bezier(.4,0,.2,1);
   cursor: pointer;
-  min-width: 0;
+  position: relative;
+  overflow: visible;
+  box-sizing: border-box;
   &:hover {
-    box-shadow: 0 12px 36px 0 rgba(30,42,120,0.22);
-    transform: translateY(-8px) scale(1.08);
+    box-shadow: 0 16px 48px 0 rgba(58,123,213,0.35), 0 2px 24px 0 rgba(30,42,120,0.18);
+    transform: translateY(-10px) scale(1.10);
     border-color: #3a7bd5;
+    z-index: 2;
+  }
+  &:hover::after {
+    content: '';
+    position: absolute;
+    inset: -6px;
+    border-radius: 20px;
+    pointer-events: none;
+    box-shadow: 0 0 32px 8px #3a7bd5aa;
+    opacity: 0.5;
+    transition: opacity 0.3s;
+    z-index: 1;
   }
   @media (max-width: 700px) {
-    padding: 18px 8px;
+    padding: 18px 10px;
     border-radius: 12px;
     font-size: 0.98rem;
     min-height: 0;
     margin: 0 auto;
-    max-width: 380px;
-    min-width: 220px;
+    max-width: 95vw;
+    min-width: 90vw;
     box-sizing: border-box;
   }
 `;
@@ -78,15 +94,20 @@ const IconWrap = styled.div`
   font-size: 2.5rem;
   margin-bottom: 16px;
   color: #3a7bd5;
+  transition: transform 0.35s cubic-bezier(.4,0,.2,1);
+  ${Card}:hover & {
+    transform: scale(1.18);
+    filter: drop-shadow(0 0 8px #3a7bd5cc);
+  }
 `;
 
 const services = [
-    { icon: <FaServer />, title: 'Backend на Java', desc: 'Проектирование и разработка микросервисов, REST/gRPC API, интеграции, отказоустойчивые системы.' },
-    { icon: <FaBrain />, title: 'ML/AI решения', desc: 'Машинное обучение, Data Science, автоматизация, предиктивная аналитика, внедрение моделей.' },
-    { icon: <FaPlug />, title: 'Интеграция сервисов', desc: 'Интеграция с внешними API, платёжными системами, корпоративными платформами.' },
-    { icon: <FaCogs />, title: 'DevOps и CI/CD', desc: 'Автоматизация процессов, настройка CI/CD, контейнеризация, мониторинг.' },
-    { icon: <FaChartLine />, title: 'Консалтинг и аудит', desc: 'Аудит архитектуры, оптимизация, подбор технологий, техническое интервью.' },
-    { icon: <FaTools />, title: 'Поддержка и сопровождение', desc: 'Техническая поддержка, развитие и оптимизация существующих решений.' },
+    { icon: <FaLaptopCode />, title: 'Frontend и клиентская логика', desc: 'Создание адаптивных интерфейсов на React, Vue, TypeScript. Интеграция с backend, настройка клиентской логики.' },
+    { icon: <FaServer />, title: 'Backend и архитектура', desc: 'Проектирование микросервисов, разработка REST/gRPC API, работа с базами данных, интеграции и построение отказоустойчивых систем.' },
+    { icon: <FaCogs />, title: 'DevOps и инфраструктура', desc: 'Автоматизация развёртывания, настройка CI/CD, Docker, Kubernetes, мониторинг и обеспечение стабильной работы.' },
+    { icon: <FaRobot />, title: 'Машинное обучение и автоматизация', desc: 'Внедрение ML-моделей, автоматизация процессов, предиктивная аналитика, чат-боты и Telegram-боты для бизнеса.' },
+    { icon: <FaPlug />, title: 'Интеграции и техническая поддержка', desc: 'Интеграции с API, платёжными системами, CRM и корпоративными платформами. Сопровождение, развитие решений, реакция на инциденты.' },
+    { icon: <FaUserCheck />, title: 'Аудит и технологический консалтинг', desc: 'Анализ архитектуры, код-ревью, оптимизация и помощь в выборе технологий.' },
 ];
 
 const Services = () => {
@@ -122,11 +143,15 @@ const Services = () => {
                             key={s.title}
                             ref={refs[i]}
                             animate={controls[i]}
-                            initial={{ opacity: 0, y: 30 }}
+                            initial={{ opacity: 0 }}
                             transition={{ duration: 0.6, ease: 'easeOut', delay: i * 0.15 }}
                         >
                             <IconWrap>{s.icon}</IconWrap>
-                            <h3 style={{ marginBottom: 8 }}>{s.title}</h3>
+                            <h3
+                                style={{ marginBottom: 8, textAlign: i >= 3 ? 'center' : undefined }}
+                            >
+                                {s.title}
+                            </h3>
                             <p style={{ textAlign: 'center' }}>{s.desc}</p>
                         </Card>
                     ))}

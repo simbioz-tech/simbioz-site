@@ -43,20 +43,37 @@ const Card = styled(motion.div)`
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  height: 100%;
+  min-width: 320px;
+  max-width: 340px;
   box-sizing: border-box;
   overflow: hidden;
-  transition: background 0.4s cubic-bezier(.4,0,.2,1), border-color 0.4s cubic-bezier(.4,0,.2,1), box-shadow 0.4s cubic-bezier(.4,0,.2,1), color 0s;
-  min-width: 0;
+  transition: background 0.4s cubic-bezier(.4,0,.2,1), border-color 0.4s cubic-bezier(.4,0,.2,1), box-shadow 0.4s cubic-bezier(.4,0,.2,1), color 0s, transform 0.25s cubic-bezier(.4,0,.2,1);
+  position: relative;
+  cursor: pointer;
+  &:hover {
+    box-shadow: 0 20px 60px 0 rgba(58,123,213,0.38), 0 2px 24px 0 rgba(30,42,120,0.18);
+    transform: translateY(-10px);
+    border-color: #3a7bd5;
+    z-index: 2;
+  }
+  &:hover::after {
+    content: '';
+    position: absolute;
+    inset: -8px;
+    border-radius: 22px;
+    pointer-events: none;
+    box-shadow: 0 0 36px 10px #3a7bd5aa;
+    opacity: 0.5;
+    transition: opacity 0.3s;
+    z-index: 1;
+  }
   @media (max-width: 700px) {
-    padding: 16px 8px;
+    padding: 18px 10px;
     border-radius: 10px;
     font-size: 0.98rem;
-    width: 340px;
-    max-width: 90vw;
-    min-width: 240px;
+    min-width: 90vw;
+    max-width: 95vw;
     margin: 0 auto;
-    min-height: 420px;
   }
 `;
 const CardContent = styled.div`
@@ -70,6 +87,11 @@ const Price = styled.div`
   font-weight: 700;
   color: #3a7bd5;
   margin-bottom: 8px;
+  transition: color 0.3s;
+  ${Card}:hover & {
+    color: #1e2a78;
+    text-shadow: 0 2px 16px #3a7bd5aa;
+  }
 `;
 const Feature = styled.li`
   margin-bottom: 6px;
@@ -150,232 +172,237 @@ const TabBtn = styled.button`
 `;
 
 const prices = [
-  // Backend-разработка
+  // Frontend и клиентская логика
   {
-    section: 'Backend-разработка',
-    title: 'Backend на Java',
-    price: 'от 90 000₽',
-    subtitle: 'Микросервисы, REST/gRPC API, интеграции',
+    section: 'Frontend и клиентская логика',
+    title: 'Базовый',
+    price: 'от 12 000₽',
+    subtitle: 'Лендинг или простое приложение',
+    features: [
+      'Адаптивная верстка',
+      'Базовая интеграция',
+      'SEO-оптимизация',
+    ],
+    popular: false,
+  },
+  {
+    section: 'Frontend и клиентская логика',
+    title: 'Стандарт',
+    price: 'от 19 000₽',
+    subtitle: 'Корпоративный сайт или SPA',
+    features: [
+      'Современный дизайн',
+      'Интеграция с backend/API',
+      'Форма обратной связи',
+      'Базовая анимация',
+    ],
+    popular: true,
+  },
+  {
+    section: 'Frontend и клиентская логика',
+    title: 'Премиум',
+    price: 'от 29 000₽',
+    subtitle: 'Сложные интерфейсы, кастомные решения',
+    features: [
+      'Индивидуальный UI/UX',
+      'Интерактивные элементы',
+      'Интеграция с внешними сервисами',
+      'Тестирование и поддержка',
+    ],
+    popular: false,
+  },
+  // Backend и архитектура
+  {
+    section: 'Backend и архитектура',
+    title: 'Базовый',
+    price: 'от 15 000₽',
+    subtitle: 'Простой API или микросервис',
+    features: [
+      'REST API',
+      'База данных',
+      'Документация',
+    ],
+    popular: false,
+  },
+  {
+    section: 'Backend и архитектура',
+    title: 'Стандарт',
+    price: 'от 24 000₽',
+    subtitle: 'Корпоративный backend',
     features: [
       'Проектирование архитектуры',
-      'Разработка микросервисов',
       'Интеграция с внешними сервисами',
-      'Отказоустойчивые системы',
-      'Документация и тестирование',
-    ],
-    popular: true,
-  },
-  {
-    section: 'Backend-разработка',
-    title: 'API для мобильных/веб-приложений',
-    price: 'от 70 000₽',
-    subtitle: 'Быстрые и безопасные API',
-    features: [
-      'Разработка REST/gRPC API',
       'Авторизация и безопасность',
-      'Интеграция с внешними сервисами',
-      'Документация (Swagger/OpenAPI)',
+      'Тестирование',
+    ],
+    popular: true,
+  },
+  {
+    section: 'Backend и архитектура',
+    title: 'Премиум',
+    price: 'от 39 000₽',
+    subtitle: 'Высоконагруженные системы',
+    features: [
+      'Микросервисная архитектура',
+      'Масштабируемость',
+      'Мониторинг и логирование',
+      'Поддержка SLA',
+    ],
+    popular: false,
+  },
+  // DevOps и инфраструктура
+  {
+    section: 'DevOps и инфраструктура',
+    title: 'Базовый',
+    price: 'от 7 000₽',
+    subtitle: 'Автоматизация деплоя',
+    features: [
+      'Настройка CI/CD',
+      'Docker Compose',
+      'Документация',
     ],
     popular: false,
   },
   {
-    section: 'Backend-разработка',
-    title: 'Миграция и оптимизация',
-    price: 'от 60 000₽',
-    subtitle: 'Перенос и ускорение систем',
+    section: 'DevOps и инфраструктура',
+    title: 'Стандарт',
+    price: 'от 12 000₽',
+    subtitle: 'Контейнеризация и мониторинг',
     features: [
-      'Миграция старых решений',
-      'Оптимизация производительности',
-      'Рефакторинг кода',
-      'Снижение затрат на инфраструктуру',
+      'Docker/Kubernetes',
+      'Мониторинг и алерты',
+      'Резервное копирование',
+      'Обновление без простоя',
+    ],
+    popular: true,
+  },
+  {
+    section: 'DevOps и инфраструктура',
+    title: 'Премиум',
+    price: 'от 19 000₽',
+    subtitle: 'Инфраструктура под ключ',
+    features: [
+      'Инфраструктура как код',
+      'Высокая отказоустойчивость',
+      'Секрет-менеджмент',
+      'Поддержка 24/7',
     ],
     popular: false,
   },
-  // ML/AI решения
+  // Машинное обучение и автоматизация
   {
-    section: 'ML/AI решения',
-    title: 'Машинное обучение под задачу',
-    price: 'от 120 000₽',
-    subtitle: 'Классификация, регрессия, подбор моделей',
+    section: 'Машинное обучение и автоматизация',
+    title: 'Базовый',
+    price: 'от 15 000₽',
+    subtitle: 'Простая аналитика или ML-модель',
     features: [
-      'Анализ и подготовка данных',
-      'Обучение и внедрение моделей',
+      'Анализ данных',
+      'Обучение базовой модели',
       'Визуализация результатов',
-      'Интеграция в бизнес-процессы',
+    ],
+    popular: false,
+  },
+  {
+    section: 'Машинное обучение и автоматизация',
+    title: 'Стандарт',
+    price: 'от 29 000₽',
+    subtitle: 'Внедрение ML/AI, чат-бот',
+    features: [
+      'Обработка и подготовка данных',
+      'Интеграция ML в бизнес-процесс',
+      'Разработка Telegram-бота',
+      'Документация',
     ],
     popular: true,
   },
   {
-    section: 'ML/AI решения',
-    title: 'NLP и обработка текста',
-    price: 'от 100 000₽',
-    subtitle: 'Чат-боты, анализ тональности, генерация текстов',
+    section: 'Машинное обучение и автоматизация',
+    title: 'Премиум',
+    price: 'от 49 000₽',
+    subtitle: 'Комплексная автоматизация',
     features: [
-      'Чат-боты и ассистенты',
-      'Анализ тональности',
-      'Генерация и поиск по тексту',
-      'Извлечение сущностей',
+      'Сложные ML-модели',
+      'Автоматизация бизнес-процессов',
+      'Интеграция с внешними сервисами',
+      'Поддержка и развитие',
     ],
     popular: false,
   },
+  // Интеграции и поддержка
   {
-    section: 'ML/AI решения',
-    title: 'Компьютерное зрение',
-    price: 'от 130 000₽',
-    subtitle: 'Распознавание изображений и видео',
+    section: 'Интеграции и поддержка',
+    title: 'Базовый',
+    price: 'от 5 000₽',
+    subtitle: 'Интеграция с одним сервисом',
     features: [
-      'Детекция и классификация объектов',
-      'OCR (распознавание текста)',
-      'Видеоаналитика',
-      'Внедрение в бизнес-процессы',
-    ],
-    popular: false,
-  },
-  // Интеграция сервисов
-  {
-    section: 'Интеграция сервисов',
-    title: 'Интеграция с платёжными системами',
-    price: 'от 60 000₽',
-    subtitle: 'Stripe, ЮKassa, PayPal, банковские API',
-    features: [
-      'Интеграция с платёжными шлюзами',
+      'Интеграция с API/CRM',
       'Настройка webhooks',
-      'Безопасность платежей',
+      'Базовая поддержка',
     ],
-    popular: true,
+    popular: false,
   },
   {
-    section: 'Интеграция сервисов',
-    title: 'Интеграция с корпоративными платформами',
-    price: 'от 70 000₽',
-    subtitle: '1С, Bitrix24, amoCRM, SAP, ERP',
+    section: 'Интеграции и поддержка',
+    title: 'Стандарт',
+    price: 'от 9 000₽',
+    subtitle: 'Комплексная интеграция',
     features: [
-      'Интеграция с CRM/ERP',
-      'Синхронизация данных',
+      'Интеграция с несколькими сервисами',
       'Автоматизация обмена',
-    ],
-    popular: false,
-  },
-  {
-    section: 'Интеграция сервисов',
-    title: 'Интеграция с внешними API',
-    price: 'от 50 000₽',
-    subtitle: 'Соцсети, карты, email/SMS, облака',
-    features: [
-      'Интеграция с соцсетями',
-      'Email/SMS сервисы',
-      'Облачные платформы',
-    ],
-    popular: false,
-  },
-  // DevOps и CI/CD
-  {
-    section: 'DevOps и CI/CD',
-    title: 'Внедрение CI/CD',
-    price: 'от 50 000₽',
-    subtitle: 'GitHub Actions, GitLab CI, автоматизация деплоя',
-    features: [
-      'Автоматизация сборки и деплоя',
-      'GitHub Actions, GitLab CI',
-      'Документация по процессу',
+      'Техническая поддержка',
+      'Реакция на инциденты',
     ],
     popular: true,
   },
   {
-    section: 'DevOps и CI/CD',
-    title: 'Контейнеризация и оркестрация',
-    price: 'от 60 000₽',
-    subtitle: 'Docker, Kubernetes, настройка кластеров',
+    section: 'Интеграции и поддержка',
+    title: 'Премиум',
+    price: 'от 15 000₽',
+    subtitle: 'Поддержка и развитие',
     features: [
-      'Docker, Docker Compose',
-      'Kubernetes, настройка кластеров',
-      'Мониторинг контейнеров',
+      'Мониторинг интеграций',
+      'Экстренная поддержка',
+      'Развитие решений',
+      'Отчётность',
     ],
     popular: false,
   },
+  // Аудит и консалтинг
   {
-    section: 'DevOps и CI/CD',
-    title: 'Мониторинг и алерты',
-    price: 'от 40 000₽',
-    subtitle: 'Prometheus, Grafana, логирование',
-    features: [
-      'Настройка мониторинга',
-      'Оповещения и алерты',
-      'Логирование и аудит',
-    ],
-    popular: false,
-  },
-  // Консалтинг и аудит
-  {
-    section: 'Консалтинг и аудит',
-    title: 'Аудит архитектуры',
-    price: 'от 30 000₽',
-    subtitle: 'Анализ текущих решений, рекомендации',
+    section: 'Аудит и консалтинг',
+    title: 'Базовый',
+    price: 'от 3 000₽',
+    subtitle: 'Быстрый аудит',
     features: [
       'Анализ архитектуры',
-      'Рекомендации по улучшению',
-      'Отчёт и презентация',
-    ],
-    popular: true,
-  },
-  {
-    section: 'Консалтинг и аудит',
-    title: 'Техническое интервью',
-    price: 'от 15 000₽',
-    subtitle: 'Оценка кандидатов, помощь в найме',
-    features: [
-      'Проведение интервью',
-      'Оценка технических навыков',
-      'Рекомендации по найму',
+      'Краткий отчёт',
+      'Рекомендации',
     ],
     popular: false,
   },
   {
-    section: 'Консалтинг и аудит',
-    title: 'Подбор технологий',
-    price: 'от 20 000₽',
-    subtitle: 'Выбор стеков, оптимизация затрат',
-    features: [
-      'Сравнение решений',
-      'Оптимизация расходов',
-      'Выбор технологий под задачу',
-    ],
-    popular: false,
-  },
-  // Поддержка и сопровождение
-  {
-    section: 'Поддержка и сопровождение',
-    title: 'Базовый',
-    price: '15 000₽/мес',
-    subtitle: 'Минимальное обслуживание',
-    features: [
-      'Контент-обновления',
-      'Техническая поддержка',
-      'Резервные копии',
-    ],
-    popular: false,
-  },
-  {
-    section: 'Поддержка и сопровождение',
+    section: 'Аудит и консалтинг',
     title: 'Стандарт',
-    price: '25 000₽/мес',
-    subtitle: 'Комплексное обслуживание',
+    price: 'от 7 000₽',
+    subtitle: 'Код-ревью и аудит',
     features: [
-      'Все из Базового',
-      'Мониторинг uptime',
-      'Оптимизация скорости',
+      'Код-ревью',
+      'Детальный отчёт',
+      'Оптимизация',
+      'Помощь в выборе технологий',
     ],
     popular: true,
   },
   {
-    section: 'Поддержка и сопровождение',
+    section: 'Аудит и консалтинг',
     title: 'Премиум',
-    price: '35 000₽/мес',
-    subtitle: 'Полное сопровождение',
+    price: 'от 12 000₽',
+    subtitle: 'Комплексный консалтинг',
     features: [
-      'Все из Стандарта',
-      'Экстренная поддержка 24/7',
-      'Защита от DDoS',
+      'Аудит архитектуры и процессов',
+      'Технологический консалтинг',
+      'Сопровождение внедрения',
+      'Обучение команды',
     ],
     popular: false,
   },
@@ -437,9 +464,6 @@ const Prices = () => {
                 <Card
                     key={p.title}
                     ref={refs[prices.findIndex(price => price.title === p.title)]}
-                    animate={controls[prices.findIndex(price => price.title === p.title)]}
-                    initial={{ opacity: 0, y: 30 }}
-                    transition={{ duration: 0.6, ease: 'easeOut', delay: i * 0.15 }}
                     style={p.popular ? { border: '2.5px solid #3a7bd5', boxShadow: '0 8px 32px 0 rgba(30,42,120,0.13)' } : {}}
                 >
                   <CardContent>
