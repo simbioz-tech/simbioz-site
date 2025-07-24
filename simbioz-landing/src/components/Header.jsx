@@ -25,7 +25,7 @@ border-radius: 36px;
 border: 1.5px solid ${({ theme }) => theme.border};
 box-shadow: 0 2px 16px 0 rgba(30,42,120,0.06);
 transition: background 0.4s, border-color 0.4s;
-@media (max-width: 700px) {
+@media (max-width: 900px) {
   padding: 0 2vw;
   margin: 10px 2vw 0 2vw;
   height: 64px;
@@ -66,9 +66,6 @@ gap: 32px;
 flex: 1;
 justify-content: center;
 @media (max-width: 900px) {
-  gap: 18px;
-}
-@media (max-width: 700px) {
   display: none;
 }
 `;
@@ -100,7 +97,7 @@ overflow: hidden;
   transform: scaleX(1);
   transform-origin: left;
 }
-@media (max-width: 700px) {
+@media (max-width: 900px) {
   width: 100%;
   box-sizing: border-box;
   font-size: 1.22rem;
@@ -114,9 +111,6 @@ align-items: center;
 gap: 14px;
 @media (max-width: 900px) {
   gap: 18px;
-}
-@media (max-width: 700px) {
-  gap: 14px;
 }
 `;
 const ThemeBtn = styled.button`
@@ -137,7 +131,7 @@ transition: background 0.2s, color 0.2s, border-color 0.2s;
   color: #fff;
   border-color: ${({ theme }) => theme.accent};
 }
-@media (max-width: 700px) {
+@media (max-width: 900px) {
   width: 34px;
   height: 34px;
   font-size: 1.05rem;
@@ -240,7 +234,7 @@ width: 32px;
 height: 32px;
 border-radius: 50%;
 display: none;
-@media (max-width: 700px) {
+@media (max-width: 900px) {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -260,7 +254,7 @@ display: none;
 `;
 const MobileMenu = styled.div`
 display: none;
-@media (max-width: 700px) {
+@media (max-width: 900px) {
   display: ${({ open }) => (open ? 'flex' : 'none')};
   flex-direction: column;
   position: fixed;
