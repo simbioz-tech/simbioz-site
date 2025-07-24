@@ -6,35 +6,16 @@ on:
       - master
 
 jobs:
-  checkout:
-    name: Checkout repository
+  build-and-deploy:
     runs-on: ubuntu-latest
-    outputs:
-      repo-path: ${{ steps.checkout.outputs.path }}
-    steps:
-      - name: Checkout code
-        id: checkout
-        uses: actions/checkout@v4.2.2
 
-  install-dependencies:
-    name: Install dependencies
-    needs: checkout
-    runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4.2.2
+        uses: actions/checkout@v3
 
-      - name: Install npm dependencies
+      - name: Install dependencies
         run: npm install
         working-directory: simbioz-landing
-
-  build:
-    name: Build project
-    needs: install-dependencies
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4.2.2
 
       - name: Build project
         run: npm run build
@@ -46,49 +27,22 @@ jobs:
           VITE_EMAILJS_TEMPLATE_ID: ${{secrets.VITE_EMAILJS_TEMPLATE_ID}}
           VITE_EMAILJS_PUBLIC_KEY: ${{secrets.VITE_EMAILJS_PUBLIC_KEY}}
 
-  prepare-artifacts:
-    name: Prepare artifacts for deployment
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4.2.2
-
-      - name: Copy dist contents
+      - name: Copy dist contents to top-level deploy folder
         run: |
           mkdir simbioz-tech.ru
           shopt -s dotglob
           cp -r simbioz-landing/dist/* simbioz-tech.ru/
 
-  deploy:
-    name: Deploy to production
-    needs: prepare-artifacts
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4.2.2
-
-      - name: Copy dist contents
-        run: |
-          mkdir simbioz-tech.ru
-          shopt -s dotglob
-          cp -r simbioz-landing/dist/* simbioz-tech.ru/
-
-      - name: Deploy via SCP
+      - name: Deploy ONLY dist contents (not the folder itself)
         uses: appleboy/scp-action@v0.1.3
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_KEY }}
           port: 22
-          source: "simbioz-tech.ru/*"
+          source: "simbioz-tech.ru/*"                # ✅ только содержимое папки dist
           target: "www/"
           rm: true
 
-  cleanup:
-    name: Cleanup
-    needs: deploy
-    runs-on: ubuntu-latest
-    steps:
-      - name: Remove temporary files
+      - name: Cleanup
         run: rm -rf simbioz-tech.ru
