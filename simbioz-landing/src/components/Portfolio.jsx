@@ -55,13 +55,20 @@ const CardGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
   gap: 32px;
+  @media (max-width: 700px) {
+    grid-template-columns: 1fr;
+    gap: 18px;
+    justify-items: center;
+    align-items: stretch;
+    grid-auto-rows: 1fr;
+    padding: 0;
+  }
 `;
 const Card = styled(motion.div)`
   background: ${({ theme }) => theme.card};
   border-radius: 18px;
   box-shadow: 0 4px 24px 0 rgba(30,42,120,0.08);
   padding: 32px 24px;
-  border: 1px solid ${({ theme }) => theme.border};
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -74,13 +81,17 @@ const Card = styled(motion.div)`
   min-width: 320px;
   max-width: 340px;
   box-sizing: border-box;
+  width: 100%;
   @media (max-width: 700px) {
-    min-width: 90vw;
-    max-width: 95vw;
+    width: 100%;
+    max-width: 340px;
+    margin-left: auto;
+    margin-right: auto;
+    min-width: unset;
     padding: 18px 10px;
   }
   &:hover {
-    box-shadow: 0 20px 60px 0 rgba(58,123,213,0.38), 0 2px 24px 0 rgba(30,42,120,0.18);
+    box-shadow: 0 8px 28px 0 rgba(58,123,213,0.11);
     transform: translateY(-10px) scale(1.08);
     border-color: #3a7bd5;
     z-index: 2;

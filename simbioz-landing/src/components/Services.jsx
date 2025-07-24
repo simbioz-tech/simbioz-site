@@ -29,7 +29,7 @@ const Title = styled.h2`
 `;
 const CardGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
   gap: 32px;
   box-sizing: border-box;
   max-width: 1100px;
@@ -41,7 +41,7 @@ const CardGrid = styled.div`
     align-items: center;
     justify-content: center;
     justify-items: center;
-    padding: 0 4vw;
+    padding: 0;
   }
 `;
 const Card = styled(motion.div)`
@@ -49,7 +49,6 @@ const Card = styled(motion.div)`
   border-radius: 16px;
   box-shadow: 0 4px 24px 0 rgba(30,42,120,0.08);
   padding: 28px 18px;
-  border: 1px solid ${({ theme }) => theme.border};
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -62,8 +61,10 @@ const Card = styled(motion.div)`
   position: relative;
   overflow: visible;
   box-sizing: border-box;
+  width: 100%;
+  max-width: 340px;
   &:hover {
-    box-shadow: 0 16px 48px 0 rgba(58,123,213,0.35), 0 2px 24px 0 rgba(30,42,120,0.18);
+    box-shadow: 0 7px 24px 0 rgba(58,123,213,0.10);
     transform: translateY(-10px) scale(1.10);
     border-color: #3a7bd5;
     z-index: 2;
@@ -85,8 +86,8 @@ const Card = styled(motion.div)`
     font-size: 0.98rem;
     min-height: 0;
     margin: 0 auto;
-    max-width: 95vw;
-    min-width: 90vw;
+    width: 100%;
+    max-width: 340px;
     box-sizing: border-box;
   }
 `;

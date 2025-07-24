@@ -39,7 +39,6 @@ const Card = styled(motion.div)`
   border-radius: 18px;
   box-shadow: 0 4px 24px 0 rgba(30,42,120,0.08);
   padding: 24px 18px;
-  border: 1px solid ${({ theme }) => theme.border};
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -51,7 +50,7 @@ const Card = styled(motion.div)`
   position: relative;
   cursor: pointer;
   &:hover {
-    box-shadow: 0 20px 60px 0 rgba(58,123,213,0.38), 0 2px 24px 0 rgba(30,42,120,0.18);
+    box-shadow: 0 8px 28px 0 rgba(58,123,213,0.09);
     transform: translateY(-10px);
     border-color: #3a7bd5;
     z-index: 2;
@@ -87,11 +86,7 @@ const Price = styled.div`
   font-weight: 700;
   color: #3a7bd5;
   margin-bottom: 8px;
-  transition: color 0.3s;
-  ${Card}:hover & {
-    color: #1e2a78;
-    text-shadow: 0 2px 16px #3a7bd5aa;
-  }
+  transition: none;
 `;
 const Feature = styled.li`
   margin-bottom: 6px;

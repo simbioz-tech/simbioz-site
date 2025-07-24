@@ -78,46 +78,27 @@ font-size: 1.22rem;
 font-weight: 700;
 text-decoration: none;
 position: relative;
-transition: color 0.3s ease-out, transform 0.2s ease-out, box-shadow 0.2s ease-out;
+transition: color 0.3s ease-out, transform 0.2s ease-out;
 overflow: hidden;
 &:hover {
   color: ${({ theme }) => theme.accent};
-  transform: translateY(-2px) scale(1.02);
-  animation: pulse 1.5s infinite;
+  transform: translateY(-2px) scale(1.04);
 }
 &::after {
   content: '';
   display: block;
   width: 100%;
-  height: 2px;
-  background: ${({ theme }) => theme.accent};
-  opacity: 0.3;
+  height: 2.5px;
+  background: linear-gradient(90deg, #3a7bd5 60%, #1e2a78 100%);
+  opacity: 0.7;
   border-radius: 2px;
   transform: scaleX(0);
   transform-origin: right;
-  transition: transform 0.3s ease-out;
+  transition: transform 0.4s cubic-bezier(.4,0,.2,1);
 }
 &:hover::after {
   transform: scaleX(1);
   transform-origin: left;
-}
-&::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(58,123,213,0.2), transparent);
-  transition: left 0.5s ease-out;
-}
-&:hover::before {
-  left: 100%;
-}
-@keyframes pulse {
-  0% { box-shadow: 0 0 0 0 rgba(58,123,213,0.5); }
-  70% { box-shadow: 0 0 0 10px rgba(58,123,213,0); }
-  100% { box-shadow: 0 0 0 0 rgba(58,123,213,0); }
 }
 @media (max-width: 700px) {
   width: 100%;

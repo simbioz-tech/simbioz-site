@@ -1,5 +1,5 @@
 import React from 'react';
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
 import VacanciesModal from './VacanciesModal';
@@ -87,8 +87,43 @@ const Subtitle = styled(motion.p)`
   margin-bottom: 40px;
   text-align: center;
   color: ${({ theme }) => (theme.background === '#0a0a23' ? '#b3c0f7' : '#3a7bd5')};
+  word-break: break-word;
+  overflow-wrap: break-word;
+  max-width: 100%;
+  -webkit-hyphens: none;
+  hyphens: none;
+  white-space: normal;
   @media (max-width: 700px) {
     font-size: 1.2rem;
+    word-break: break-word;
+    overflow-wrap: break-word;
+    max-width: 100%;
+    -webkit-hyphens: none;
+    hyphens: none;
+    white-space: normal;
+  }
+`;
+
+const SubtitleWrap = styled(motion.div)`
+  margin-bottom: 40px;
+  text-align: center;
+  @media (max-width: 700px) {
+    margin-bottom: 20px;
+  }
+`;
+
+const Cursor = styled(motion.span)`
+  display: inline-block;
+  margin-left: 4px;
+  font-size: 1.4rem;
+  color: #3a7bd5;
+  animation: blink 1s step-end infinite;
+  @media (max-width: 700px) {
+    font-size: 1.2rem;
+  }
+  @keyframes blink {
+    from, to { color: transparent }
+    50% { color: #3a7bd5 }
   }
 `;
 
@@ -230,35 +265,52 @@ const WorkWithUsButton = styled(OutlineButton)`
   }
 `;
 
+const useIsMobile = () => {
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 700);
+  useEffect(() => {
+    const onResize = () => setIsMobile(window.innerWidth <= 700);
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, []);
+  return isMobile;
+};
+
 const Hero = () => {
     const [vacanciesOpen, setVacanciesOpen] = useState(false);
+    const [typed, setTyped] = useState('');
+    const [showCursor, setShowCursor] = useState(true);
+    const isMobile = useIsMobile();
+    const fullText =
+      'Мы — команда инженеров, обеспечивающих полный цикл цифровой трансформации и внедрения\nинновационных технологий. Создаем надежные веб-сервисы, внедряем машинное обучение,\nразворачиваем Telegram-ботов и автоматизируем повседневные задачи.';
+    const mobileText =
+      'Мы — команда инженеров,\nобеспечивающих полный цикл цифровой трансформации и внедрения инновационных технологий.\nСоздаем надежные веб-сервисы, внедряем машинное обучение,\nразворачиваем Telegram-ботов и автоматизируем повседневные задачи.';
+    const typingSpeed = 18; // ms per char
+    const cursorDelay = 800; // ms after typing before cursor stops blinking
+    const typingTimeout = useRef();
+    const cursorTimeout = useRef();
+
+    useEffect(() => {
+      let i = 0;
+      const text = isMobile ? mobileText : fullText;
+      function type() {
+        setTyped(text.slice(0, i));
+        if (i < text.length) {
+          i++;
+          typingTimeout.current = setTimeout(type, text[i-1] === '\n' ? typingSpeed * 8 : typingSpeed + Math.random()*30);
+        } else {
+          cursorTimeout.current = setTimeout(() => setShowCursor(false), cursorDelay);
+        }
+      }
+      setTyped('');
+      setShowCursor(true);
+      type();
+      return () => {
+        clearTimeout(typingTimeout.current);
+        clearTimeout(cursorTimeout.current);
+      };
+    }, [isMobile]);
 
     const titleText = 'Комплексная разработка и автоматизация для бизнеса';
-    const subtitleLines = [
-        'Мы — команда инженеров, обеспечивающих полный цикл цифровой трансформации и внедрения\nинновационных технологий. Создаем надежные веб-сервисы, внедряем машинное обучение,\nразворачиваем Telegram-ботов и автоматизируем повседневные задачи.'
-    ];
-
-    const TYPEWRITER_DELAY = 0.015;
-
-    const typewriterVariants = {
-        hidden: { opacity: 0 },
-        visible: (i) => ({
-            opacity: 1,
-            transition: {
-                delay: i * TYPEWRITER_DELAY,
-                duration: 0.1,
-            },
-        }),
-    };
-
-    // Combine all characters into a single array with line break markers
-    const allChars = subtitleLines.reduce((acc, line, lineIndex) => {
-        const chars = line.split('');
-        if (lineIndex < subtitleLines.length - 1) {
-            chars.push('\n'); // Use \n as a marker for line breaks
-        }
-        return [...acc, ...chars];
-    }, []);
 
     return (
         <Section
@@ -269,27 +321,35 @@ const Hero = () => {
         >
             <Container>
                 <Title
-                    initial={{ opacity: 0, y: 20, scale: 0.95 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    transition={{ duration: 0.7, ease: 'easeOut' }}
+                    initial={{ opacity: 0, y: 20, scale: 0.85 }}
+                    animate={{ opacity: 1, y: 0, scale: [1, 1.07, 1] }}
+                    transition={{ duration: 1.1, ease: 'easeInOut', times: [0, 0.5, 1] }}
+                    style={{
+                      background: 'linear-gradient(45deg, #3a7bd5, #1e2a78, #00ddeb, #b3c0f7, #3a7bd5)',
+                      backgroundSize: '400% 100%',
+                      animation: 'gradientShift 8s ease-in-out infinite',
+                      WebkitBackgroundClip: 'text',
+                      backgroundClip: 'text',
+                      WebkitTextFillColor: 'transparent',
+                    }}
                 >
                     {titleText}
                 </Title>
-                <Subtitle as={motion.div} initial="hidden" animate="visible">
-                    {allChars.map((char, index) => (
-                        char === '\n' ? (
-                            <br key={`br-${index}`} />
-                        ) : (
-                            <Letter
-                                key={`char-${index}`}
-                                variants={typewriterVariants}
-                                custom={index} // Continuous index for all characters
-                            >
-                                {char === ' ' ? '\u00A0' : char}
-                            </Letter>
-                        )
+                <SubtitleWrap
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.7, duration: 0.8 }}
+                >
+                  <Subtitle as="span">
+                    {typed.split('\n').map((line, idx, arr) => (
+                      <span key={idx}>
+                        {line}
+                        {idx < arr.length - 1 && <br />}
+                      </span>
                     ))}
-                </Subtitle>
+                    {showCursor && <Cursor>|</Cursor>}
+                  </Subtitle>
+                </SubtitleWrap>
                 <ButtonRow>
                     <MainButton href="#contact" whileHover={{ scale: 1.07 }} whileTap={{ scale: 0.97 }}>
                         Начать проект

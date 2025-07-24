@@ -24,7 +24,6 @@ const Card = styled.div`
   border-radius: 18px;
   box-shadow: 0 4px 24px 0 rgba(30,42,120,0.08);
   padding: 32px 24px;
-  border: 1.5px solid ${({ theme }) => theme.border};
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -33,6 +32,9 @@ const Card = styled.div`
   transition: background 0.4s cubic-bezier(.4,0,.2,1), border-color 0.4s cubic-bezier(.4,0,.2,1), box-shadow 0.4s cubic-bezier(.4,0,.2,1), color 0s;
   cursor: default;
   box-sizing: border-box;
+  &:hover {
+    box-shadow: 0 6px 20px 0 rgba(58,123,213,0.13);
+  }
   @media (max-width: 700px) {
     min-width: 90vw;
     max-width: 95vw;

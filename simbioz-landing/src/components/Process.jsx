@@ -23,12 +23,16 @@ const Title = styled.h2`
   text-align: center;
 `;
 const Steps = styled.div`
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
   gap: 32px;
   justify-content: center;
+  @media (max-width: 900px) {
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+  }
   @media (max-width: 700px) {
-    flex-direction: column;
+    grid-template-columns: 1fr;
     gap: 18px;
     align-items: center;
     width: 100vw;
@@ -42,7 +46,6 @@ const Step = styled(motion.div)`
   border-radius: 16px;
   box-shadow: 0 2px 12px 0 rgba(30,42,120,0.08);
   padding: 32px 24px;
-  border: 1.5px solid ${({ theme }) => theme.border};
   min-width: 320px;
   max-width: 340px;
   display: flex;
@@ -54,7 +57,7 @@ const Step = styled(motion.div)`
   overflow: visible;
   box-sizing: border-box;
   &:hover {
-    box-shadow: 0 16px 48px 0 rgba(58,123,213,0.32), 0 2px 24px 0 rgba(30,42,120,0.18);
+    box-shadow: 0 5px 18px 0 rgba(58,123,213,0.09);
     transform: translateY(-8px) scale(1.10);
     border-color: #3a7bd5;
     z-index: 2;
