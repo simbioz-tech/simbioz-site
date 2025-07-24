@@ -53,7 +53,7 @@ const Container = styled.div`
   }
 `;
 
-const Title = styled(motion.h1)`
+const Title = styled.h1`
   font-size: 3.2rem;
   font-weight: 800;
   margin-bottom: 18px;
@@ -284,7 +284,7 @@ const Hero = () => {
       'Мы — команда инженеров, обеспечивающих полный цикл цифровой трансформации и внедрения\nинновационных технологий. Создаем надежные веб-сервисы, внедряем машинное обучение,\nразворачиваем Telegram-ботов и автоматизируем повседневные задачи.';
     const mobileText =
       'Мы — команда инженеров,\nобеспечивающих полный цикл цифровой трансформации и внедрения инновационных технологий.\nСоздаем надежные веб-сервисы, внедряем машинное обучение,\nразворачиваем Telegram-ботов и автоматизируем повседневные задачи.';
-    const typingSpeed = 18; // ms per char
+    const typingSpeed = 5; // ms per char
     const cursorDelay = 800; // ms after typing before cursor stops blinking
     const typingTimeout = useRef();
     const cursorTimeout = useRef();
@@ -321,17 +321,6 @@ const Hero = () => {
         >
             <Container>
                 <Title
-                    initial={{ opacity: 0, y: 20, scale: 0.85 }}
-                    animate={{ opacity: 1, y: 0, scale: [1, 1.07, 1] }}
-                    transition={{ duration: 1.1, ease: 'easeInOut', times: [0, 0.5, 1] }}
-                    style={{
-                      background: 'linear-gradient(45deg, #3a7bd5, #1e2a78, #00ddeb, #b3c0f7, #3a7bd5)',
-                      backgroundSize: '400% 100%',
-                      animation: 'gradientShift 8s ease-in-out infinite',
-                      WebkitBackgroundClip: 'text',
-                      backgroundClip: 'text',
-                      WebkitTextFillColor: 'transparent',
-                    }}
                 >
                     {titleText}
                 </Title>
