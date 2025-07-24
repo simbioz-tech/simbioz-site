@@ -35,7 +35,7 @@ const CardGrid = styled.div`
   max-width: 1100px;
   margin: 0 auto;
   padding: 0 16px;
-  @media (max-width: 700px) {
+  @media (max-width: 900px) {
     grid-template-columns: 1fr;
     gap: 12px;
     align-items: center;

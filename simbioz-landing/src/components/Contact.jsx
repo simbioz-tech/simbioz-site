@@ -16,7 +16,7 @@ const Container = styled.div`
   max-width: 1100px;
   margin: 0 auto;
   padding: 0 24px;
-  @media (max-width: 700px) {
+  @media (max-width: 900px) {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -34,7 +34,7 @@ const Title = styled(motion.h2)`
   text-align: center;
   color: ${({ theme }) => theme.text};
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-  @media (max-width: 700px) {
+  @media (max-width: 900px) {
     font-size: 2rem;
   }
 `;
@@ -46,7 +46,7 @@ const SuccessMessage = styled(motion.h2)`
   color: #3a7bd5;
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   font-weight: 600;
-  @media (max-width: 700px) {
+  @media (max-width: 900px) {
     font-size: 2rem;
   }
 `;
@@ -69,7 +69,7 @@ const FormWrap = styled(motion.form)`
     'file file'
     'checkbox checkbox'
     'button button';
-  @media (max-width: 700px) {
+  @media (max-width: 900px) {
     display: flex;
     flex-direction: column;
     gap: 12px;
@@ -128,7 +128,7 @@ const Input = styled(motion.input)`
     outline: none;
     transform: scale(1.02);
   }
-  @media (max-width: 700px) {
+  @media (max-width: 900px) {
     width: 100%;
     box-sizing: border-box;
     border-radius: 8px;
@@ -173,7 +173,7 @@ const Select = styled(motion.select)`
     padding: 10px;
     font-size: 1rem;
   }
-  @media (max-width: 700px) {
+  @media (max-width: 900px) {
     padding: 10px 32px 10px 8px;
     border-radius: 8px;
     font-size: 0.97rem;
@@ -221,7 +221,7 @@ const FileInputWrap = styled(motion.div)`
     box-shadow: 0 0 8px rgba(58, 123, 213, 0.5);
     transform: scale(1.02);
   }
-  @media (max-width: 700px) {
+  @media (max-width: 900px) {
     padding: 10px 8px;
     border-radius: 8px;
     font-size: 0.97rem;
@@ -268,7 +268,7 @@ const Textarea = styled(motion.textarea)`
     outline: none;
     transform: scale(1.02);
   }
-  @media (max-width: 700px) {
+  @media (max-width: 900px) {
     padding: 10px 6px;
     font-size: 0.98rem;
     border-radius: 8px;
@@ -290,7 +290,7 @@ const CheckboxWrap = styled.label`
   text-align: left;
   line-height: 1.3;
   width: 100%;
-  @media (max-width: 700px) {
+  @media (max-width: 900px) {
     font-size: 0.95rem;
     gap: 6px;
     flex-direction: column;
@@ -308,7 +308,7 @@ const ButtonRow = styled.div`
     max-width: 340px;
     margin: 0 auto;
   }
-  @media (max-width: 700px) {
+  @media (max-width: 900px) {
     flex-direction: column;
     gap: 8px;
     width: 100%;
@@ -365,7 +365,7 @@ const Button = styled(motion.button)`
   &:hover::before {
     left: 100%;
   }
-  @media (max-width: 700px) {
+  @media (max-width: 900px) {
     padding: 28px 0;
     font-size: 1rem;
     border-radius: 20px;

@@ -195,7 +195,7 @@ const MainButton = styled(motion.a)`
   &:hover::before {
     left: 100%;
   }
-  @media (max-width: 700px) {
+  @media (max-width: 900px) {
     width: 90vw;
     max-width: 340px;
     min-width: 180px;
@@ -242,7 +242,7 @@ const OutlineButton = styled(motion.a)`
   &:hover::before {
     left: 100%;
   }
-  @media (max-width: 700px) {
+  @media (max-width: 900px) {
     width: 90vw;
     max-width: 340px;
     min-width: 180px;
@@ -255,7 +255,7 @@ const OutlineButton = styled(motion.a)`
 const WorkWithUsButton = styled(OutlineButton)`
   width: 220px;
   text-align: center;
-  @media (max-width: 700px) {
+  @media (max-width: 900px) {
     width: 90vw;
     max-width: 340px;
     min-width: 180px;
