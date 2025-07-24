@@ -25,7 +25,7 @@ border-radius: 36px;
 border: 1.5px solid ${({ theme }) => theme.border};
 box-shadow: 0 2px 16px 0 rgba(30,42,120,0.06);
 transition: background 0.4s, border-color 0.4s;
-@media (max-width: 900px) {
+@media (max-width: 700px) {
   padding: 0 2vw;
   margin: 10px 2vw 0 2vw;
   height: 64px;
@@ -37,12 +37,13 @@ transition: background 0.4s, border-color 0.4s;
 const Logo = styled.a`
 display: flex;
 align-items: center;
+margin-bottom: 2px;    
 gap: 10px;
 font-size: 1.25rem;
 font-weight: 800;
 color: ${({ theme }) => theme.text};
 text-decoration: none;
-letter-spacing: 1px;
+//letter-spacing: 1px;
 transition: color 0.3s;
 @media (max-width: 700px) {
   font-size: 1.05rem;
@@ -66,7 +67,7 @@ gap: 32px;
 flex: 1;
 justify-content: center;
 @media (max-width: 900px) {
-  display: none;
+    display: none;
 }
 `;
 const NavLink = styled.a`
@@ -97,7 +98,7 @@ overflow: hidden;
   transform: scaleX(1);
   transform-origin: left;
 }
-@media (max-width: 900px) {
+@media (max-width: 700px) {
   width: 100%;
   box-sizing: border-box;
   font-size: 1.22rem;
@@ -109,8 +110,9 @@ const Right = styled.div`
 display: flex;
 align-items: center;
 gap: 14px;
-@media (max-width: 900px) {
-  gap: 18px;
+@media (max-width: 700px) {
+    //margin-top: 5px;
+  gap: 8px;
 }
 `;
 const ThemeBtn = styled.button`
@@ -131,7 +133,7 @@ transition: background 0.2s, color 0.2s, border-color 0.2s;
   color: #fff;
   border-color: ${({ theme }) => theme.accent};
 }
-@media (max-width: 900px) {
+@media (max-width: 700px) {
   width: 34px;
   height: 34px;
   font-size: 1.05rem;
@@ -238,13 +240,17 @@ display: none;
   display: flex;
   align-items: center;
   justify-content: center;
+  align-content: center;
+  justify-items: center;
   background: transparent;
   border: 1.5px solid ${({ theme }) => theme.border};
   color: ${({ theme }) => theme.text};
   font-size: 1.25rem;
-  margin-left: 6px;
   cursor: pointer;
   transition: background 0.2s, color 0.2s, border-color 0.2s;
+    svg {
+        margin-left: 0.5px;
+    }  
 &:hover {
     background: ${({ theme }) => theme.accent};
     color: #fff;
