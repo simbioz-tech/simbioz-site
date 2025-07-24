@@ -32,6 +32,12 @@ const Card = styled.div`
   margin-right: 20px;
   transition: background 0.4s cubic-bezier(.4,0,.2,1), border-color 0.4s cubic-bezier(.4,0,.2,1), box-shadow 0.4s cubic-bezier(.4,0,.2,1), color 0s;
   cursor: default;
+  box-sizing: border-box;
+  @media (max-width: 700px) {
+    min-width: 90vw;
+    max-width: 95vw;
+    padding: 18px 10px;
+  }
 `;
 const Name = styled.div`
   font-weight: 700;
@@ -44,10 +50,10 @@ const Service = styled.div`
   margin-bottom: 10px;
 `;
 const reviews = [
-  { name: 'Екатерина', service: 'ML/AI проект', text: 'Ребята внедрили ML-модель для прогнозирования спроса — результат превзошёл ожидания!' },
-  { name: 'Дмитрий', service: 'Backend-решение', text: 'Разработали отказоустойчивый API для финтеха. Всё быстро, чётко, профессионально.' },
-  { name: 'Ольга', service: 'Интеграция сервисов', text: 'Интеграция с платёжными системами прошла безупречно. Отличная коммуникация.' },
-  { name: 'Игорь', service: 'DevOps/CI-CD', text: 'Автоматизировали развёртывание и мониторинг ML-сервисов. Очень доволен сотрудничеством.' },
+  { name: 'Анна', service: 'Сайт для бизнеса', text: 'Сделали современный сайт-визитку с интеграцией в Telegram. Всё понятно, быстро и удобно!' },
+  { name: 'Владимир', service: 'Автоматизация отчётности', text: 'Теперь отчёты приходят в Telegram и на почту автоматически. Экономит кучу времени!' },
+  { name: 'Мария', service: 'Мини-CRM', text: 'Реализовали простую CRM для заявок — всё под контролем, есть аналитика. Спасибо за поддержку!' },
+  { name: 'Алексей', service: 'Telegram-бот', text: 'Бот для сбора обратной связи работает отлично, интеграция с сайтом без проблем.' },
 ];
 
 const Reviews = () => {

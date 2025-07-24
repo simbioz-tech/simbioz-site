@@ -43,25 +43,39 @@ const Step = styled(motion.div)`
   box-shadow: 0 2px 12px 0 rgba(30,42,120,0.08);
   padding: 32px 24px;
   border: 1.5px solid ${({ theme }) => theme.border};
-  min-width: 200px;
-  max-width: 220px;
+  min-width: 320px;
+  max-width: 340px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  transition: background 0.4s cubic-bezier(.4,0,.2,1), border-color 0.4s cubic-bezier(.4,0,.2,1), box-shadow 0.4s cubic-bezier(.4,0,.2,1), color 0s;
+  transition: background 0.4s cubic-bezier(.4,0,.2,1), border-color 0.4s cubic-bezier(.4,0,.2,1), box-shadow 0.4s cubic-bezier(.4,0,.2,1), color 0s, transform 0.25s cubic-bezier(.4,0,.2,1);
   cursor: pointer;
+  position: relative;
+  overflow: visible;
+  box-sizing: border-box;
   &:hover {
-    box-shadow: 0 12px 36px 0 rgba(30,42,120,0.22);
-    transform: translateY(-8px) scale(1.08);
+    box-shadow: 0 16px 48px 0 rgba(58,123,213,0.32), 0 2px 24px 0 rgba(30,42,120,0.18);
+    transform: translateY(-8px) scale(1.10);
     border-color: #3a7bd5;
+    z-index: 2;
+  }
+  &:hover::after {
+    content: '';
+    position: absolute;
+    inset: -6px;
+    border-radius: 20px;
+    pointer-events: none;
+    box-shadow: 0 0 32px 8px #3a7bd5aa;
+    opacity: 0.5;
+    transition: opacity 0.3s;
+    z-index: 1;
   }
   @media (max-width: 700px) {
     padding: 18px 10px;
     border-radius: 10px;
     font-size: 0.98rem;
-    width: 100%;
-    max-width: 340px;
-    min-width: 200px;
+    min-width: 90vw;
+    max-width: 95vw;
     margin: 0 auto;
   }
 `;
@@ -69,15 +83,20 @@ const IconWrap = styled.div`
   font-size: 2.2rem;
   color: #3a7bd5;
   margin-bottom: 12px;
+  transition: transform 0.35s cubic-bezier(.4,0,.2,1);
+  ${Step}:hover & {
+    transform: scale(1.18);
+    filter: drop-shadow(0 0 8px #3a7bd5cc);
+  }
 `;
 
 const steps = [
-  { icon: <FaSearch />, title: 'Анализ задачи', desc: 'Погружаемся в бизнес-процесс, выявляем цели и требования.' },
-  { icon: <FaProjectDiagram />, title: 'Проектирование архитектуры', desc: 'Разрабатываем архитектуру backend/ML-решения, выбираем технологии.' },
-  { icon: <FaCode />, title: 'Разработка и обучение', desc: 'Пишем код, обучаем ML-модели, реализуем интеграции.' },
-  { icon: <FaPlug />, title: 'Интеграция', desc: 'Встраиваем решение в инфраструктуру клиента, настраиваем обмен данными.' },
-  { icon: <FaRocket />, title: 'Внедрение', desc: 'Запуск в продакшн, обучение сотрудников, документация.' },
-  { icon: <FaTools />, title: 'Поддержка', desc: 'Мониторинг, сопровождение, развитие и оптимизация.' },
+  { icon: <FaSearch />, title: 'Знакомство и анализ', desc: 'Обсуждаем задачи, изучаем бизнес-процессы и цели клиента.' },
+  { icon: <FaProjectDiagram />, title: 'Проектирование решения', desc: 'Формируем архитектуру, подбираем технологии, планируем этапы.' },
+  { icon: <FaCode />, title: 'Разработка', desc: 'Создаём интерфейсы, backend, реализуем бизнес-логику.' },
+  { icon: <FaPlug />, title: 'Интеграция и автоматизация', desc: 'Интегрируем внешние сервисы, настраиваем автоматизацию и ML.' },
+  { icon: <FaRocket />, title: 'Запуск и внедрение', desc: 'Тестируем, внедряем решение, обучаем и сопровождаем запуск.' },
+  { icon: <FaTools />, title: 'Поддержка и развитие', desc: 'Оперативно реагируем на вопросы, развиваем и оптимизируем проект.' },
 ];
 
 const Process = () => {
@@ -113,11 +132,15 @@ const Process = () => {
                     key={s.title}
                     ref={refs[i]}
                     animate={controls[i]}
-                    initial={{ opacity: 0, y: 30 }}
+                    initial={{ opacity: 0 }}
                     transition={{ duration: 0.6, ease: 'easeOut', delay: i * 0.15 }}
                 >
                   <IconWrap>{s.icon}</IconWrap>
-                  <h4 style={{ marginBottom: 8 }}>{s.title}</h4>
+                  <h4
+                      style={{ marginBottom: 8, textAlign: s.title === 'Интеграция и автоматизация' ? 'center' : undefined }}
+                  >
+                      {s.title}
+                  </h4>
                   <p style={{ textAlign: 'center', color: '#7a88c9' }}>{s.desc}</p>
                 </Step>
             ))}
