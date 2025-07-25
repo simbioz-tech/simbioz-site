@@ -34,7 +34,7 @@ function App() {
             <Footer />
           </>
         } />
-        <Route path="/privacy" element={<PrivacyPolicy />} />
+        <Route path="/privacy" element={<PrivacyPolicy theme={theme} onToggleTheme={handleTheme} />} />
       </Routes>
     </ThemeProvider>
   );
