@@ -37,34 +37,35 @@ const CardGrid = styled.div`
 `;
 const RecommendRibbon = styled.div`
   position: absolute;
-  top: 16px;
-  right: -28px;
+  top: 12px;
+  right: -24px;
   transform: rotate(45deg);
   background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 50%, #ff3838 100%);
   background-size: 200% 100%;
   animation: recommendGradientShift 3s ease-in-out infinite;
   color: #fff;
   font-weight: 800;
-  font-size: 0.85rem;
-  padding: 8px 28px;
-  border-radius: 4px;
+  font-size: 0.75rem;
+  padding: 6px 24px;
+  border-radius: 3px;
   box-shadow: 0 2px 12px 0 rgba(238, 90, 36, 0.25);
-  letter-spacing: 0.05em;
+  letter-spacing: 0.04em;
   z-index: 10;
   user-select: none;
   text-align: center;
   text-transform: uppercase;
+  white-space: nowrap;
   @keyframes recommendGradientShift {
     0% { background-position: 0% 50%; }
     50% { background-position: 100% 50%; }
     100% { background-position: 0% 50%; }
   }
   @media (max-width: 700px) {
-    font-size: 0.7rem;
-    padding: 6px 22px;
-    border-radius: 3px;
-    top: 18px;
-    right: -26px;
+    font-size: 0.65rem;
+    padding: 4px 18px;
+    border-radius: 2px;
+    top: 14px;
+    right: -20px;
     transform: rotate(45deg);
   }
 `;
@@ -128,6 +129,9 @@ const Card = styled(motion.div)`
   &.standard {
     transform: none;
     z-index: auto;
+  }
+  &.recommended {
+    padding-top: 32px;
   }
   &:hover {
     box-shadow: 0 0 0 4px #3a7bd5, 0 0 18px 4px #3a7bd5aa;
@@ -676,7 +680,7 @@ const Prices = () => {
                 <Card
                     key={p.title}
                     ref={refs[prices.findIndex(price => price.title === p.title)]}
-                    className={p.title === 'Стандарт' ? 'standard' : ''}
+                    className={`${p.title === 'Стандарт' ? 'standard' : ''} ${p.popular ? 'recommended' : ''}`.trim()}
                     initial={{ opacity: 0, y: 30 }}
                     animate={controls[i]}
                     transition={{ duration: 0.7, ease: 'easeOut' }}
