@@ -123,16 +123,29 @@ const Card = styled(motion.div)`
     margin: 0 auto;
     transition: none !important;
     transform: none !important;
+    pointer-events: auto;
     &.standard {
       transform: none !important;
       z-index: auto;
     }
-    &:active, &:focus, &:active::after, &:focus::after, &:focus-visible {
-      box-shadow: none !important;
+    &:hover, &:active, &:focus, &:focus-visible, &:focus-within {
+      box-shadow: 0 2px 16px 0 rgba(58,123,213,0.10) !important;
       outline: none !important;
       background: inherit !important;
       transform: none !important;
       transition: none !important;
+      z-index: auto !important;
+    }
+    &:hover::after, &:active::after, &:focus::after, &:focus-visible::after, &:focus-within::after {
+      content: none !important;
+      display: none !important;
+      opacity: 0 !important;
+      box-shadow: none !important;
+      transition: none !important;
+    }
+    &::after {
+      display: none !important;
+      content: none !important;
     }
   }
 `;
