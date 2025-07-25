@@ -35,6 +35,40 @@ const CardGrid = styled.div`
     grid-auto-rows: 1fr;
   }
 `;
+const RecommendRibbon = styled.div`
+  position: absolute;
+  top: 16px;
+  right: -28px;
+  transform: rotate(45deg);
+  background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 50%, #ff3838 100%);
+  background-size: 200% 100%;
+  animation: recommendGradientShift 3s ease-in-out infinite;
+  color: #fff;
+  font-weight: 800;
+  font-size: 0.85rem;
+  padding: 8px 28px;
+  border-radius: 4px;
+  box-shadow: 0 2px 12px 0 rgba(238, 90, 36, 0.25);
+  letter-spacing: 0.05em;
+  z-index: 10;
+  user-select: none;
+  text-align: center;
+  text-transform: uppercase;
+  @keyframes recommendGradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+  @media (max-width: 700px) {
+    font-size: 0.7rem;
+    padding: 6px 22px;
+    border-radius: 3px;
+    top: 18px;
+    right: -26px;
+    transform: rotate(45deg);
+  }
+`;
+
 const HitRibbon = styled.div`
   position: absolute;
   top: 14px;
@@ -647,6 +681,7 @@ const Prices = () => {
                     animate={controls[i]}
                     transition={{ duration: 0.7, ease: 'easeOut' }}
                 >
+                  {p.popular && <RecommendRibbon>Советуем</RecommendRibbon>}
                   <CardContent>
                     <div style={{ fontWeight: 700, color: '#7a88c9', marginBottom: 4, fontSize: '1.02rem' }}>{p.section}</div>
                     <h3 style={{ marginBottom: 8 }}>{p.title}</h3>
