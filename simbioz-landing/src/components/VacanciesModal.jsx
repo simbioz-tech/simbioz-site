@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import styled from 'styled-components';
 
 const ModalOverlay = styled.div`
@@ -64,7 +64,34 @@ const VacanciesIframe = styled.iframe`
 `;
 
 export default function VacanciesModal({ open, onClose }) {
+  // Блокируем скролл страницы при открытии модалки
+  useEffect(() => {
+    let scrollY = 0;
+    if (open) {
+      scrollY = window.scrollY;
+      document.body.style.position = 'fixed';
+      document.body.style.top = `-${scrollY}px`;
+      document.body.style.left = '0';
+      document.body.style.right = '0';
+    } else {
+      document.body.style.position = '';
+      document.body.style.top = '';
+      document.body.style.left = '';
+      document.body.style.right = '';
+      window.scrollTo(0, scrollY);
+    }
+    return () => {
+      document.body.style.position = '';
+      document.body.style.top = '';
+      document.body.style.left = '';
+      document.body.style.right = '';
+      window.scrollTo(0, scrollY);
+    };
+  }, [open]);
+
+
   if (!open) return null;
+
   return (
     <ModalOverlay onClick={onClose}>
       <ModalContent onClick={e => e.stopPropagation()}>

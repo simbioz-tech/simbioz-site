@@ -419,7 +419,7 @@ const prices = [
   {
     section: 'Frontend и клиентская логика',
     title: 'Премиум',
-    price: 'от 65 000₽',
+    price: 'от 80 000₽',
     subtitle: 'Сложные интерфейсы, кастомные решения',
     features: [
       'Индивидуальный UI/UX',
@@ -497,7 +497,7 @@ const prices = [
   {
     section: 'DevOps и инфраструктура',
     title: 'Премиум',
-    price: 'от 25 000₽',
+    price: 'от 60 000₽',
     subtitle: 'Инфраструктура под ключ',
     features: [
       'Инфраструктура как код',
@@ -536,7 +536,7 @@ const prices = [
   {
     section: 'ML и автоматизация',
     title: 'Премиум',
-    price: 'от 69 000₽',
+    price: 'от 99 000₽',
     subtitle: 'Комплексная автоматизация',
     features: [
       'Сложные ML-модели',
