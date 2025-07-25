@@ -84,8 +84,8 @@ const Card = styled(motion.div)`
   width: 100%;
   border: none;
   &:hover {
-    box-shadow: 0 0 32px 8px #3a7bd5cc;
-    transform: translateY(-10px) scale(1.08);
+    box-shadow: 0 0 32px 0 #3a7bd5cc;
+    transform: translateY(-10px) scale(3.08);
     z-index: 2;
   }
   &:hover::after {
@@ -94,7 +94,7 @@ const Card = styled(motion.div)`
     inset: 0;
     border-radius: 22px;
     pointer-events: none;
-    box-shadow: 0 0 32px 8px #3a7bd5cc;
+    box-shadow: 0 0 16px 8px #3a7bd5cc;
     opacity: 1;
     transition: opacity 0.3s;
     z-index: 1;

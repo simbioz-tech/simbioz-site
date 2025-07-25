@@ -78,6 +78,7 @@ const Title = styled.h1`
     }
   }
   @media (max-width: 700px) {
+      margin-bottom: 0;
     font-size: 2.4rem;
   }
 `;
@@ -97,6 +98,7 @@ const Subtitle = styled(motion.p)`
     font-size: 1.2rem;
     word-break: break-word;
     overflow-wrap: break-word;
+      margin-bottom: 0;
     max-width: 100%;
     -webkit-hyphens: none;
     hyphens: none;
@@ -142,6 +144,7 @@ const ButtonRow = styled.div`
   flex-wrap: nowrap;
   @media (max-width: 700px) {
     flex-direction: column;
+      margin-top: 20px;
     gap: 14px;
     align-items: center;
   }
@@ -289,27 +292,6 @@ const Hero = () => {
     const typingTimeout = useRef();
     const cursorTimeout = useRef();
 
-    useEffect(() => {
-      let i = 0;
-      const text = isMobile ? mobileText : fullText;
-      function type() {
-        setTyped(text.slice(0, i));
-        if (i < text.length) {
-          i++;
-          typingTimeout.current = setTimeout(type, text[i-1] === '\n' ? typingSpeed * 8 : typingSpeed + Math.random()*30);
-        } else {
-          cursorTimeout.current = setTimeout(() => setShowCursor(false), cursorDelay);
-        }
-      }
-      setTyped('');
-      setShowCursor(true);
-      type();
-      return () => {
-        clearTimeout(typingTimeout.current);
-        clearTimeout(cursorTimeout.current);
-      };
-    }, [isMobile]);
-
     const titleText = ' Полный цикл IT-решений для роста вашего бизнеса';
 
     return (
@@ -320,24 +302,17 @@ const Hero = () => {
             transition={{ duration: 0.7 }}
         >
             <Container>
-                <Title
-                >
+                <Title>
                     {titleText}
                 </Title>
                 <SubtitleWrap
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  transition={{ delay: 0.7, duration: 0.8 }}
+                  transition={{ delay: 0.4, duration: 0.4 }}
                 >
-                  <Subtitle as="span">
-                    {typed.split('\n').map((line, idx, arr) => (
-                      <span key={idx}>
-                        {line}
-                        {idx < arr.length - 1 && <br />}
-                      </span>
-                    ))}
-                    {showCursor && <Cursor>|</Cursor>}
-                  </Subtitle>
+                    <Subtitle>
+                        {fullText}
+                    </Subtitle>
                 </SubtitleWrap>
                 <ButtonRow>
                     <MainButton href="#contact" whileHover={{ scale: 1.07 }} whileTap={{ scale: 0.97 }}>

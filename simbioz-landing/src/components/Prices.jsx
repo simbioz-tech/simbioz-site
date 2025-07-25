@@ -77,7 +77,7 @@ const HitRibbon = styled.div`
 const Card = styled(motion.div)`
   background: ${({ theme }) => theme.background};
   border-radius: 18px;
-  box-shadow: 0 2px 8px 0 rgba(30,42,120,0.08);
+  //box-shadow: 0 2px 8px 0 rgba(30,42,120,0.08);
   padding: 24px 18px;
   display: flex;
   flex-direction: column;
@@ -90,49 +90,64 @@ const Card = styled(motion.div)`
   position: relative;
   cursor: pointer;
   border: 2.5px solid #3a7bd5;
-  box-shadow: 0 2px 16px 0 rgba(58,123,213,0.10);
+  //box-shadow: 0 2px 16px 0 rgba(58,123,213,0.10);
   &.standard {
     transform: none;
     z-index: auto;
   }
   &:hover {
-    box-shadow: 0 0 0 4px #3a7bd5, 0 0 18px 4px #3a7bd5aa;
+    box-shadow: 0 0 5px 5px #3a7bd5, 0 0 0 0 #3a7bd5aa;
     transform: translateY(-10px) scale(1.10);
-    z-index: 2;
+    border-radius: 16px;
+    z-index: 1;
   }
   &:hover.standard {
     transform: translateY(-10px) scale(1.12);
+    border-radius: 16px;
   }
   &:hover::after {
     content: '';
     position: absolute;
     top: 0; left: 0; right: 0; bottom: 0;
-    border-radius: 20px;
+    border-radius: 16px;
     pointer-events: none;
-    box-shadow: 0 0 0 4px #3a7bd5, 0 0 18px 4px #3a7bd5aa;
+    box-shadow: 0 0 5px 5px #3a7bd5, 0 0 0 0 #3a7bd5aa;
     opacity: 1;
     transition: opacity 0.3s;
     z-index: 1;
   }
   @media (max-width: 700px) {
     padding: 18px 10px;
-    border-radius: 10px;
+    border-radius: 16px;
     font-size: 0.98rem;
     min-width: 90vw;
     max-width: 95vw;
     margin: 0 auto;
     transition: none !important;
     transform: none !important;
+    pointer-events: auto;
     &.standard {
       transform: none !important;
       z-index: auto;
     }
-    &:active, &:focus, &:active::after, &:focus::after, &:focus-visible {
-      box-shadow: none !important;
+    &:hover, &:active, &:focus, &:focus-visible, &:focus-within {
+      box-shadow: 0 2px 16px 0 rgba(58,123,213,0.10) !important;
       outline: none !important;
       background: inherit !important;
       transform: none !important;
       transition: none !important;
+      z-index: auto !important;
+    }
+    &:hover::after, &:active::after, &:focus::after, &:focus-visible::after, &:focus-within::after {
+      content: none !important;
+      display: none !important;
+      opacity: 0 !important;
+      box-shadow: none !important;
+      transition: none !important;
+    }
+    &::after {
+      display: none !important;
+      content: none !important;
     }
   }
 `;
@@ -233,10 +248,10 @@ const StudentBanner = styled.div`
     50% { background-position: 100% 50%; }
     100% { background-position: 0% 50%; }
   }
-  @media (max-width: 700px) {
+  @media (max-width: 900px) {
     flex-direction: column;
-    font-size: 1.05rem;
-    padding: 16px 12px;
+    font-size: 0.9rem;
+    padding: 10px 12px;
     gap: 10px;
     text-align: center;
   }
@@ -285,6 +300,45 @@ const StudentBtn = styled.button`
     width: 100%;
     padding: 12px 0;
     font-size: 1rem;
+  }
+`;
+const RecommendRibbon = styled.div`
+  position: absolute;
+  top: 16px;
+  right: -28px;
+  transform: rotate(45deg);
+  background: linear-gradient(135deg, #4e5eff 0%, #9c0998 50%, #151d65 100%);
+  background-size: 200% 100%;
+  animation: recommendGradientShift 3s ease-in-out infinite;
+  color: #fff;
+  font-weight: 800;
+  font-size: 0.68rem;
+  padding: 8px 28px;
+  border-radius: 4px;
+  box-shadow: 0 2px 12px 0 rgb(21, 29, 101);
+  letter-spacing: 0.05em;
+  z-index: 10;
+  user-select: none;
+  text-align: center;
+  text-transform: uppercase;
+  @keyframes recommendGradientShift {
+    0% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+    100% {
+      background-position: 0% 50%;
+    }
+  }
+  @media (max-width: 900px) {
+    font-size: 0.72rem;
+    padding: 6px 22px;
+    border-radius: 3px;
+    top: 18px;
+    right: -26px;
+    transform: rotate(45deg);
   }
 `;
 const StudentModalOverlay = styled.div`
@@ -455,7 +509,7 @@ const prices = [
   },
   // Машинное обучение и автоматизация
   {
-    section: 'Машинное обучение и автоматизация',
+    section: 'ML и автоматизация',
     title: 'Базовый',
     price: 'от 15 000₽',
     subtitle: 'Простая аналитика или ML-модель',
@@ -467,7 +521,7 @@ const prices = [
     popular: false,
   },
   {
-    section: 'Машинное обучение и автоматизация',
+    section: 'ML и автоматизация',
     title: 'Стандарт',
     price: 'от 29 000₽',
     subtitle: 'Внедрение ML/AI, чат-бот',
@@ -480,7 +534,7 @@ const prices = [
     popular: true,
   },
   {
-    section: 'Машинное обучение и автоматизация',
+    section: 'ML и автоматизация',
     title: 'Премиум',
     price: 'от 69 000₽',
     subtitle: 'Комплексная автоматизация',
@@ -634,6 +688,7 @@ const Prices = () => {
                     animate={controls[i]}
                     transition={{ duration: 0.7, ease: 'easeOut' }}
                 >
+                  {p.popular && <RecommendRibbon>Советуем</RecommendRibbon>}
                   <CardContent>
                     <div style={{ fontWeight: 700, color: '#7a88c9', marginBottom: 4, fontSize: '1.02rem' }}>{p.section}</div>
                     <h3 style={{ marginBottom: 8 }}>{p.title}</h3>

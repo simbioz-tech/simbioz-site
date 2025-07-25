@@ -65,7 +65,8 @@ const Card = styled(motion.div)`
   max-width: 340px;
   border: none;
   &:hover {
-    box-shadow: 0 0 0 4px #3a7bd5, 0 0 18px 4px #3a7bd5aa;
+    box-shadow: 0 0 2px 2px #3a7bd5, 0 0 5px 5px #3a7bd5aa;
+      border-radius: 16px;
     transform: translateY(-10px) scale(1.10);
     z-index: 2;
   }
@@ -73,16 +74,16 @@ const Card = styled(motion.div)`
     content: '';
     position: absolute;
     inset: 0;
-    border-radius: 20px;
+    border-radius: 16px;
     pointer-events: none;
-    box-shadow: 0 0 0 4px #3a7bd5, 0 0 18px 4px #3a7bd5aa;
+    box-shadow: 0 0 2px 2px #3a7bd5, 0 0 5px 5px #3a7bd5aa;
     opacity: 1;
     transition: opacity 0.3s;
     z-index: 1;
   }
   @media (max-width: 700px) {
     padding: 18px 10px;
-    border-radius: 12px;
+    border-radius: 16px;
     font-size: 0.98rem;
     min-height: 0;
     margin: 0 auto;
