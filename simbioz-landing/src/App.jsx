@@ -11,6 +11,8 @@ import Reviews from './components/Reviews';
 import Contact from './components/Contact';
 import Footer from './components/Footer';
 import PrivacyPolicy from './components/PrivacyPolicy';
+import SEOHelmet from './components/SEOHelmet';
+import { SEO_DATA } from './utils/seoConstants';
 import { Routes, Route } from 'react-router-dom';
 
 function App() {
@@ -23,6 +25,12 @@ function App() {
       <Routes>
         <Route path="/" element={
           <>
+            <SEOHelmet 
+              title={SEO_DATA.homepage.title}
+              description={SEO_DATA.homepage.description}
+              keywords={SEO_DATA.homepage.keywords}
+              canonical={SEO_DATA.homepage.canonical}
+            />
             <Header theme={theme} onToggleTheme={handleTheme} />
             <div id="hero"><Hero /></div>
             <Services />
