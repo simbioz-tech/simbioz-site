@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { motion, useAnimation } from 'framer-motion';
 import { FaLaptopCode, FaServer, FaCogs, FaRobot, FaPlug, FaUserCheck } from 'react-icons/fa';
+import { Helmet } from "react-helmet";
 
 const Section = styled.section`
   padding: 64px 0 48px 0;
@@ -136,30 +137,36 @@ const Services = () => {
     }, [controls, refs]);
 
     return (
-        <Section id="services">
-            <Container>
-                <Title>Наши услуги</Title>
-                <CardGrid>
-                    {services.map((s, i) => (
-                        <Card
-                            key={s.title}
-                            ref={refs[i]}
-                            animate={controls[i]}
-                            initial={{ opacity: 0 }}
-                            transition={{ duration: 0.6, ease: 'easeOut', delay: i * 0.15 }}
-                        >
-                            <IconWrap>{s.icon}</IconWrap>
-                            <h3
-                                style={{ marginBottom: 8, textAlign: i >= 3 ? 'center' : undefined }}
+        <>
+            <Helmet>
+                <title>Услуги — Симбиоз</title>
+                <meta name="description" content="Услуги Симбиоз: frontend, backend, DevOps, машинное обучение, интеграции, аудит и технологический консалтинг. Полный цикл IT-решений для бизнеса." />
+            </Helmet>
+            <Section id="services">
+                <Container>
+                    <Title>Наши услуги</Title>
+                    <CardGrid>
+                        {services.map((s, i) => (
+                            <Card
+                                key={s.title}
+                                ref={refs[i]}
+                                animate={controls[i]}
+                                initial={{ opacity: 0 }}
+                                transition={{ duration: 0.6, ease: 'easeOut', delay: i * 0.15 }}
                             >
-                                {s.title}
-                            </h3>
-                            <p style={{ textAlign: 'center' }}>{s.desc}</p>
-                        </Card>
-                    ))}
-                </CardGrid>
-            </Container>
-        </Section>
+                                <IconWrap>{s.icon}</IconWrap>
+                                <h3
+                                    style={{ marginBottom: 8, textAlign: i >= 3 ? 'center' : undefined }}
+                                >
+                                    {s.title}
+                                </h3>
+                                <p style={{ textAlign: 'center' }}>{s.desc}</p>
+                            </Card>
+                        ))}
+                    </CardGrid>
+                </Container>
+            </Section>
+        </>
     );
 };
 

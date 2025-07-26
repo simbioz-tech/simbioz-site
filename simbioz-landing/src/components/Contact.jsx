@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { FaGithub, FaUpload } from 'react-icons/fa';
 import * as emailjs from '@emailjs/browser';
 import { Link } from 'react-router-dom';
+import { Helmet } from "react-helmet";
 
 const Section = styled.section`
   padding: 64px 0 48px 0;
@@ -549,194 +550,200 @@ const Contact = () => {
   };
 
   return (
-      <Section id="contact">
-        <Container>
-          {!sent && (
-              <Title
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5 }}
-              >
-                Оставьте заявку на проект
-              </Title>
-          )}
-          {sent ? (
-              <SuccessMessage
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5 }}
-              >
-                Спасибо! Мы свяжемся с вами для обсуждения деталей.
-              </SuccessMessage>
-          ) : (
-              <FormWrap
-                  initial={{ opacity: 0, y: 50 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.7, ease: 'easeOut' }}
-                  onSubmit={handleSubmit}
-              >
-                <Field data-area="name">
-                  <Label
-                      initial={{ opacity: 0, x: -10 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ duration: 0.3, delay: 0.1 }}
-                      htmlFor="name"
-                  >
-                    Ваше имя *
-                  </Label>
-                  <Input
-                      id="name"
-                      name="name"
-                      type="text"
-                      placeholder="Иван Иванов"
-                      value={form.name}
-                      onChange={handleChange}
-                      required
-                  />
-                </Field>
-                <Field data-area="email">
-                  <Label
-                      initial={{ opacity: 0, x: -10 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ duration: 0.3, delay: 0.2 }}
-                      htmlFor="email"
-                  >
-                    Email *
-                  </Label>
-                  <Input
-                      id="email"
-                      name="email"
-                      type="email"
-                      placeholder="example@mail.com"
-                      value={form.email}
-                      onChange={handleChange}
-                      required
-                  />
-                </Field>
-                <Field data-area="telegram">
-                  <Label
-                      initial={{ opacity: 0, x: -10 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ duration: 0.3, delay: 0.3 }}
-                      htmlFor="telegram"
-                  >
-                    Telegram
-                  </Label>
-                  <Input
-                      id="telegram"
-                      name="telegram"
-                      type="text"
-                      placeholder="username (без @)"
-                      value={form.telegram}
-                      onChange={handleChange}
-                  />
-                </Field>
-                <Field data-area="service">
-                  <Label
-                      initial={{ opacity: 0, x: -10 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ duration: 0.3, delay: 0.4 }}
-                      htmlFor="service"
-                  >
-                    Услуга *
-                  </Label>
-                  <SelectWrap>
-                    <Select
-                        id="service"
-                        name="service"
-                        value={form.service}
+      <>
+        <Helmet>
+          <title>Контакты — Симбиоз</title>
+          <meta name="description" content="Контакты Симбиоз: форма обратной связи, Telegram, email. Оставьте заявку на проект или задайте вопрос нашей команде." />
+        </Helmet>
+        <Section id="contact">
+          <Container>
+            {!sent && (
+                <Title
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5 }}
+                >
+                  Оставьте заявку на проект
+                </Title>
+            )}
+            {sent ? (
+                <SuccessMessage
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5 }}
+                >
+                  Спасибо! Мы свяжемся с вами для обсуждения деталей.
+                </SuccessMessage>
+            ) : (
+                <FormWrap
+                    initial={{ opacity: 0, y: 50 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.7, ease: 'easeOut' }}
+                    onSubmit={handleSubmit}
+                >
+                  <Field data-area="name">
+                    <Label
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ duration: 0.3, delay: 0.1 }}
+                        htmlFor="name"
+                    >
+                      Ваше имя *
+                    </Label>
+                    <Input
+                        id="name"
+                        name="name"
+                        type="text"
+                        placeholder="Иван Иванов"
+                        value={form.name}
                         onChange={handleChange}
                         required
+                    />
+                  </Field>
+                  <Field data-area="email">
+                    <Label
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ duration: 0.3, delay: 0.2 }}
+                        htmlFor="email"
                     >
-                      <option value="">Выберите услугу</option>
-                      <option value="Backend">Backend-решение</option>
-                      <option value="ML/AI">ML/AI проект</option>
-                      <option value="Интеграция">Интеграция сервисов</option>
-                      <option value="DevOps">DevOps/CI-CD</option>
-                      <option value="Консалтинг">Консалтинг/Аудит</option>
-                      <option value="Другое">Другое</option>
-                    </Select>
-                    <SelectArrow />
-                  </SelectWrap>
-                </Field>
-                <Field data-area="file">
-                  <Label
-                      initial={{ opacity: 0, x: -10 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ duration: 0.3, delay: 0.5 }}
-                      htmlFor="file"
-                  >
-                    Прикрепить файл (PDF, Word, до 50 МБ)
-                  </Label>
-                  <FileInputWrap
-                      whileTap={{ scale: 0.98 }}
-                  >
-                    <FileInputIcon
-                        animate={form.fileName ? { rotate: 360 } : { rotate: 0 }}
-                        transition={{ duration: 0.5 }}
+                      Email *
+                    </Label>
+                    <Input
+                        id="email"
+                        name="email"
+                        type="email"
+                        placeholder="example@mail.com"
+                        value={form.email}
+                        onChange={handleChange}
+                        required
+                    />
+                  </Field>
+                  <Field data-area="telegram">
+                    <Label
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ duration: 0.3, delay: 0.3 }}
+                        htmlFor="telegram"
                     >
-                      <FaUpload />
-                    </FileInputIcon>
-                    <span>{form.fileName || 'Выберите файл'}</span>
-                    <FileInput
-                        id="file"
-                        name="file"
-                        type="file"
-                        accept=".pdf,.doc,.docx"
+                      Telegram
+                    </Label>
+                    <Input
+                        id="telegram"
+                        name="telegram"
+                        type="text"
+                        placeholder="username (без @)"
+                        value={form.telegram}
                         onChange={handleChange}
                     />
-                  </FileInputWrap>
-                </Field>
-                <Field data-area="message">
-                  <Label
-                      initial={{ opacity: 0, x: -10 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ duration: 0.3, delay: 0.6 }}
-                      htmlFor="message"
-                  >
-                    Описание проекта *
-                  </Label>
-                  <Textarea
-                      id="message"
-                      name="message"
-                      placeholder="Расскажите о вашем проекте, целях и пожеланиях..."
-                      value={form.message}
-                      onChange={handleChange}
-                      required
-                  />
-                </Field>
-                <Field data-area="checkbox">
-                  <CheckboxWrap>
-                    <Checkbox type="checkbox" checked={agree} onChange={e => setAgree(e.target.checked)} required />
-                    Я соглашаюсь с <Link to="/privacy" style={{ color: '#3a7bd5', textDecoration: 'underline' }} target="_blank" rel="noopener noreferrer">политикой конфиденциальности</Link> и даю согласие на обработку персональных данных
-                  </CheckboxWrap>
-                </Field>
-                <ButtonRow>
-                  <Button
-                      type="submit"
-                      disabled={loading}
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      transition={{ duration: 0.2 }}
-                  >
-                    {loading ? 'Отправка...' : 'Отправить заявку'}
-                    <span style={{ fontSize: 18, marginLeft: 4 }}>↗</span>
-                  </Button>
-                </ButtonRow>
-                {errorMessage && (
-                    <motion.p
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.3 }}
-                        style={{ textAlign: 'center', color: '#ff4444', fontWeight: 600, fontSize: '1rem', marginTop: '16px' }}
+                  </Field>
+                  <Field data-area="service">
+                    <Label
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ duration: 0.3, delay: 0.4 }}
+                        htmlFor="service"
                     >
-                      {errorMessage}
-                    </motion.p>
-                )}
-              </FormWrap>
-          )}
-        </Container>
-      </Section>
+                      Услуга *
+                    </Label>
+                    <SelectWrap>
+                      <Select
+                          id="service"
+                          name="service"
+                          value={form.service}
+                          onChange={handleChange}
+                          required
+                      >
+                        <option value="">Выберите услугу</option>
+                        <option value="Backend">Backend-решение</option>
+                        <option value="ML/AI">ML/AI проект</option>
+                        <option value="Интеграция">Интеграция сервисов</option>
+                        <option value="DevOps">DevOps/CI-CD</option>
+                        <option value="Консалтинг">Консалтинг/Аудит</option>
+                        <option value="Другое">Другое</option>
+                      </Select>
+                      <SelectArrow />
+                    </SelectWrap>
+                  </Field>
+                  <Field data-area="file">
+                    <Label
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ duration: 0.3, delay: 0.5 }}
+                        htmlFor="file"
+                    >
+                      Прикрепить файл (PDF, Word, до 50 МБ)
+                    </Label>
+                    <FileInputWrap
+                        whileTap={{ scale: 0.98 }}
+                    >
+                      <FileInputIcon
+                          animate={form.fileName ? { rotate: 360 } : { rotate: 0 }}
+                          transition={{ duration: 0.5 }}
+                      >
+                        <FaUpload />
+                      </FileInputIcon>
+                      <span>{form.fileName || 'Выберите файл'}</span>
+                      <FileInput
+                          id="file"
+                          name="file"
+                          type="file"
+                          accept=".pdf,.doc,.docx"
+                          onChange={handleChange}
+                      />
+                    </FileInputWrap>
+                  </Field>
+                  <Field data-area="message">
+                    <Label
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ duration: 0.3, delay: 0.6 }}
+                        htmlFor="message"
+                    >
+                      Описание проекта *
+                    </Label>
+                    <Textarea
+                        id="message"
+                        name="message"
+                        placeholder="Расскажите о вашем проекте, целях и пожеланиях..."
+                        value={form.message}
+                        onChange={handleChange}
+                        required
+                    />
+                  </Field>
+                  <Field data-area="checkbox">
+                    <CheckboxWrap>
+                      <Checkbox type="checkbox" checked={agree} onChange={e => setAgree(e.target.checked)} required />
+                      Я соглашаюсь с <Link to="/privacy" style={{ color: '#3a7bd5', textDecoration: 'underline' }} target="_blank" rel="noopener noreferrer">политикой конфиденциальности</Link> и даю согласие на обработку персональных данных
+                    </CheckboxWrap>
+                  </Field>
+                  <ButtonRow>
+                    <Button
+                        type="submit"
+                        disabled={loading}
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        transition={{ duration: 0.2 }}
+                    >
+                      {loading ? 'Отправка...' : 'Отправить заявку'}
+                      <span style={{ fontSize: 18, marginLeft: 4 }}>↗</span>
+                    </Button>
+                  </ButtonRow>
+                  {errorMessage && (
+                      <motion.p
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.3 }}
+                          style={{ textAlign: 'center', color: '#ff4444', fontWeight: 600, fontSize: '1rem', marginTop: '16px' }}
+                      >
+                        {errorMessage}
+                      </motion.p>
+                  )}
+                </FormWrap>
+            )}
+          </Container>
+        </Section>
+      </>
   );
 };
 

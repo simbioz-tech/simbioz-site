@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import { motion, useAnimation } from 'framer-motion';
 import InfiniteCarousel from './InfiniteCarousel';
+import { Helmet } from "react-helmet";
 
 const Section = styled.section`
   padding: 64px 0 48px 0;
@@ -211,40 +212,46 @@ const Portfolio = () => {
   }, [controls, refs]);
 
   return (
-      <Section>
-        <Container>
-          <Title>Проекты</Title>
-          <TechCarouselWrap>
-            <InfiniteCarousel speed={50} gap={12}>
-              {techs.map((t, i) => (
-                  <TechCard key={t + i}>{t}</TechCard>
+      <>
+        <Helmet>
+          <title>Портфолио — Симбиоз</title>
+          <meta name="description" content="Портфолио Симбиоз: реализованные проекты, автоматизация, интеграции, веб-сервисы, Telegram-боты, ML и AI решения." />
+        </Helmet>
+        <Section>
+          <Container>
+            <Title>Проекты</Title>
+            <TechCarouselWrap>
+              <InfiniteCarousel speed={50} gap={12}>
+                {techs.map((t, i) => (
+                    <TechCard key={t + i}>{t}</TechCard>
+                ))}
+              </InfiniteCarousel>
+            </TechCarouselWrap>
+            <CardGrid>
+              {projects.map((p, i) => (
+                  <Card
+                      key={p.title}
+                      ref={refs[i]}
+                      animate={controls[i]}
+                      initial={{ opacity: 0 }}
+                      transition={{ duration: 0.6, ease: 'easeOut', delay: i * 0.15 }}
+                  >
+                    <h3 style={{ marginBottom: 8 }}>{p.title}</h3>
+                    <p style={{ color: '#7a88c9', marginBottom: 8 }}>{p.desc}</p>
+                    <Tags>
+                      {p.tags.map(tag => <Tag key={tag}>{tag}</Tag>)}
+                    </Tags>
+                  </Card>
               ))}
-            </InfiniteCarousel>
-          </TechCarouselWrap>
-          <CardGrid>
-            {projects.map((p, i) => (
-                <Card
-                    key={p.title}
-                    ref={refs[i]}
-                    animate={controls[i]}
-                    initial={{ opacity: 0 }}
-                    transition={{ duration: 0.6, ease: 'easeOut', delay: i * 0.15 }}
-                >
-                  <h3 style={{ marginBottom: 8 }}>{p.title}</h3>
-                  <p style={{ color: '#7a88c9', marginBottom: 8 }}>{p.desc}</p>
-                  <Tags>
-                    {p.tags.map(tag => <Tag key={tag}>{tag}</Tag>)}
-                  </Tags>
-                </Card>
-            ))}
-          </CardGrid>
-          {/*
-          <MoreLink href="#" onClick={e => { e.preventDefault(); alert('Показать все проекты — скоро!'); }}>
-            Смотреть все проекты
-          </MoreLink>
-          */}
-        </Container>
-      </Section>
+            </CardGrid>
+            {/*
+            <MoreLink href="#" onClick={e => { e.preventDefault(); alert('Показать все проекты — скоро!'); }}>
+              Смотреть все проекты
+            </MoreLink>
+            */}
+          </Container>
+        </Section>
+      </>
   );
 };
 

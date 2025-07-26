@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { motion, useAnimation } from 'framer-motion';
 import { FaGraduationCap } from 'react-icons/fa';
+import { Helmet } from "react-helmet";
 
 const Section = styled.section`
   padding: 64px 0 48px 0;
@@ -664,80 +665,86 @@ const Prices = () => {
   }, [active, controls]);
 
   return (
-      <Section>
-        <Container>
-          <Title>Тарифы и цены</Title>
-          <TabsWrap>
-            {sections.map(section => (
-                <TabBtn
-                    key={section}
-                    active={active === section}
-                    onClick={() => setActive(section)}
-                >
-                  {section}
-                </TabBtn>
-            ))}
-          </TabsWrap>
-          <CardGrid>
-            {prices.filter(p => p.section === active).map((p, i) => (
-                <Card
-                    key={p.title}
-                    ref={refs[prices.findIndex(price => price.title === p.title)]}
-                    className={p.title === 'Стандарт' ? 'standard' : ''}
-                    initial={{ opacity: 0, y: 30 }}
-                    animate={controls[i]}
-                    transition={{ duration: 0.7, ease: 'easeOut' }}
-                >
-                  {p.popular && <RecommendRibbon>Советуем</RecommendRibbon>}
-                  <CardContent>
-                    <div style={{ fontWeight: 700, color: '#7a88c9', marginBottom: 4, fontSize: '1.02rem' }}>{p.section}</div>
-                    <h3 style={{ marginBottom: 8 }}>{p.title}</h3>
-                    <Price>{p.price}</Price>
-                    {p.subtitle && <div style={{ color: '#b3b3b3', fontSize: '1.08rem', marginBottom: 18 }}>{p.subtitle}</div>}
-                    <ul style={{ paddingLeft: 18, marginBottom: 12, marginTop: p.subtitle ? 0 : 18 }}>
-                      {p.features.map(f => <Feature key={f}>{f}</Feature>)}
-                    </ul>
-                  </CardContent>
-                  <Button
-                    href="#contact"
-                    style={{ marginTop: 'auto', width: '100%', boxSizing: 'border-box' }}
+      <>
+        <Helmet>
+          <title>Тарифы и цены — Симбиоз</title>
+          <meta name="description" content="Тарифы и цены на услуги Симбиоз: разработка, автоматизация, интеграции, DevOps, ML/AI, поддержка и сопровождение." />
+        </Helmet>
+        <Section>
+          <Container>
+            <Title>Тарифы и цены</Title>
+            <TabsWrap>
+              {sections.map(section => (
+                  <TabBtn
+                      key={section}
+                      active={active === section}
+                      onClick={() => setActive(section)}
                   >
-                    {p.section === 'Поддержка и сопровождение' ? 'Заказать' : 'Обсудить проект'}
-                  </Button>
-                </Card>
-            ))}
-          </CardGrid>
-          <StudentBanner>
-            <StudentIcon />
-            <span>
-              <b>Студентам — скидка 25% на тариф “Базовый”!</b><br />
-              Учишься в вузе? Просто приложи фото действующего студенческого при заказе — и получи выгодное предложение на старт карьеры в IT.
-            </span>
-            <StudentBtn onClick={() => setStudentOpen(true)}>
-              Подробнее об условиях
-            </StudentBtn>
-          </StudentBanner>
-          {studentOpen && (
-            <StudentModalOverlay onClick={() => setStudentOpen(false)}>
-              <StudentModalContent onClick={e => e.stopPropagation()}>
-                <StudentModalClose onClick={() => setStudentOpen(false)} aria-label="Закрыть">×</StudentModalClose>
-                <StudentModalTitle>Условия студенческой скидки 25%</StudentModalTitle>
-                <StudentModalList>
-                  <li>Скидка действует только на тарифы “Базовый” во всех категориях услуг.</li>
-                  <li>Для получения скидки необходимо приложить фото или скан действующего студенческого билета при оформлении заявки.</li>
-                  <li>Мы проверим действительность студенческого (годен ли, совпадает ли ФИО).</li>
-                  <li>Скидка не суммируется с другими акциями и спецпредложениями.</li>
-                  <li>Срок действия скидки — до окончания обучения (или до отмены акции).</li>
-                  <li>В случае сомнений мы можем запросить дополнительное подтверждение статуса студента.</li>
-                </StudentModalList>
-                <div style={{ textAlign: 'center', color: '#3a7bd5', fontWeight: 700, fontSize: '1.08rem' }}>
-                  Начни свой путь в IT с выгодой!
-                </div>
-              </StudentModalContent>
-            </StudentModalOverlay>
-          )}
-        </Container>
-      </Section>
+                    {section}
+                  </TabBtn>
+              ))}
+            </TabsWrap>
+            <CardGrid>
+              {prices.filter(p => p.section === active).map((p, i) => (
+                  <Card
+                      key={p.title}
+                      ref={refs[prices.findIndex(price => price.title === p.title)]}
+                      className={p.title === 'Стандарт' ? 'standard' : ''}
+                      initial={{ opacity: 0, y: 30 }}
+                      animate={controls[i]}
+                      transition={{ duration: 0.7, ease: 'easeOut' }}
+                  >
+                    {p.popular && <RecommendRibbon>Советуем</RecommendRibbon>}
+                    <CardContent>
+                      <div style={{ fontWeight: 700, color: '#7a88c9', marginBottom: 4, fontSize: '1.02rem' }}>{p.section}</div>
+                      <h3 style={{ marginBottom: 8 }}>{p.title}</h3>
+                      <Price>{p.price}</Price>
+                      {p.subtitle && <div style={{ color: '#b3b3b3', fontSize: '1.08rem', marginBottom: 18 }}>{p.subtitle}</div>}
+                      <ul style={{ paddingLeft: 18, marginBottom: 12, marginTop: p.subtitle ? 0 : 18 }}>
+                        {p.features.map(f => <Feature key={f}>{f}</Feature>)}
+                      </ul>
+                    </CardContent>
+                    <Button
+                      href="#contact"
+                      style={{ marginTop: 'auto', width: '100%', boxSizing: 'border-box' }}
+                    >
+                      {p.section === 'Поддержка и сопровождение' ? 'Заказать' : 'Обсудить проект'}
+                    </Button>
+                  </Card>
+              ))}
+            </CardGrid>
+            <StudentBanner>
+              <StudentIcon />
+              <span>
+                <b>Студентам — скидка 25% на тариф “Базовый”!</b><br />
+                Учишься в вузе? Просто приложи фото действующего студенческого при заказе — и получи выгодное предложение на старт карьеры в IT.
+              </span>
+              <StudentBtn onClick={() => setStudentOpen(true)}>
+                Подробнее об условиях
+              </StudentBtn>
+            </StudentBanner>
+            {studentOpen && (
+              <StudentModalOverlay onClick={() => setStudentOpen(false)}>
+                <StudentModalContent onClick={e => e.stopPropagation()}>
+                  <StudentModalClose onClick={() => setStudentOpen(false)} aria-label="Закрыть">×</StudentModalClose>
+                  <StudentModalTitle>Условия студенческой скидки 25%</StudentModalTitle>
+                  <StudentModalList>
+                    <li>Скидка действует только на тарифы “Базовый” во всех категориях услуг.</li>
+                    <li>Для получения скидки необходимо приложить фото или скан действующего студенческого билета при оформлении заявки.</li>
+                    <li>Мы проверим действительность студенческого (годен ли, совпадает ли ФИО).</li>
+                    <li>Скидка не суммируется с другими акциями и спецпредложениями.</li>
+                    <li>Срок действия скидки — до окончания обучения (или до отмены акции).</li>
+                    <li>В случае сомнений мы можем запросить дополнительное подтверждение статуса студента.</li>
+                  </StudentModalList>
+                  <div style={{ textAlign: 'center', color: '#3a7bd5', fontWeight: 700, fontSize: '1.08rem' }}>
+                    Начни свой путь в IT с выгодой!
+                  </div>
+                </StudentModalContent>
+              </StudentModalOverlay>
+            )}
+          </Container>
+        </Section>
+      </>
   );
 };
 

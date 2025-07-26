@@ -3,6 +3,7 @@ import { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
 import VacanciesModal from './VacanciesModal';
+import { Helmet } from "react-helmet";
 
 const Section = styled.section`
   position: relative;
@@ -295,47 +296,53 @@ const Hero = () => {
     const titleText = ' Полный цикл IT-решений для роста вашего бизнеса';
 
     return (
-        <Section
-            as={motion.section}
-            initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7 }}
-        >
-            <Container>
-                <Title>
-                    {titleText}
-                </Title>
-                <SubtitleWrap
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.4, duration: 0.4 }}
-                >
-                    <Subtitle>
-                        {fullText}
-                    </Subtitle>
-                </SubtitleWrap>
-                <ButtonRow>
-                    <MainButton href="#contact" whileHover={{ scale: 1.07 }} whileTap={{ scale: 0.97 }}>
-                        Начать проект
-                    </MainButton>
-                    <WorkWithUsButton
-                        href="#vacancies"
-                        onClick={(e) => {
-                            e.preventDefault();
-                            setVacanciesOpen(true);
-                        }}
-                        whileHover={{ scale: 1.07 }}
-                        whileTap={{ scale: 0.97 }}
+        <>
+            <Helmet>
+                <title>Симбиоз — Полный цикл IT-решений для роста вашего бизнеса</title>
+                <meta name="description" content="Симбиоз — команда инженеров, предоставляющая полный цикл цифровой трансформации и внедрения инновационных технологий. Создаём надёжные веб-сервисы, внедряем машинное обучение, разворачиваем Telegram-ботов и автоматизируем задачи." />
+            </Helmet>
+            <Section
+                as={motion.section}
+                initial={{ opacity: 0, y: 40 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.7 }}
+            >
+                <Container>
+                    <Title>
+                        {titleText}
+                    </Title>
+                    <SubtitleWrap
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ delay: 0.4, duration: 0.4 }}
                     >
-                        Работать с нами
-                    </WorkWithUsButton>
-                    <OutlineButton href="#services" whileHover={{ scale: 1.07 }} whileTap={{ scale: 0.97 }}>
-                        Узнать подробнее
-                    </OutlineButton>
-                </ButtonRow>
-                <VacanciesModal open={vacanciesOpen} onClose={() => setVacanciesOpen(false)} />
-            </Container>
-        </Section>
+                        <Subtitle>
+                            {fullText}
+                        </Subtitle>
+                    </SubtitleWrap>
+                    <ButtonRow>
+                        <MainButton href="#contact" whileHover={{ scale: 1.07 }} whileTap={{ scale: 0.97 }}>
+                            Начать проект
+                        </MainButton>
+                        <WorkWithUsButton
+                            href="#vacancies"
+                            onClick={(e) => {
+                                e.preventDefault();
+                                setVacanciesOpen(true);
+                            }}
+                            whileHover={{ scale: 1.07 }}
+                            whileTap={{ scale: 0.97 }}
+                        >
+                            Работать с нами
+                        </WorkWithUsButton>
+                        <OutlineButton href="#services" whileHover={{ scale: 1.07 }} whileTap={{ scale: 0.97 }}>
+                            Узнать подробнее
+                        </OutlineButton>
+                    </ButtonRow>
+                    <VacanciesModal open={vacanciesOpen} onClose={() => setVacanciesOpen(false)} />
+                </Container>
+            </Section>
+        </>
     );
 };
 

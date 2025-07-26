@@ -25,7 +25,7 @@ const ModalContent = styled.div`
   min-height: 0;
   max-height: 80vh;
   width: 98vw;
-  overflow-y: auto;
+  overflow-y: hidden;
   scrollbar-width: none; /* Firefox */
   &::-webkit-scrollbar { display: none; } /* Chrome, Safari */
 `;
@@ -57,10 +57,10 @@ const VacanciesDesc = styled.p`
 
 const VacanciesIframe = styled.iframe`
   width: 100%;
-  min-height: 600px;
+  min-height: 500px;
   border: none;
   border-radius: 12px;
-  background: #fff;
+  background: rgba(255, 255, 255, 0);
 `;
 
 export default function VacanciesModal({ open, onClose }) {

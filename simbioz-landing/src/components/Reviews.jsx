@@ -1,6 +1,7 @@
 import React from 'react';
 import styled, { keyframes } from 'styled-components';
 import InfiniteCarousel from './InfiniteCarousel';
+import { Helmet } from "react-helmet";
 
 const Section = styled.section`
   padding: 64px 0 48px 0;
@@ -62,20 +63,26 @@ const Reviews = () => {
   // Дублируем массив для seamless loop
   const items = [...reviews, ...reviews];
   return (
-    <Section>
-      <Container>
-        <Title>Отзывы</Title>
-        <InfiniteCarousel speed={80} gap={20}>
-          {reviews.map((r, i) => (
-            <Card key={r.name + i}>
-              <Name>{r.name}</Name>
-              <Service>{r.service}</Service>
-              <p style={{ fontStyle: 'italic', marginBottom: 0 }}>&ldquo;{r.text}&rdquo;</p>
-            </Card>
-          ))}
-        </InfiniteCarousel>
-      </Container>
-    </Section>
+    <>
+      <Helmet>
+        <title>Отзывы — Симбиоз</title>
+        <meta name="description" content="Отзывы клиентов Симбиоз: реальные кейсы, успешные проекты, автоматизация, интеграции, веб-сервисы, Telegram-боты." />
+      </Helmet>
+      <Section>
+        <Container>
+          <Title>Отзывы</Title>
+          <InfiniteCarousel speed={80} gap={20}>
+            {reviews.map((r, i) => (
+              <Card key={r.name + i}>
+                <Name>{r.name}</Name>
+                <Service>{r.service}</Service>
+                <p style={{ fontStyle: 'italic', marginBottom: 0 }}>&ldquo;{r.text}&rdquo;</p>
+              </Card>
+            ))}
+          </InfiniteCarousel>
+        </Container>
+      </Section>
+    </>
   );
 };
 
