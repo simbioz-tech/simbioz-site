@@ -4,7 +4,6 @@ import { motion } from 'framer-motion';
 import { FaGithub, FaUpload } from 'react-icons/fa';
 import * as emailjs from '@emailjs/browser';
 import { Link } from 'react-router-dom';
-import { Helmet } from "react-helmet";
 
 const Section = styled.section`
   padding: 64px 0 48px 0;
@@ -551,10 +550,6 @@ const Contact = () => {
 
   return (
       <>
-        <Helmet>
-          <title>Контакты — Симбиоз</title>
-          <meta name="description" content="Контакты Симбиоз: форма обратной связи, Telegram, email. Оставьте заявку на проект или задайте вопрос нашей команде." />
-        </Helmet>
         <Section id="contact">
           <Container>
             {!sent && (

@@ -2,7 +2,6 @@ import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { motion, useAnimation } from 'framer-motion';
 import { FaLaptopCode, FaServer, FaCogs, FaRobot, FaPlug, FaUserCheck } from 'react-icons/fa';
-import { Helmet } from "react-helmet";
 
 const Section = styled.section`
   padding: 64px 0 48px 0;
@@ -138,10 +137,6 @@ const Services = () => {
 
     return (
         <>
-            <Helmet>
-                <title>Услуги — Симбиоз</title>
-                <meta name="description" content="Услуги Симбиоз: frontend, backend, DevOps, машинное обучение, интеграции, аудит и технологический консалтинг. Полный цикл IT-решений для бизнеса." />
-            </Helmet>
             <Section id="services">
                 <Container>
                     <Title>Наши услуги</Title>

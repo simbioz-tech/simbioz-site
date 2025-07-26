@@ -2,7 +2,6 @@ import React, { useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import { motion, useAnimation } from 'framer-motion';
 import InfiniteCarousel from './InfiniteCarousel';
-import { Helmet } from "react-helmet";
 
 const Section = styled.section`
   padding: 64px 0 48px 0;
@@ -213,10 +212,6 @@ const Portfolio = () => {
 
   return (
       <>
-        <Helmet>
-          <title>Портфолио — Симбиоз</title>
-          <meta name="description" content="Портфолио Симбиоз: реализованные проекты, автоматизация, интеграции, веб-сервисы, Telegram-боты, ML и AI решения." />
-        </Helmet>
         <Section>
           <Container>
             <Title>Проекты</Title>

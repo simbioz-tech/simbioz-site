@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { ThemeProvider } from 'styled-components';
 import GlobalStyle, { darkTheme, lightTheme } from './styles/theme';
+import { Helmet } from 'react-helmet';
 import Header from './components/Header';
 import Hero from './components/Hero';
 import Services from './components/Services';
@@ -20,6 +21,10 @@ function App() {
   return (
     <ThemeProvider theme={theme === 'dark' ? darkTheme : lightTheme}>
       <GlobalStyle />
+      <Helmet>
+        <title>Симбиоз — Полный цикл IT-решений для роста вашего бизнеса</title>
+        <meta name="description" content="Симбиоз — команда инженеров, предоставляющая полный цикл цифровой трансформации и внедрения инновационных технологий. Создаём надёжные веб-сервисы, внедряем машинное обучение, разворачиваем Telegram-ботов и автоматизируем задачи." />
+      </Helmet>
       <Routes>
         <Route path="/" element={
           <>

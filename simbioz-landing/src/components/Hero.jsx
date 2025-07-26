@@ -3,7 +3,6 @@ import { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
 import VacanciesModal from './VacanciesModal';
-import { Helmet } from "react-helmet";
 
 const Section = styled.section`
   position: relative;
@@ -297,10 +296,6 @@ const Hero = () => {
 
     return (
         <>
-            <Helmet>
-                <title>Симбиоз — Полный цикл IT-решений для роста вашего бизнеса</title>
-                <meta name="description" content="Симбиоз — команда инженеров, предоставляющая полный цикл цифровой трансформации и внедрения инновационных технологий. Создаём надёжные веб-сервисы, внедряем машинное обучение, разворачиваем Telegram-ботов и автоматизируем задачи." />
-            </Helmet>
             <Section
                 as={motion.section}
                 initial={{ opacity: 0, y: 40 }}

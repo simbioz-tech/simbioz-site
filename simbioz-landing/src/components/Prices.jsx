@@ -2,7 +2,6 @@ import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { motion, useAnimation } from 'framer-motion';
 import { FaGraduationCap } from 'react-icons/fa';
-import { Helmet } from "react-helmet";
 
 const Section = styled.section`
   padding: 64px 0 48px 0;
@@ -666,10 +665,6 @@ const Prices = () => {
 
   return (
       <>
-        <Helmet>
-          <title>Тарифы и цены — Симбиоз</title>
-          <meta name="description" content="Тарифы и цены на услуги Симбиоз: разработка, автоматизация, интеграции, DevOps, ML/AI, поддержка и сопровождение." />
-        </Helmet>
         <Section>
           <Container>
             <Title>Тарифы и цены</Title>

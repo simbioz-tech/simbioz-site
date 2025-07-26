@@ -1,7 +1,6 @@
 import React from 'react';
 import styled, { keyframes } from 'styled-components';
 import InfiniteCarousel from './InfiniteCarousel';
-import { Helmet } from "react-helmet";
 
 const Section = styled.section`
   padding: 64px 0 48px 0;
@@ -64,10 +63,6 @@ const Reviews = () => {
   const items = [...reviews, ...reviews];
   return (
     <>
-      <Helmet>
-        <title>Отзывы — Симбиоз</title>
-        <meta name="description" content="Отзывы клиентов Симбиоз: реальные кейсы, успешные проекты, автоматизация, интеграции, веб-сервисы, Telegram-боты." />
-      </Helmet>
       <Section>
         <Container>
           <Title>Отзывы</Title>
