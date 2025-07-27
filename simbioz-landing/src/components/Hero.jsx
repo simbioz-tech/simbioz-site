@@ -204,7 +204,7 @@ const MainButton = styled(motion.a)`
     min-width: 180px;
     padding: 14px 20px;
     font-size: 1.08rem;
-    border-radius: 20px;
+    border-radius: 64px;
   }
 `;
 
@@ -251,7 +251,7 @@ const OutlineButton = styled(motion.a)`
     min-width: 180px;
     padding: 14px 20px;
     font-size: 1.08rem;
-    border-radius: 20px;
+    border-radius: 64px;
   }
 `;
 
@@ -264,7 +264,7 @@ const WorkWithUsButton = styled(OutlineButton)`
     min-width: 180px;
     padding: 14px 20px;
     font-size: 1.08rem;
-    border-radius: 20px;
+    border-radius: 64px;
   }
 `;
 

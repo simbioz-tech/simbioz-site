@@ -29,7 +29,7 @@ transition: background 0.4s, border-color 0.4s;
   padding: 0 2vw;
   margin: 10px 2vw 0 2vw;
   height: 64px;
-  border-radius: 18px;
+  border-radius: 64px;
   gap: 0;
   justify-content: flex-start;
 }

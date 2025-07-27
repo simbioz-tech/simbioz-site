@@ -199,7 +199,7 @@ const Button = styled.a`
   @media (max-width: 700px) {
     padding: 12px 0;
     font-size: 0.98rem;
-    border-radius: 12px;
+    border-radius: 64px;
     text-align: center;
   }
 `;
