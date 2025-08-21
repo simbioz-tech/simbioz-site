@@ -4,9 +4,6 @@ on:
   push:
     branches:
       - master
-    paths:
-      - 'simbioz-landing/**'
-      - 'simbioz-landing/server/**'
 
 jobs:
   build-and-deploy:
@@ -61,12 +58,21 @@ jobs:
       - name: Check if server files exist
         id: check-files
         run: |
-          if [ -d "simbioz-landing/server" ] && [ "$(ls -A simbioz-landing/server)" ]; then
-            echo "server_files_exist=true" >> $GITHUB_OUTPUT
-            echo "✅ Server files found"
+          echo "Checking for server files..."
+          ls -la simbioz-landing/ || echo "simbioz-landing directory not found"
+          if [ -d "simbioz-landing/server" ]; then
+            echo "simbioz-landing/server directory found"
+            ls -la simbioz-landing/server/
+            if [ "$(ls -A simbioz-landing/server)" ]; then
+              echo "server_files_exist=true" >> $GITHUB_OUTPUT
+              echo "✅ Server files found"
+            else
+              echo "server_files_exist=false" >> $GITHUB_OUTPUT
+              echo "❌ Server directory is empty"
+            fi
           else
             echo "server_files_exist=false" >> $GITHUB_OUTPUT
-            echo "❌ No server files found, skipping bot deployment"
+            echo "❌ Server directory not found"
           fi
 
       - name: Setup Python
@@ -80,6 +86,9 @@ jobs:
         run: |
           cd simbioz-landing/server
           pip install -r requirements.txt
+        env:
+          VITE_TELEGRAM_TOKEN: ${{secrets.VITE_TELEGRAM_TOKEN}}
+          VITE_CHAT_IDS: ${{secrets.VITE_CHAT_IDS}}
 
       - name: Deploy Telegram Bot files
         if: steps.check-files.outputs.server_files_exist == 'true'
@@ -91,7 +100,6 @@ jobs:
           port: 22
           source: "simbioz-landing/server/*"
           target: "www/server/"
-          rm: true
 
       - name: Deploy and start Telegram Bot
         if: steps.check-files.outputs.server_files_exist == 'true'
@@ -102,15 +110,20 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           port: 22
           script: |
-            cd www/server
-            chmod +x deploy.sh check_bot.sh restart_bot.sh
-            ./deploy.sh
+            echo "Creating server directory..."
+            mkdir -p www/server
+            echo "Checking server files..."
+            ls -la www/server/simbioz-landing/server/
+            echo "Setting permissions..."
+            chmod +x www/server/simbioz-landing/server/deploy.sh www/server/simbioz-landing/server/check_bot.sh www/server/simbioz-landing/server/restart_bot.sh
+            echo "Running deploy script..."
+            cd www/server/simbioz-landing/server/
+            VITE_TELEGRAM_TOKEN="${{ secrets.VITE_TELEGRAM_TOKEN }}" ./deploy.sh
 
       - name: Notify Telegram Bot deployment
         if: always() && steps.check-files.outputs.server_files_exist == 'true'
         uses: appleboy/telegram-action@master
         with:
-          to: ${{ secrets.VITE_CHAT_IDS }}
           token: ${{ secrets.VITE_TELEGRAM_TOKEN }}
           message: |
             🤖 Telegram Bot Deployment

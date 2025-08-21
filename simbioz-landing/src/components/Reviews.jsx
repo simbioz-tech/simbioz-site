@@ -67,6 +67,7 @@ const Card = styled.div`
   align-items: flex-start;
   flex-shrink: 0;
   margin-right: 20px;
+  margin-bottom: 1px;
   transition: all 0.2s ease;
   cursor: default;
   box-sizing: border-box;

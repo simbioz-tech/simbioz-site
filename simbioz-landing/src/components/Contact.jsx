@@ -150,6 +150,10 @@ const Field = styled.div`
     justify-content: center;
     align-items: center;
     width: 100%;
+    margin: 0 auto;
+    text-align: center;
+    justify-self: center;
+    align-self: center;
   }
 `;
 
@@ -261,6 +265,8 @@ const FileInputWrap = styled(motion.div)`
   background: ${({ theme }) => theme.background};
   transition: all 0.2s ease;
   cursor: pointer;
+  min-height: 48px;
+  box-sizing: border-box;
   
   &:hover {
     border-color: #00b4d8;
@@ -270,6 +276,11 @@ const FileInputWrap = styled(motion.div)`
   &.has-file {
     border-color: #00b4d8;
     background: rgba(0, 180, 216, 0.1);
+  }
+  
+  @media (max-width: 900px) {
+    padding: 10px 12px;
+    gap: 8px;
   }
 `;
 
@@ -284,6 +295,19 @@ const FileInput = styled.input`
 const FileInputIcon = styled(motion.div)`
   font-size: 1.2rem;
   color: #00b4d8;
+`;
+
+const FileName = styled.span`
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.9rem;
+  color: ${({ theme }) => theme.text};
+  
+  @media (max-width: 900px) {
+    font-size: 0.85rem;
+  }
 `;
 
 const Textarea = styled(motion.textarea)`
@@ -319,9 +343,15 @@ const Textarea = styled(motion.textarea)`
 
 const CheckboxWrap = styled.div`
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 12px;
   margin-top: 8px;
+  
+  @media (max-width: 900px) {
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
 `;
 
 const Checkbox = styled.input`
@@ -336,6 +366,7 @@ const CheckboxLabel = styled.label`
   color: ${({ theme }) => theme.text};
   opacity: 0.8;
   cursor: pointer;
+  line-height: 1.4;
   
   a {
     color: #00b4d8;
@@ -345,6 +376,11 @@ const CheckboxLabel = styled.label`
       text-decoration: underline;
     }
   }
+  
+  @media (max-width: 900px) {
+    font-size: 0.9rem;
+    line-height: 1.5;
+  }
 `;
 
 const ButtonRow = styled.div`
@@ -352,6 +388,8 @@ const ButtonRow = styled.div`
   justify-content: center;
   align-items: center;
   width: 100%;
+  margin-top: 24px;
+  text-align: center;
 `;
 
 const Button = styled(motion.button)`
@@ -368,6 +406,7 @@ const Button = styled(motion.button)`
   transition: all 0.2s ease;
   box-shadow: 0 4px 12px rgba(0, 180, 216, 0.3);
   position: relative;
+  margin: 0 auto;
   
   &:hover {
     transform: translateY(-2px);
@@ -375,16 +414,19 @@ const Button = styled(motion.button)`
   }
   
   &:disabled {
-    opacity: 0.6;
+    opacity: 0.4;
     cursor: not-allowed;
     transform: none;
+    background: #6c757d;
+    box-shadow: none;
   }
   
   @media (max-width: 900px) {
     padding: 14px 24px;
     font-size: 1rem;
-    width: 100%;
-    min-width: unset;
+    width: auto;
+    min-width: 200px;
+    max-width: 100%;
   }
 `;
 
@@ -394,6 +436,16 @@ const Contact = () => {
   const [sent, setSent] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  const [showValidationHint, setShowValidationHint] = useState(false);
+
+  // Функция для проверки заполнения обязательных полей
+  const isFormValid = () => {
+    return form.name.trim() !== '' && 
+           form.email.trim() !== '' && 
+           form.service.trim() !== '' && 
+           form.message.trim() !== '' && 
+           agree;
+  };
 
   const handleChange = e => {
     if (e.target.name === 'file') {
@@ -501,12 +553,17 @@ const Contact = () => {
 
   const handleSubmit = async e => {
     e.preventDefault();
-    if (!agree) {
-      alert('Необходимо согласиться с политикой конфиденциальности.');
+    
+    // Проверяем заполнение всех обязательных полей
+    if (!isFormValid()) {
+      setShowValidationHint(true);
+      setTimeout(() => setShowValidationHint(false), 3000); // Скрываем подсказку через 3 секунды
       return;
     }
+    
     setLoading(true);
     setErrorMessage('');
+    setShowValidationHint(false);
     try {
       await Promise.all([sendToEmailJS(), sendToTelegram()]);
       setSent(true);
@@ -561,7 +618,7 @@ const Contact = () => {
                         transition={{ duration: 0.3, delay: 0.1 }}
                         htmlFor="name"
                     >
-                      Ваше имя *
+                      Ваше имя <span style={{ color: '#e63946' }}>*</span>
                     </Label>
                     <Input
                         id="name"
@@ -580,7 +637,7 @@ const Contact = () => {
                         transition={{ duration: 0.3, delay: 0.2 }}
                         htmlFor="email"
                     >
-                      Email *
+                      Email <span style={{ color: '#e63946' }}>*</span>
                     </Label>
                     <Input
                         id="email"
@@ -617,7 +674,7 @@ const Contact = () => {
                         transition={{ duration: 0.3, delay: 0.4 }}
                         htmlFor="service"
                     >
-                      Услуга *
+                      Услуга <span style={{ color: '#e63946' }}>*</span>
                     </Label>
                     <SelectWrap>
                       <Select
@@ -638,42 +695,14 @@ const Contact = () => {
                       <SelectArrow />
                     </SelectWrap>
                   </Field>
-                  <Field data-area="file">
-                    <Label
-                        initial={{ opacity: 0, x: -10 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ duration: 0.3, delay: 0.5 }}
-                        htmlFor="file"
-                    >
-                      Прикрепить файл (PDF, Word, до 50 МБ)
-                    </Label>
-                    <FileInputWrap
-                        whileTap={{ scale: 0.98 }}
-                    >
-                      <FileInputIcon
-                          animate={form.fileName ? { rotate: 360 } : { rotate: 0 }}
-                          transition={{ duration: 0.5 }}
-                      >
-                        <FaUpload />
-                      </FileInputIcon>
-                      <span>{form.fileName || 'Выберите файл'}</span>
-                      <FileInput
-                          id="file"
-                          name="file"
-                          type="file"
-                          accept=".pdf,.doc,.docx"
-                          onChange={handleChange}
-                      />
-                    </FileInputWrap>
-                  </Field>
                   <Field data-area="message">
                     <Label
                         initial={{ opacity: 0, x: -10 }}
                         animate={{ opacity: 1, x: 0 }}
-                        transition={{ duration: 0.3, delay: 0.6 }}
+                        transition={{ duration: 0.3, delay: 0.5 }}
                         htmlFor="message"
                     >
-                      Описание проекта *
+                      Описание проекта <span style={{ color: '#e63946' }}>*</span>
                     </Label>
                     <Textarea
                         id="message"
@@ -684,16 +713,44 @@ const Contact = () => {
                         required
                     />
                   </Field>
+                  <Field data-area="file">
+                    <Label
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ duration: 0.3, delay: 0.6 }}
+                        htmlFor="file"
+                    >
+                      Прикрепить файл
+                    </Label>
+                    <FileInputWrap
+                        whileTap={{ scale: 0.98 }}
+                    >
+                      <FileInputIcon
+                          animate={form.fileName ? { rotate: 360 } : { rotate: 0 }}
+                          transition={{ duration: 0.5 }}
+                      >
+                        <FaUpload />
+                      </FileInputIcon>
+                      <FileName>{form.fileName || 'Выберите файл'}</FileName>
+                      <FileInput
+                          id="file"
+                          name="file"
+                          type="file"
+                          accept=".pdf,.doc,.docx"
+                          onChange={handleChange}
+                      />
+                    </FileInputWrap>
+                  </Field>
                   <Field data-area="checkbox">
                     <CheckboxWrap>
                       <Checkbox type="checkbox" checked={agree} onChange={e => setAgree(e.target.checked)} required />
-                      Я соглашаюсь с <Link to="/privacy" style={{ color: '#3a7bd5', textDecoration: 'underline' }} target="_blank" rel="noopener noreferrer">политикой конфиденциальности</Link> и даю согласие на обработку персональных данных
+                      Я соглашаюсь с <Link to="/privacy" style={{ color: '#3a7bd5', textDecoration: 'underline' }} target="_blank" rel="noopener noreferrer">политикой конфиденциальности</Link><span style={{ color: '#e63946' }}>*</span>
                     </CheckboxWrap>
                   </Field>
-                  <ButtonRow>
+                  <Field data-area="button">
                     <Button
                         type="submit"
-                        disabled={loading}
+                        disabled={loading || !isFormValid()}
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
                         transition={{ duration: 0.2 }}
@@ -701,7 +758,17 @@ const Contact = () => {
                       {loading ? 'Отправка...' : 'Отправить заявку'}
                       <span style={{ fontSize: 18, marginLeft: 4 }}>↗</span>
                     </Button>
-                  </ButtonRow>
+                  </Field>
+                  {showValidationHint && (
+                      <motion.p
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.3 }}
+                          style={{ textAlign: 'center', color: '#ff6b35', fontWeight: 600, fontSize: '0.9rem', marginTop: '12px' }}
+                      >
+                        Пожалуйста, заполните все обязательные поля (отмечены красной звездочкой *)
+                      </motion.p>
+                  )}
                   {errorMessage && (
                       <motion.p
                           initial={{ opacity: 0, y: 10 }}

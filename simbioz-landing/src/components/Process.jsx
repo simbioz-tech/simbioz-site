@@ -3,7 +3,7 @@ import styled, { keyframes, css } from 'styled-components';
 import { FaSearch, FaProjectDiagram, FaCode, FaPlug, FaRocket, FaTools, FaCheck } from 'react-icons/fa';
 
 const Section = styled.section`
-  padding: 100px 0 80px 0;
+  padding: 80px 0 60px 0;
   background: ${({ theme }) => theme.background};
   position: relative;
   overflow: hidden;
@@ -69,20 +69,20 @@ const Subtitle = styled.p`
 
 const TimelineContainer = styled.div`
   position: relative;
-  padding: 40px 0;
+  padding: 20px 0;
 `;
 
 const TimelineSteps = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 30px;
   position: relative;
   z-index: 2;
-  gap: 20px;
+  align-items: stretch;
   
   @media (max-width: 768px) {
-    flex-direction: column;
-    gap: 50px;
+    grid-template-columns: 1fr;
+    gap: 30px;
   }
 `;
 
@@ -110,6 +110,7 @@ const Step = styled.div`
   position: relative;
   opacity: 0;
   transform: translateY(30px);
+  height: 100%;
   
   &.animate {
     animation: ${slideIn} 0.8s ease forwards;
@@ -123,17 +124,17 @@ const Step = styled.div`
 `;
 
 const StepCircle = styled.div`
-  width: 90px;
-  height: 90px;
+  width: 70px;
+  height: 70px;
   border-radius: 50%;
   background: ${({ theme }) => theme.card};
-  border: 4px solid ${({ $active, $completed }) => 
+  border: 3px solid ${({ $active, $completed }) => 
     $completed ? '#00b4d8' : $active ? '#e63946' : '#e0e0e0'
   };
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 2rem;
+  font-size: 1.5rem;
   color: ${({ $active, $completed }) => 
     $completed ? '#00b4d8' : $active ? '#e63946' : '#999'
   };
@@ -142,7 +143,7 @@ const StepCircle = styled.div`
   position: relative;
   z-index: 3;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
-  margin-bottom: 25px;
+  margin-bottom: 15px;
   
   ${({ $active }) => $active && css`
     animation: ${pulse} 2s infinite;
@@ -154,25 +155,26 @@ const StepCircle = styled.div`
   `}
   
   &:hover {
-    transform: scale(1.05);
+    transform: scale(1.02);
   }
   
   @media (max-width: 768px) {
-    width: 80px;
-    height: 80px;
-    font-size: 1.7rem;
-    margin-bottom: 20px;
+    width: 60px;
+    height: 60px;
+    font-size: 1.4rem;
+    margin-bottom: 12px;
   }
 `;
 
 const StepContent = styled.div`
   background: ${({ theme }) => theme.card};
   border-radius: 16px;
-  padding: 28px 24px;
+  padding: 20px 16px;
   margin-top: 0;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
   border: 1px solid ${({ theme }) => theme.border};
-  max-width: 300px;
+  width: 100%;
+  height: 180px;
   text-align: center;
   transition: all 0.3s ease;
   backdrop-filter: blur(8px);
@@ -181,9 +183,11 @@ const StepContent = styled.div`
       ? 'rgba(255, 255, 255, 0.9)' 
       : 'rgba(26, 26, 26, 0.9)'
   };
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
   
   ${({ $active }) => $active && css`
-    transform: translateY(-8px);
     box-shadow: 0 16px 32px rgba(230, 57, 70, 0.2);
     border-color: #e63946;
   `}
@@ -193,25 +197,49 @@ const StepContent = styled.div`
   `}
   
   @media (max-width: 768px) {
-    max-width: 100%;
-    padding: 24px 20px;
+    width: 100%;
+    max-width: 400px;
+    height: 160px;
+    padding: 16px 12px;
   }
 `;
 
 const StepTitle = styled.h4`
-  font-size: 1.2rem;
+  font-size: 1.1rem;
   font-weight: 700;
-  margin-bottom: 12px;
+  margin-bottom: 8px;
   color: ${({ theme }) => theme.text};
-  line-height: 1.4;
+  line-height: 1.3;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  
+  @media (max-width: 768px) {
+    height: 35px;
+    font-size: 1rem;
+  }
 `;
 
 const StepDescription = styled.p`
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   color: ${({ theme }) => theme.text};
   opacity: 0.8;
-  line-height: 1.5;
+  line-height: 1.4;
   margin-bottom: 16px;
+  height: 50px;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  
+  @media (max-width: 768px) {
+    height: 40px;
+    font-size: 0.85rem;
+    -webkit-line-clamp: 2;
+    margin-bottom: 5px;
+  }
 `;
 
 const ProgressBar = styled.div`
@@ -220,7 +248,7 @@ const ProgressBar = styled.div`
   background: #e0e0e0;
   border-radius: 2px;
   overflow: hidden;
-  margin-top: 8px;
+  margin-top: 0px;
 `;
 
 const ProgressFill = styled.div`
@@ -333,7 +361,7 @@ const Process = () => {
           } else {
             setCompletedSteps(prevCompleted => [...prevCompleted, prev]);
             clearInterval(interval);
-            return prev;
+            return -1; // Убираем активный шаг после завершения
           }
         });
       }, 1000);
@@ -345,6 +373,12 @@ const Process = () => {
   const handleStepClick = (index) => {
     setActiveStep(index);
     setCompletedSteps(Array.from({ length: index }, (_, i) => i));
+  };
+
+  // Сброс анимации при клике на любую карточку
+  const resetAnimation = () => {
+    setActiveStep(0);
+    setCompletedSteps([]);
   };
 
   return (
@@ -371,7 +405,13 @@ const Process = () => {
                   <StepCircle
                     $active={isActive}
                     $completed={isCompleted}
-                    onClick={() => handleStepClick(index)}
+                    onClick={() => {
+                      if (activeStep === -1) {
+                        resetAnimation();
+                      } else {
+                        handleStepClick(index);
+                      }
+                    }}
                   >
                     {isCompleted ? <FaCheck /> : step.icon}
                     <StepNumber $completed={isCompleted}>
