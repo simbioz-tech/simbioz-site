@@ -348,7 +348,7 @@ def show_admin_applications(query, context):
                 f"👤 {safe_name} ({safe_email})\n"
                 f"🛠 {safe_service}\n"
                 f"💬 {safe_message}{'...' if len(app['message']) > 50 else ''}\n"
-                f"📱 {safe_username}\n\n"
+                f"📱 **@{safe_username}**\n\n"
             )
             
             # Добавляем кнопку удаления для каждой заявки
