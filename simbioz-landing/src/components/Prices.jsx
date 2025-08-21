@@ -359,7 +359,7 @@ const RecommendRibbon = styled.div`
     font-size: 0.72rem;
     padding: 6px 22px;
     border-radius: 3px;
-    top: 12px;
+    top: 14px;
     right: -28px;
     transform: rotate(45deg);
   }
