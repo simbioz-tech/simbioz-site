@@ -339,8 +339,8 @@ const StudentBtn = styled.button`
 
 const RecommendRibbon = styled.div`
   position: absolute;
-  top: 16px;
-  right: -28px;
+  top: 12px;
+  right: -31px;
   transform: rotate(45deg);
   background: linear-gradient(135deg, #00b4d8 0%, #e63946 100%);
   color: #fff;
@@ -359,8 +359,8 @@ const RecommendRibbon = styled.div`
     font-size: 0.72rem;
     padding: 6px 22px;
     border-radius: 3px;
-    top: 18px;
-    right: -26px;
+    top: 12px;
+    right: -28px;
     transform: rotate(45deg);
   }
 `;
