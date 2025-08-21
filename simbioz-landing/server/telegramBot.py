@@ -96,7 +96,7 @@ def start(update: Update, context: CallbackContext):
         if chat_id not in unique_users:
             unique_users.add(chat_id)
             stats['total_users'] += 1
-            logger.info(f"New user started bot: {chat_id} - {user.username or 'No username'}")
+        logger.info(f"New user started bot: {chat_id} - {user.username or 'No username'}")
         
         # Показываем главное меню
         show_main_menu(update, context)
