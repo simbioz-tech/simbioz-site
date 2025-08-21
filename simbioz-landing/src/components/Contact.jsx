@@ -281,15 +281,9 @@ const FileInput = styled.input`
   cursor: pointer;
 `;
 
-const FileIcon = styled(FaUpload)`
+const FileInputIcon = styled(motion.div)`
   font-size: 1.2rem;
   color: #00b4d8;
-`;
-
-const FileText = styled.span`
-  color: ${({ theme }) => theme.text};
-  font-size: 0.95rem;
-  font-weight: 500;
 `;
 
 const Textarea = styled(motion.textarea)`
@@ -353,7 +347,14 @@ const CheckboxLabel = styled.label`
   }
 `;
 
-const SubmitButton = styled(motion.button)`
+const ButtonRow = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+`;
+
+const Button = styled(motion.button)`
   width: auto;
   min-width: 250px;
   padding: 16px 32px;
@@ -387,221 +388,335 @@ const SubmitButton = styled(motion.button)`
   }
 `;
 
-const services = [
-  'Выберите услугу',
-  'Frontend и клиентская логика',
-  'Backend и архитектура',
-  'DevOps и инфраструктура',
-  'Машинное обучение и AI',
-  'Интеграции и поддержка',
-  'Консалтинг и аудит'
-];
-
 const Contact = () => {
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    telegram: '',
-    service: '',
-    message: '',
-    file: null
-  });
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isSubmitted, setIsSubmitted] = useState(false);
-  const [agreed, setAgreed] = useState(false);
-  const [isVisible, setIsVisible] = useState(false);
-  const sectionRef = useRef(null);
+  const [form, setForm] = useState({ name: '', email: '', telegram: '', service: '', message: '', fileName: '', file: null });
+  const [agree, setAgree] = useState(false);
+  const [sent, setSent] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
 
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setIsVisible(true);
-          observer.unobserve(entry.target);
-        }
-      },
-      { threshold: 0.1 }
-    );
-
-    if (sectionRef.current) observer.observe(sectionRef.current);
-    return () => observer.disconnect();
-  }, []);
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-  };
-
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    setFormData(prev => ({ ...prev, file }));
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!agreed) return;
-    
-    setIsSubmitting(true);
-    
-    try {
-      // Здесь будет логика отправки формы
-      await new Promise(resolve => setTimeout(resolve, 2000)); // Имитация отправки
-      setIsSubmitted(true);
-    } catch (error) {
-      console.error('Ошибка отправки:', error);
-    } finally {
-      setIsSubmitting(false);
+  const handleChange = e => {
+    if (e.target.name === 'file') {
+      const file = e.target.files[0];
+      if (file && file.size > 50 * 1024 * 1024) {
+        alert('Файл слишком большой для Telegram (макс. 50 МБ).');
+        return;
+      }
+      setForm(f => ({ ...f, fileName: file?.name || '', file }));
+    } else if (e.target.name === 'telegram') {
+      const value = e.target.value;
+      if (value && !/^\w{5,}$/.test(value)) {
+        console.warn('Telegram username должен содержать минимум 5 символов');
+      }
+      setForm({ ...form, [e.target.name]: value });
+    } else {
+      setForm({ ...form, [e.target.name]: e.target.value });
     }
   };
 
-  if (isSubmitted) {
-    return (
-      <Section id="contact">
-        <Container>
-          <SuccessMessage
-                          initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 2.0 }}
-          >
-            Спасибо! Ваша заявка отправлена
-          </SuccessMessage>
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.3, duration: 2.0 }}
-            style={{ textAlign: 'center', color: 'var(--text)', opacity: 0.8 }}
-          >
-            Мы свяжемся с вами в ближайшее время
-          </motion.p>
-        </Container>
-      </Section>
+  const sendToTelegram = async () => {
+    const TELEGRAM_TOKEN = import.meta.env.VITE_TELEGRAM_TOKEN;
+    const CHAT_IDS = import.meta.env.VITE_CHAT_IDS?.split(',').map(id => id.trim()).filter(id => id) || [];
+
+    console.log('Attempting to send to Telegram. Token exists:', !!TELEGRAM_TOKEN, 'Chat IDs:', CHAT_IDS);
+
+    if (!TELEGRAM_TOKEN) {
+      const error = 'Ошибка: VITE_TELEGRAM_TOKEN не указан в .env или недействителен';
+      console.error(error);
+      throw new Error(error);
+    }
+    if (CHAT_IDS.length === 0) {
+      const error = 'Ошибка: VITE_CHAT_IDS пуст или не указан в .env';
+      console.error(error);
+      throw new Error(error);
+    }
+
+    const telegramLink = form.telegram ? `https://t.me/${form.telegram}` : 'Отсутствует';
+    const text = `📩 Новая заявка на проект\n👤 Имя: ${form.name}\n📧 Email: ${form.email}\n📱 Telegram: ${telegramLink}\n🛠 Услуга: ${form.service}\n📄 Файл: ${form.fileName || 'Отсутствует'}\n💬 Сообщение: ${form.message}\n🕒 Дата: ${new Date().toLocaleString('ru-RU')}`;
+
+    const errors = [];
+    let successCount = 0;
+
+    for (const chatId of CHAT_IDS) {
+      try {
+        console.log(`Sending message to chat_id: ${chatId}`);
+        const textResponse = await fetch(
+            `https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(text)}`
+        );
+        const textResult = await textResponse.json();
+        console.log(`Telegram response for chat_id ${chatId}:`, textResult);
+        if (!textResult.ok) {
+          throw new Error(`Ошибка Telegram: ${textResult.description} (Код: ${textResult.error_code})`);
+        }
+
+        if (form.file) {
+          console.log(`Sending file to chat_id: ${chatId}`);
+          const formData = new FormData();
+          formData.append('chat_id', chatId);
+          formData.append('document', form.file);
+          const fileResponse = await fetch(
+              `https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendDocument`,
+              { method: 'POST', body: formData }
+          );
+          const fileResult = await fileResponse.json();
+          console.log(`File response for chat_id ${chatId}:`, fileResult);
+          if (!fileResult.ok) {
+            throw new Error(`Ошибка отправки файла: ${fileResult.description} (Код: ${fileResult.error_code})`);
+          }
+        }
+        successCount++;
+      } catch (error) {
+        console.error(`Ошибка для chat_id ${chatId}:`, error);
+        errors.push(`chat_id ${chatId}: ${error.message}`);
+      }
+    }
+
+    if (successCount === 0) {
+      throw new Error(`Не удалось отправить уведомления: ${errors.join('; ')}`);
+    } else if (errors.length > 0) {
+      console.warn(`Частичные ошибки при отправке: ${errors.join('; ')}`);
+    }
+  };
+
+  const sendToEmailJS = async () => {
+    const telegramLink = form.telegram ? `https://t.me/${form.telegram}` : 'Отсутствует';
+    const templateParams = {
+      name: form.name,
+      email: form.email,
+      telegram: telegramLink,
+      service: form.service,
+      message: form.message,
+      fileName: form.fileName || 'Отсутствует',
+    };
+
+    const response = await emailjs.send(
+        import.meta.env.VITE_EMAILJS_SERVICE_ID,
+        import.meta.env.VITE_EMAILJS_TEMPLATE_ID,
+        templateParams,
+        import.meta.env.VITE_EMAILJS_PUBLIC_KEY
     );
-  }
+    console.log('EmailJS response:', response);
+    if (response.status !== 200) throw new Error(`Ошибка EmailJS: ${response.text || 'Неизвестная ошибка'}`);
+  };
+
+  const handleSubmit = async e => {
+    e.preventDefault();
+    if (!agree) {
+      alert('Необходимо согласиться с политикой конфиденциальности.');
+      return;
+    }
+    setLoading(true);
+    setErrorMessage('');
+    try {
+      await Promise.all([sendToEmailJS(), sendToTelegram()]);
+      setSent(true);
+      setForm({ name: '', email: '', telegram: '', service: '', message: '', fileName: '', file: null });
+      setAgree(false);
+      e.target.querySelector('#file').value = '';
+    } catch (error) {
+      console.error('Ошибка отправки:', error);
+      setErrorMessage(
+          error.message.includes('VITE_TELEGRAM_TOKEN') ? 'Не настроены Telegram ключи в .env или токен недействителен' :
+              error.message.includes('chat not found') ? 'Неверный chat_id в VITE_CHAT_IDS. Проверьте ID в .env' :
+                  error.message.includes('EmailJS') ? 'Ошибка EmailJS: проверьте ключи или лимит' :
+                      `Ошибка: ${error.message}`
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
-    <Section id="contact" ref={sectionRef}>
-      <Container>
-        <Title>
-          Оставьте заявку на проект
-        </Title>
-        <Subtitle>
-          Расскажите о вашем проекте, и мы свяжемся с вами для обсуждения деталей
-        </Subtitle>
-        
-        <FormWrap
-          onSubmit={handleSubmit}
-                      initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.2, duration: 2.0 }}
-        >
-          <Field data-area="name">
-            <Label>Имя *</Label>
-            <Input
-              type="text"
-              name="name"
-              value={formData.name}
-              onChange={handleInputChange}
-              required
-              placeholder="Ваше имя"
-            />
-          </Field>
-          
-          <Field data-area="email">
-            <Label>Email *</Label>
-            <Input
-              type="email"
-              name="email"
-              value={formData.email}
-              onChange={handleInputChange}
-              required
-              placeholder="your@email.com"
-            />
-          </Field>
-          
-          <Field data-area="telegram">
-            <Label>Telegram</Label>
-            <Input
-              type="text"
-              name="telegram"
-              value={formData.telegram}
-              onChange={handleInputChange}
-              placeholder="@username"
-            />
-          </Field>
-          
-          <Field data-area="service">
-            <Label>Услуга *</Label>
-            <SelectWrap>
-              <Select
-                name="service"
-                value={formData.service}
-                onChange={handleInputChange}
-                required
-              >
-                {services.map(service => (
-                  <option key={service} value={service}>
-                    {service}
-                  </option>
-                ))}
-              </Select>
-              <SelectArrow />
-            </SelectWrap>
-          </Field>
-          
-          <Field data-area="message">
-            <Label>Описание проекта *</Label>
-            <Textarea
-              name="message"
-              value={formData.message}
-              onChange={handleInputChange}
-              required
-              placeholder="Опишите ваш проект, задачи и цели..."
-            />
-          </Field>
-          
-          <Field data-area="file">
-            <Label>Прикрепить файлы</Label>
-            <FileInputWrap className={formData.file ? 'has-file' : ''}>
-              <FileInput
-                type="file"
-                onChange={handleFileChange}
-                accept=".pdf,.doc,.docx,.txt,.zip,.rar"
-              />
-              <FileIcon />
-              <FileText>
-                {formData.file ? formData.file.name : 'Выберите файл или перетащите сюда'}
-              </FileText>
-            </FileInputWrap>
-          </Field>
-          
-          <Field data-area="checkbox">
-            <CheckboxWrap>
-              <Checkbox
-                type="checkbox"
-                id="agreement"
-                checked={agreed}
-                onChange={(e) => setAgreed(e.target.checked)}
-                required
-              />
-              <CheckboxLabel htmlFor="agreement">
-                Я согласен с <Link to="/privacy">политикой конфиденциальности</Link> *
-              </CheckboxLabel>
-            </CheckboxWrap>
-          </Field>
-          
-          <Field data-area="button">
-            <SubmitButton
-              type="submit"
-              disabled={isSubmitting || !agreed}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-            >
-              {isSubmitting ? 'Отправляем...' : 'Отправить заявку'}
-            </SubmitButton>
-          </Field>
-        </FormWrap>
-      </Container>
-    </Section>
+      <>
+        <Section id="contact">
+          <Container>
+            {!sent && (
+                <Title
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5 }}
+                >
+                  Оставьте заявку на проект
+                </Title>
+            )}
+            {sent ? (
+                <SuccessMessage
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5 }}
+                >
+                  Спасибо! Мы свяжемся с вами для обсуждения деталей.
+                </SuccessMessage>
+            ) : (
+                <FormWrap
+                    initial={{ opacity: 0, y: 50 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.7, ease: 'easeOut' }}
+                    onSubmit={handleSubmit}
+                >
+                  <Field data-area="name">
+                    <Label
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ duration: 0.3, delay: 0.1 }}
+                        htmlFor="name"
+                    >
+                      Ваше имя *
+                    </Label>
+                    <Input
+                        id="name"
+                        name="name"
+                        type="text"
+                        placeholder="Иван Иванов"
+                        value={form.name}
+                        onChange={handleChange}
+                        required
+                    />
+                  </Field>
+                  <Field data-area="email">
+                    <Label
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ duration: 0.3, delay: 0.2 }}
+                        htmlFor="email"
+                    >
+                      Email *
+                    </Label>
+                    <Input
+                        id="email"
+                        name="email"
+                        type="email"
+                        placeholder="example@mail.com"
+                        value={form.email}
+                        onChange={handleChange}
+                        required
+                    />
+                  </Field>
+                  <Field data-area="telegram">
+                    <Label
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ duration: 0.3, delay: 0.3 }}
+                        htmlFor="telegram"
+                    >
+                      Telegram
+                    </Label>
+                    <Input
+                        id="telegram"
+                        name="telegram"
+                        type="text"
+                        placeholder="username (без @)"
+                        value={form.telegram}
+                        onChange={handleChange}
+                    />
+                  </Field>
+                  <Field data-area="service">
+                    <Label
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ duration: 0.3, delay: 0.4 }}
+                        htmlFor="service"
+                    >
+                      Услуга *
+                    </Label>
+                    <SelectWrap>
+                      <Select
+                          id="service"
+                          name="service"
+                          value={form.service}
+                          onChange={handleChange}
+                          required
+                      >
+                        <option value="">Выберите услугу</option>
+                        <option value="Backend">Backend-решение</option>
+                        <option value="ML/AI">ML/AI проект</option>
+                        <option value="Интеграция">Интеграция сервисов</option>
+                        <option value="DevOps">DevOps/CI-CD</option>
+                        <option value="Консалтинг">Консалтинг/Аудит</option>
+                        <option value="Другое">Другое</option>
+                      </Select>
+                      <SelectArrow />
+                    </SelectWrap>
+                  </Field>
+                  <Field data-area="file">
+                    <Label
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ duration: 0.3, delay: 0.5 }}
+                        htmlFor="file"
+                    >
+                      Прикрепить файл (PDF, Word, до 50 МБ)
+                    </Label>
+                    <FileInputWrap
+                        whileTap={{ scale: 0.98 }}
+                    >
+                      <FileInputIcon
+                          animate={form.fileName ? { rotate: 360 } : { rotate: 0 }}
+                          transition={{ duration: 0.5 }}
+                      >
+                        <FaUpload />
+                      </FileInputIcon>
+                      <span>{form.fileName || 'Выберите файл'}</span>
+                      <FileInput
+                          id="file"
+                          name="file"
+                          type="file"
+                          accept=".pdf,.doc,.docx"
+                          onChange={handleChange}
+                      />
+                    </FileInputWrap>
+                  </Field>
+                  <Field data-area="message">
+                    <Label
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ duration: 0.3, delay: 0.6 }}
+                        htmlFor="message"
+                    >
+                      Описание проекта *
+                    </Label>
+                    <Textarea
+                        id="message"
+                        name="message"
+                        placeholder="Расскажите о вашем проекте, целях и пожеланиях..."
+                        value={form.message}
+                        onChange={handleChange}
+                        required
+                    />
+                  </Field>
+                  <Field data-area="checkbox">
+                    <CheckboxWrap>
+                      <Checkbox type="checkbox" checked={agree} onChange={e => setAgree(e.target.checked)} required />
+                      Я соглашаюсь с <Link to="/privacy" style={{ color: '#3a7bd5', textDecoration: 'underline' }} target="_blank" rel="noopener noreferrer">политикой конфиденциальности</Link> и даю согласие на обработку персональных данных
+                    </CheckboxWrap>
+                  </Field>
+                  <ButtonRow>
+                    <Button
+                        type="submit"
+                        disabled={loading}
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        transition={{ duration: 0.2 }}
+                    >
+                      {loading ? 'Отправка...' : 'Отправить заявку'}
+                      <span style={{ fontSize: 18, marginLeft: 4 }}>↗</span>
+                    </Button>
+                  </ButtonRow>
+                  {errorMessage && (
+                      <motion.p
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.3 }}
+                          style={{ textAlign: 'center', color: '#ff4444', fontWeight: 600, fontSize: '1rem', marginTop: '16px' }}
+                      >
+                        {errorMessage}
+                      </motion.p>
+                  )}
+                </FormWrap>
+            )}
+          </Container>
+        </Section>
+      </>
   );
 };
 
