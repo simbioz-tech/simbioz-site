@@ -139,7 +139,8 @@ def show_main_menu(update, context):
                 [InlineKeyboardButton("📝 Оставить заявку", callback_data='new_application')],
                 [InlineKeyboardButton("ℹ️ О нас", callback_data='about_us')],
                 [InlineKeyboardButton("🛠 Наши услуги", callback_data='services')],
-                [InlineKeyboardButton("📞 Связаться", callback_data='contact')]
+                [InlineKeyboardButton("📞 Связаться", callback_data='contact')],
+                [InlineKeyboardButton("🆘 Тех Поддержка", callback_data='tech_support')]
             ]
             
             welcome_message = (
@@ -197,6 +198,8 @@ def button_handler(update: Update, context: CallbackContext):
         show_services_detailed(query, context)
     elif query.data == 'contact':
         show_contact_info(query, context)
+    elif query.data == 'tech_support':
+        show_tech_support(query, context)
     elif query.data.startswith('service_'):
         handle_service_selection(query, context)
     elif query.data == 'back_to_main':
@@ -209,6 +212,8 @@ def button_handler(update: Update, context: CallbackContext):
         show_admin_applications(query, context)
     elif query.data == 'admin_panel':
         show_admin_panel(query, context)
+    elif query.data.startswith('delete_app_'):
+        delete_application(query, context)
 
 def show_admin_panel(query, context):
     """Показать админскую панель"""
@@ -271,7 +276,7 @@ def show_admin_stats(query, context):
         f"⏳ **Активных заявок:** {active_applications_count}\n"
         f"📈 **Конверсия:** {conversion_rate:.1f}%\n\n"
         f"🕒 **Обновлено:** {datetime.now().strftime('%d.%m.%Y %H:%M')}\n\n"
-        "💡 Конверсия показывает процент пользователей, которые оставили заявку."
+        "💡 Конверсия показывает процент пользователей, которые оставили заявку\\."
     )
     
     query.edit_message_text(
@@ -297,12 +302,22 @@ def show_admin_applications(query, context):
     # Очищаем старые заявки перед показом
     cleanup_old_applications()
     
+    # Функция для экранирования Markdown символов
+    def escape_markdown(text):
+        if not text:
+            return text
+        # Экранируем специальные символы Markdown
+        chars_to_escape = ['_', '*', '[', ']', '(', ')', '~', '`', '>', '#', '+', '-', '=', '|', '{', '}', '.', '!']
+        for char in chars_to_escape:
+            text = text.replace(char, f'\\{char}')
+        return text
+    
     # Показываем активные заявки
     if not active_applications:
         message = (
             "📝 **Активные заявки**\n\n"
-            "Нет активных заявок.\n\n"
-            "💡 Здесь отображаются заявки, которые еще не обработаны."
+            "Нет активных заявок\\.\n\n"
+            "💡 Здесь отображаются заявки, которые еще не обработаны\\."
         )
     else:
         # Сортируем заявки по времени (новые сверху)
@@ -315,21 +330,31 @@ def show_admin_applications(query, context):
         # Показываем последние 5 заявок
         recent_applications = sorted_applications[:5]
         
-        message = f"📝 **Активные заявки** ({len(active_applications)})\n\n"
+        message = f"📝 **Активные заявки** \\({len(active_applications)}\\)\n\n"
         
         for i, app in enumerate(recent_applications, 1):
+            # Экранируем данные заявки
+            safe_name = escape_markdown(app['name'])
+            safe_email = escape_markdown(app['email'])
+            safe_service = escape_markdown(app['service'])
+            safe_message = escape_markdown(app['message'][:50])
+            safe_username = escape_markdown(app['username'] or 'Без username')
+            
             message += (
-                f"**#{i} {app['id']}** - {app['timestamp']}\n"
-                f"👤 {app['name']} ({app['email']})\n"
-                f"🛠 {app['service']}\n"
-                f"💬 {app['message'][:50]}{'...' if len(app['message']) > 50 else ''}\n"
-                f"📱 {app['username'] or 'Без username'}\n\n"
+                f"**#{i} {app['id']}** \\- {app['timestamp']}\n"
+                f"👤 {safe_name} \\({safe_email}\\)\n"
+                f"🛠 {safe_service}\n"
+                f"💬 {safe_message}{'...' if len(app['message']) > 50 else ''}\n"
+                f"📱 {safe_username}\n\n"
             )
+            
+            # Добавляем кнопку удаления для каждой заявки
+            keyboard.append([InlineKeyboardButton(f"🗑 Удалить {app['id']}", callback_data=f'delete_app_{app["id"]}')])
         
         if len(active_applications) > 5:
-            message += f"💡 Показано последних 5 из {len(active_applications)} заявок.\n\n"
+            message += f"💡 Показано последних 5 из {len(active_applications)} заявок\\.\n\n"
         
-        message += "💡 Заявки автоматически очищаются при перезапуске бота."
+        message += "💡 Заявки автоматически очищаются при перезапуске бота\\."
     
     query.edit_message_text(
         text=message,
@@ -435,6 +460,130 @@ def show_services_detailed(query, context):
         reply_markup=reply_markup,
         parse_mode=ParseMode.MARKDOWN
     )
+
+def show_tech_support(query, context):
+    """Показать форму тех поддержки"""
+    chat_id = query.from_user.id
+    
+    # Проверяем, является ли пользователь админом
+    if is_admin_chat(chat_id):
+        # Для админа показываем сообщения поддержки
+        show_admin_support_messages(query, context)
+        return
+    
+    # Для обычных пользователей показываем форму поддержки
+    keyboard = [
+        [InlineKeyboardButton("🔙 Назад", callback_data='back_to_main')]
+    ]
+    reply_markup = InlineKeyboardMarkup(keyboard)
+    
+    message = (
+        "🆘 **Техническая поддержка**\n\n"
+        "Опишите вашу проблему или вопрос, и мы свяжемся с вами в ближайшее время\\.\n\n"
+        "💡 **Что можно описать:**\n"
+        "• Технические проблемы\n"
+        "• Вопросы по услугам\n"
+        "• Консультации\n"
+        "• Любые другие вопросы\n\n"
+        "📝 **Просто напишите ваше сообщение:**"
+    )
+    
+    # Устанавливаем состояние для получения сообщения поддержки
+    context.user_data['state'] = 'tech_support'
+    
+    query.edit_message_text(
+        text=message,
+        reply_markup=reply_markup,
+        parse_mode=ParseMode.MARKDOWN
+    )
+
+def show_admin_support_messages(query, context):
+    """Показать сообщения поддержки для админа"""
+    keyboard = [
+        [InlineKeyboardButton("🔙 Назад к панели", callback_data='admin_panel')]
+    ]
+    reply_markup = InlineKeyboardMarkup(keyboard)
+    
+    # Здесь можно добавить логику для показа сообщений поддержки
+    # Пока что просто показываем заглушку
+    message = (
+        "🆘 **Сообщения поддержки**\n\n"
+        "Здесь будут отображаться сообщения от пользователей, обратившихся в техподдержку\\.\n\n"
+        "💡 Функция в разработке\\."
+    )
+    
+    query.edit_message_text(
+        text=message,
+        reply_markup=reply_markup,
+        parse_mode=ParseMode.MARKDOWN
+    )
+
+def handle_support_message(update, context):
+    """Обработка сообщения поддержки"""
+    chat_id = update.effective_chat.id
+    user = update.effective_user
+    message_text = update.message.text
+    
+    # Очищаем состояние
+    context.user_data.clear()
+    
+    # Отправляем подтверждение пользователю
+    keyboard = [[InlineKeyboardButton("🏠 Главное меню", callback_data='back_to_main')]]
+    reply_markup = InlineKeyboardMarkup(keyboard)
+    
+    success_message = (
+        "✅ **Сообщение отправлено!**\n\n"
+        "Спасибо за обращение в техподдержку\\. Мы свяжемся с вами в ближайшее время\\.\n\n"
+        "🕒 **Время ответа:** до 24 часов"
+    )
+    
+    update.message.reply_text(
+        text=success_message,
+        reply_markup=reply_markup,
+        parse_mode=ParseMode.MARKDOWN
+    )
+    
+    # Отправляем сообщение админу
+    admin_message = (
+        f"🆘 **Новое сообщение поддержки**\n\n"
+        f"👤 **От:** {f'@{user.username}' if user.username else f'ID {chat_id}'}\n"
+        f"📝 **Имя:** {user.first_name or ''} {user.last_name or ''}\n"
+        f"💬 **Сообщение:**\n{message_text}\n\n"
+        f"🕒 **Время:** {datetime.now().strftime('%d.%m.%Y %H:%M')}"
+    )
+    
+    context.bot.send_message(
+        chat_id=CREATOR_CHAT_ID,
+        text=admin_message
+    )
+    
+    logger.info(f"Support message from {chat_id} - {user.username or 'No username'}")
+
+def delete_application(query, context):
+    """Удаление заявки админом"""
+    chat_id = query.from_user.id
+    
+    # Проверяем, является ли пользователь админом
+    if not is_admin_chat(chat_id):
+        query.answer("❌ Доступ запрещен")
+        return
+    
+    # Получаем ID заявки из callback_data
+    app_id = query.data.replace('delete_app_', '')
+    
+    if app_id in active_applications:
+        # Удаляем заявку
+        deleted_app = active_applications.pop(app_id)
+        
+        # Отправляем подтверждение
+        query.answer(f"✅ Заявка {app_id} удалена")
+        
+        # Показываем обновленный список заявок
+        show_admin_applications(query, context)
+        
+        logger.info(f"Application {app_id} deleted by admin {chat_id}")
+    else:
+        query.answer("❌ Заявка не найдена")
 
 def show_contact_info(query, context):
     """Показать контактную информацию"""
@@ -568,6 +717,10 @@ def handle_message(update: Update, context: CallbackContext):
             # Показываем подтверждение
             show_application_confirmation(update, context)
             
+        elif current_state == 'tech_support':
+            # Обрабатываем сообщение поддержки
+            handle_support_message(update, context)
+            
         else:
             # Обычное сообщение (не в процессе создания заявки)
             handle_general_message(update, context)
@@ -624,21 +777,28 @@ def handle_general_message(update, context):
     chat_id = update.effective_chat.id
     user = update.effective_user
     
-    # Отправляем подтверждение пользователю
-    context.bot.send_message(
-        chat_id=chat_id, 
-        text="✅ Спасибо за ваше сообщение! Мы получили его и свяжемся с вами в ближайшее время."
+    # Отправляем сообщение с предложением использовать кнопки
+    keyboard = [
+        [InlineKeyboardButton("📝 Оставить заявку", callback_data='new_application')],
+        [InlineKeyboardButton("🆘 Тех Поддержка", callback_data='tech_support')],
+        [InlineKeyboardButton("🏠 Главное меню", callback_data='back_to_main')]
+    ]
+    reply_markup = InlineKeyboardMarkup(keyboard)
+    
+    message = (
+        "🤖 **Используйте кнопки для навигации**\n\n"
+        "Для взаимодействия с ботом используйте кнопки меню:\n\n"
+        "• 📝 **Оставить заявку** - для подачи заявки на проект\n"
+        "• 🆘 **Тех Поддержка** - для связи с поддержкой\n"
+        "• 🏠 **Главное меню** - для возврата в основное меню\n\n"
+        "Выберите нужное действие:"
     )
     
-    # Отправляем сообщение создателю
-    user_message = (
-        f"💬 Новое сообщение:\n"
-        f"От: {f'@{user.username}' if user.username else f'ID {chat_id}'}\n"
-        f"Имя: {user.first_name or ''} {user.last_name or ''}\n"
-        f"Сообщение:\n{update.message.text}"
+    update.message.reply_text(
+        text=message,
+        reply_markup=reply_markup,
+        parse_mode=ParseMode.MARKDOWN
     )
-    context.bot.send_message(chat_id=CREATOR_CHAT_ID, text=user_message)
-    logger.info(f"Message received from {chat_id} - {user.username or 'No username'}")
 
 def confirm_application(query, context):
     """Подтверждение и отправка заявки"""
@@ -687,17 +847,35 @@ def confirm_application(query, context):
         'other': '🛠 Другое'
     }
     
+    # Функция для экранирования Markdown символов
+    def escape_markdown(text):
+        if not text:
+            return text
+        # Экранируем специальные символы Markdown
+        chars_to_escape = ['_', '*', '[', ']', '(', ')', '~', '`', '>', '#', '+', '-', '=', '|', '{', '}', '.', '!']
+        for char in chars_to_escape:
+            text = text.replace(char, f'\\{char}')
+        return text
+    
+    # Экранируем данные заявки
+    safe_name = escape_markdown(data.get('name', 'Не указано'))
+    safe_email = escape_markdown(data.get('email', 'Не указан'))
+    safe_service = escape_markdown(service_names.get(data.get('service', ''), data.get('service', 'Не выбрана')))
+    safe_message = escape_markdown(data.get('message', 'Не указано'))
+    safe_username = escape_markdown(user.username or 'Отсутствует')
+    safe_user_name = escape_markdown(f"{user.first_name or ''} {user.last_name or ''}".strip())
+    
     admin_message = (
         f"📝 **Новая заявка #{stats['total_applications']}**\n\n"
         f"👤 **Пользователь:**\n"
         f"• ID: `{chat_id}`\n"
-        f"• Username: {f'@{user.username}' if user.username else 'Отсутствует'}\n"
-        f"• Имя: {user.first_name or ''} {user.last_name or ''}\n\n"
+        f"• Username: {f'@{safe_username}' if user.username else 'Отсутствует'}\n"
+        f"• Имя: {safe_user_name}\n\n"
         f"📋 **Данные заявки:**\n"
-        f"• Имя: {data.get('name', 'Не указано')}\n"
-        f"• Email: {data.get('email', 'Не указан')}\n"
-        f"• Услуга: {service_names.get(data.get('service', ''), data.get('service', 'Не выбрана'))}\n"
-        f"• Сообщение:\n{data.get('message', 'Не указано')}\n\n"
+        f"• Имя: {safe_name}\n"
+        f"• Email: {safe_email}\n"
+        f"• Услуга: {safe_service}\n"
+        f"• Сообщение:\n{safe_message}\n\n"
         f"📊 **Статистика:**\n"
         f"• Всего заявок: {stats['total_applications']}\n"
         f"• Заявок сегодня: {stats['applications_today']}\n"
