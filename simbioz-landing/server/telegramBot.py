@@ -99,17 +99,17 @@ def start(update: Update, context: CallbackContext):
             logger.info(f"New user started bot: {chat_id} - {user.username or 'No username'}")
         
         # Показываем главное меню
-        show_main_menu(update, context, is_new_user=False)
+        show_main_menu(update, context)
         
     except Exception as e:
         logger.error(f"Error in start command: {e}")
         context.bot.send_message(chat_id=chat_id, text="Произошла ошибка. Попробуйте позже.")
 
-def show_main_menu(update, context, is_new_user=True):
+def show_main_menu(update, context):
     """Показать главное меню"""
     try:
         # Определяем chat_id и user в зависимости от типа обновления
-        if hasattr(update, 'callback_query'):
+        if hasattr(update, 'callback_query') and update.callback_query:
             # Если это callback query (кнопка)
             chat_id = update.callback_query.from_user.id
             user = update.callback_query.from_user
@@ -157,19 +157,6 @@ def show_main_menu(update, context, is_new_user=True):
         
         reply_markup = InlineKeyboardMarkup(keyboard)
         
-        welcome_message = (
-            f"👋 Привет, {user.first_name or 'друг'}!\n\n"
-            "Добро пожаловать в **Simbioz Tech** 🤖\n\n"
-            "Мы — команда из Java-разработчика и ML-инженера. Создаём современные, надёжные и масштабируемые решения для бизнеса:\n"
-            "• 💻 Frontend и клиентская логика\n"
-            "• ⚙️ Backend и архитектура\n"
-            "• 🔧 DevOps и инфраструктура\n"
-            "• 🤖 Машинное обучение и AI\n"
-            "• 🔌 Интеграции и поддержка\n"
-            "• 📊 Консалтинг и аудит\n\n"
-            "Выберите действие:"
-        )
-        
         if is_callback:
             # Если это callback, редактируем сообщение
             update.callback_query.edit_message_text(
@@ -188,10 +175,14 @@ def show_main_menu(update, context, is_new_user=True):
             
     except Exception as e:
         logger.error(f"Error in show_main_menu: {e}")
-        if is_callback:
-            update.callback_query.answer("Произошла ошибка. Попробуйте позже.")
-        else:
-            context.bot.send_message(chat_id=chat_id, text="Произошла ошибка. Попробуйте позже.")
+        try:
+            if 'is_callback' in locals() and is_callback:
+                update.callback_query.answer("Произошла ошибка. Попробуйте позже.")
+            else:
+                context.bot.send_message(chat_id=chat_id, text="Произошла ошибка. Попробуйте позже.")
+        except:
+            # Если и это не работает, просто логируем ошибку
+            logger.error(f"Failed to send error message: {e}")
 
 def button_handler(update: Update, context: CallbackContext):
     """Обработчик нажатий на кнопки"""
@@ -218,8 +209,6 @@ def button_handler(update: Update, context: CallbackContext):
         show_admin_applications(query, context)
     elif query.data == 'admin_panel':
         show_admin_panel(query, context)
-    elif query.data == 'admin_stats':
-        show_admin_stats(query, context)
 
 def show_admin_panel(query, context):
     """Показать админскую панель"""
