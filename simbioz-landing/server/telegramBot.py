@@ -294,10 +294,7 @@ def show_admin_applications(query, context):
         query.answer("❌ Доступ запрещен")
         return
     
-    keyboard = [
-        [InlineKeyboardButton("🔙 Назад к панели", callback_data='admin_panel')]
-    ]
-    reply_markup = InlineKeyboardMarkup(keyboard)
+    logger.info(f"Admin {chat_id} requested applications list. Total applications: {len(active_applications)}")
     
     # Очищаем старые заявки перед показом
     cleanup_old_applications()
@@ -319,6 +316,9 @@ def show_admin_applications(query, context):
             "Нет активных заявок\\.\n\n"
             "💡 Здесь отображаются заявки, которые еще не обработаны\\."
         )
+        keyboard = [
+            [InlineKeyboardButton("🔙 Назад к панели", callback_data='admin_panel')]
+        ]
     else:
         # Сортируем заявки по времени (новые сверху)
         sorted_applications = sorted(
@@ -331,6 +331,9 @@ def show_admin_applications(query, context):
         recent_applications = sorted_applications[:5]
         
         message = f"📝 **Активные заявки** \\({len(active_applications)}\\)\n\n"
+        
+        # Создаем клавиатуру с кнопками удаления
+        keyboard = []
         
         for i, app in enumerate(recent_applications, 1):
             # Экранируем данные заявки
@@ -355,12 +358,30 @@ def show_admin_applications(query, context):
             message += f"💡 Показано последних 5 из {len(active_applications)} заявок\\.\n\n"
         
         message += "💡 Заявки автоматически очищаются при перезапуске бота\\."
+        
+        # Добавляем кнопку "Назад"
+        keyboard.append([InlineKeyboardButton("🔙 Назад к панели", callback_data='admin_panel')])
     
-    query.edit_message_text(
-        text=message,
-        reply_markup=reply_markup,
-        parse_mode=ParseMode.MARKDOWN
-    )
+    reply_markup = InlineKeyboardMarkup(keyboard)
+    
+    try:
+        query.edit_message_text(
+            text=message,
+            reply_markup=reply_markup,
+            parse_mode=ParseMode.MARKDOWN
+        )
+        logger.info(f"Successfully showed applications list to admin {chat_id}")
+    except Exception as e:
+        logger.error(f"Error showing applications list to admin {chat_id}: {e}")
+        # Пробуем отправить без Markdown
+        try:
+            query.edit_message_text(
+                text=message.replace('*', '').replace('_', ''),
+                reply_markup=reply_markup
+            )
+        except Exception as e2:
+            logger.error(f"Failed to send applications list even without Markdown: {e2}")
+            query.answer("❌ Ошибка при отображении заявок")
 
 def show_services_menu(query, context):
     """Показать меню выбора услуг"""
@@ -644,8 +665,8 @@ def handle_service_selection(query, context):
     
     message = (
         f"✅ Выбрана услуга: **{service_names.get(service, service)}**\n\n"
-        "📝 Теперь введите ваше **имя и фамилию**:\n\n"
-        "Пример: Иван Иванов"
+        "📝 Теперь введите ваше **имя**:\n\n"
+        "Пример: Иван"
     )
     
     query.edit_message_text(
