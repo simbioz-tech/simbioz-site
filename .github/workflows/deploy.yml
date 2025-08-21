@@ -53,23 +53,36 @@ jobs:
   deploy-telegram-bot:
     runs-on: ubuntu-latest
     needs: build-and-deploy
-    if: contains(github.event.head_commit.modified, 'simbioz-landing/server/') || contains(github.event.head_commit.added, 'simbioz-landing/server/')
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Check if server files exist
+        id: check-files
+        run: |
+          if [ -d "simbioz-landing/server" ] && [ "$(ls -A simbioz-landing/server)" ]; then
+            echo "server_files_exist=true" >> $GITHUB_OUTPUT
+            echo "✅ Server files found"
+          else
+            echo "server_files_exist=false" >> $GITHUB_OUTPUT
+            echo "❌ No server files found, skipping bot deployment"
+          fi
+
       - name: Setup Python
+        if: steps.check-files.outputs.server_files_exist == 'true'
         uses: actions/setup-python@v4
         with:
           python-version: '3.11'
 
       - name: Install Python dependencies
+        if: steps.check-files.outputs.server_files_exist == 'true'
         run: |
           cd simbioz-landing/server
           pip install -r requirements.txt
 
       - name: Deploy Telegram Bot files
+        if: steps.check-files.outputs.server_files_exist == 'true'
         uses: appleboy/scp-action@v0.1.3
         with:
           host: ${{ secrets.SSH_HOST }}
@@ -81,6 +94,7 @@ jobs:
           rm: true
 
       - name: Deploy and start Telegram Bot
+        if: steps.check-files.outputs.server_files_exist == 'true'
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.SSH_HOST }}
@@ -93,7 +107,7 @@ jobs:
             ./deploy.sh
 
       - name: Notify Telegram Bot deployment
-        if: always()
+        if: always() && steps.check-files.outputs.server_files_exist == 'true'
         uses: appleboy/telegram-action@master
         with:
           to: ${{ secrets.VITE_CHAT_IDS }}
