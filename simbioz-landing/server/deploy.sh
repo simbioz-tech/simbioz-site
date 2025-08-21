@@ -25,7 +25,9 @@ echo "✅ Переменные окружения настроены"
 
 # Останавливаем существующий процесс бота
 echo "🛑 Останавливаем существующий процесс бота..."
+pkill -f "python.*start_bot.py" || echo "Процесс не найден"
 pkill -f "python.*telegramBot.py" || echo "Процесс не найден"
+pkill -f "python.*wsgi.py" || echo "Процесс не найден"
 
 # Ждем завершения процесса
 sleep 3
@@ -42,13 +44,13 @@ fi
 
 # Запускаем бота в фоне
 echo "🤖 Запускаем Telegram бота..."
-nohup python start_bot.py > bot.log 2>&1 &
+nohup python3 start_bot.py > bot.log 2>&1 &
 
 # Ждем немного для запуска
 sleep 5
 
 # Проверяем, что бот запустился
-if pgrep -f "python.*telegramBot.py" > /dev/null; then
+if pgrep -f "python.*start_bot.py" > /dev/null || pgrep -f "python.*telegramBot.py" > /dev/null; then
     echo "✅ Telegram бот успешно запущен!"
     echo "📋 Логи: tail -f bot.log"
     echo "🔍 Статус: ./check_bot.sh"
