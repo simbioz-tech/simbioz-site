@@ -2,15 +2,35 @@ import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { motion, useAnimation } from 'framer-motion';
 import { FaGraduationCap } from 'react-icons/fa';
+import { createPortal } from 'react-dom';
 
 const Section = styled.section`
-  padding: 64px 0 48px 0;
-  background: ${({ theme }) => theme.card};
+  padding: 100px 0 80px 0;
+  background: ${({ theme }) => theme.background};
+  position: relative;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+      radial-gradient(circle at 20% 20%, rgba(0, 180, 216, 0.04) 0%, rgba(0, 180, 216, 0.04) 5%, rgba(0, 180, 216, 0.04) 10%, transparent 70%),
+      radial-gradient(circle at 80% 80%, rgba(230, 57, 70, 0.04) 0%, rgba(230, 57, 70, 0.04) 5%, rgba(230, 57, 70, 0.04) 30%, transparent 70%);
+    filter: blur(15px);
+    pointer-events: none;
+  }
 `;
+
 const Container = styled.div`
-  max-width: 1100px;
+  max-width: 1200px;
   margin: 0 auto;
   padding: 0 24px;
+  position: relative;
+  z-index: 1;
+  
   @media (max-width: 700px) {
     display: flex;
     flex-direction: column;
@@ -18,55 +38,79 @@ const Container = styled.div`
     justify-content: center;
   }
 `;
+
 const Title = styled.h2`
-  font-size: 2.5rem;
-  margin-bottom: 24px;
+  font-size: clamp(2.5rem, 5vw, 3.5rem);
+  margin-bottom: 30px;
   text-align: center;
+  font-weight: 800;
+  background: linear-gradient(135deg, #00b4d8 0%, #e63946 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  position: relative;
+  
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px;
+    height: 4px;
+    background: linear-gradient(90deg, #00b4d8, #e63946);
+    border-radius: 2px;
+  }
 `;
+
+const Subtitle = styled.p`
+  text-align: center;
+  font-size: 1.2rem;
+  color: ${({ theme }) => theme.text};
+  opacity: 0.8;
+  margin-bottom: 60px;
+  max-width: 700px;
+  margin-left: auto;
+  margin-right: auto;
+  line-height: 1.6;
+`;
+
 const CardGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
   gap: 32px;
+  margin-bottom: 40px;
+  
   @media (max-width: 700px) {
     grid-template-columns: 1fr;
-    gap: 18px;
+    gap: 24px;
     justify-items: center;
     align-items: stretch;
     grid-auto-rows: 1fr;
   }
 `;
+
 const HitRibbon = styled.div`
   position: absolute;
   top: 14px;
   right: -32px;
   transform: rotate(45deg);
-  background: linear-gradient(90deg, #23234a 0%, #3a7bd5 40%, #6e8efb 100%);
-  background-size: 200% 100%;
-  animation: ribbonGradientShift 4s ease-in-out infinite, hitPulse 2.2s infinite;
+  background: linear-gradient(135deg, #00b4d8 0%, #e63946 100%);
   color: #fff;
   font-weight: 800;
   font-size: 0.98rem;
   padding: 10px 22px;
   border-radius: 10px;
-  box-shadow: 0 2px 12px 0 rgba(30, 42, 120, 0.18);
+  box-shadow: 0 4px 16px rgba(0, 180, 216, 0.3);
   letter-spacing: 0.03em;
   z-index: 10;
   user-select: none;
   text-align: center;
-  @keyframes ribbonGradientShift {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
-  }
-  @keyframes hitPulse {
-    0% { box-shadow: 0 2px 12px 0 rgba(30, 42, 120, 0.18); }
-    50% { box-shadow: 0 4px 32px 0 rgba(30, 42, 120, 0.32); }
-    100% { box-shadow: 0 2px 12px 0 rgba(30, 42, 120, 0.18); }
-  }
+  
   @media (max-width: 700px) {
     font-size: 0.75rem;
-    padding: 1.5px 18px 1.5px 22px;
-    border-radius: 2px;
+    padding: 8px 18px;
+    border-radius: 8px;
     top: 22px;
     left: 54%;
     right: auto;
@@ -75,10 +119,9 @@ const HitRibbon = styled.div`
 `;
 
 const Card = styled(motion.div)`
-  background: ${({ theme }) => theme.background};
-  border-radius: 18px;
-  //box-shadow: 0 2px 8px 0 rgba(30,42,120,0.08);
-  padding: 24px 18px;
+  background: ${({ theme }) => theme.card};
+  border-radius: 20px;
+  padding: 32px 24px;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -86,38 +129,37 @@ const Card = styled(motion.div)`
   max-width: 340px;
   box-sizing: border-box;
   overflow: hidden;
-  transition: background 0.4s cubic-bezier(.4,0,.2,1), box-shadow 0.4s cubic-bezier(.4,0,.2,1), color 0s, transform 0.25s cubic-bezier(.4,0,.2,1);
+  transition: all 0.2s ease;
   position: relative;
   cursor: pointer;
-  border: 2.5px solid #3a7bd5;
-  //box-shadow: 0 2px 16px 0 rgba(58,123,213,0.10);
+  border: 1px solid ${({ theme }) => theme.border};
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  
+  // Glassmorphism эффект
+  backdrop-filter: blur(8px);
+  background: ${({ theme }) => 
+    theme.background === '#ffffff' 
+      ? 'rgba(248, 249, 250, 0.8)' 
+      : 'rgba(26, 26, 26, 0.8)'
+  };
+  
   &.standard {
     transform: none;
     z-index: auto;
   }
+  
   &:hover {
-    box-shadow: 0 0 5px 5px #3a7bd5, 0 0 0 0 #3a7bd5aa;
-    transform: translateY(-10px) scale(1.10);
-    border-radius: 16px;
-    z-index: 1;
+    transform: translateY(-8px);
+    box-shadow: 0 12px 40px rgba(0, 180, 216, 0.2);
+    border: 1px solid rgba(0, 180, 216, 0.3);
   }
+  
   &:hover.standard {
-    transform: translateY(-10px) scale(1.12);
-    border-radius: 16px;
+    transform: translateY(-8px);
   }
-  &:hover::after {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0; bottom: 0;
-    border-radius: 16px;
-    pointer-events: none;
-    box-shadow: 0 0 5px 5px #3a7bd5, 0 0 0 0 #3a7bd5aa;
-    opacity: 1;
-    transition: opacity 0.3s;
-    z-index: 1;
-  }
+  
   @media (max-width: 700px) {
-    padding: 18px 10px;
+    padding: 24px 20px;
     border-radius: 16px;
     font-size: 0.98rem;
     min-width: 90vw;
@@ -126,212 +168,193 @@ const Card = styled(motion.div)`
     transition: none !important;
     transform: none !important;
     pointer-events: auto;
+    
     &.standard {
       transform: none !important;
       z-index: auto;
     }
+    
     &:hover, &:active, &:focus, &:focus-visible, &:focus-within {
-      box-shadow: 0 2px 16px 0 rgba(58,123,213,0.10) !important;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1) !important;
       outline: none !important;
       background: inherit !important;
       transform: none !important;
       transition: none !important;
       z-index: auto !important;
     }
-    &:hover::after, &:active::after, &:focus::after, &:focus-visible::after, &:focus-within::after {
-      content: none !important;
-      display: none !important;
-      opacity: 0 !important;
-      box-shadow: none !important;
-      transition: none !important;
-    }
-    &::after {
-      display: none !important;
-      content: none !important;
-    }
   }
 `;
+
 const CardContent = styled.div`
   flex: 1 1 auto;
   width: 100%;
   display: flex;
   flex-direction: column;
 `;
+
 const Price = styled.div`
   font-size: 2rem;
   font-weight: 700;
-  color: #3a7bd5;
+  color: #00b4d8;
   margin-bottom: 8px;
-  transition: none;
+  transition: color 0.2s ease;
+  
+  &:hover {
+    background: linear-gradient(135deg, #00b4d8 0%, #e63946 100%);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
 `;
+
 const Feature = styled.li`
-  margin-bottom: 6px;
-  color: #7a88c9;
+  margin-bottom: 8px;
+  color: ${({ theme }) => theme.text};
+  opacity: 0.8;
+  line-height: 1.5;
 `;
+
 const Button = styled.a`
   display: inline-block;
-  padding: 10px 18px;
-  border-radius: 28px;
-  background: linear-gradient(45deg, #3a7bd5, #1e2a78, #3a7bd5);
-  background-size: 200% 100%;
-  animation: gradientShift 5s ease infinite;
+  padding: 14px 24px;
+  border-radius: 24px;
+  background: linear-gradient(135deg, #00b4d8 0%, #e63946 100%);
   color: #fff;
   font-weight: 700;
-  font-size: 1.08rem;
+  font-size: 1.1rem;
   text-decoration: none;
   border: none;
-  transition: background 0.3s, box-shadow 0.2s, transform 0.2s;
-  box-shadow: 0 4px 24px 0 rgba(30,42,120,0.13);
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(0, 180, 216, 0.3);
   letter-spacing: 0.02em;
   cursor: pointer;
   position: relative;
   overflow: hidden;
-  @keyframes gradientShift {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
-  }
+  width: 100%;
+  text-align: center;
+  box-sizing: border-box;
+  margin-top: auto;
+  
   &:hover {
-    background-position: 100% 0;
-    box-shadow: 0 8px 32px 0 rgba(58, 123, 213, 0.5);
-    transform: translateY(-2px) scale(1.05);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 180, 216, 0.4);
   }
+  
   @media (max-width: 700px) {
-    padding: 12px 0;
-    font-size: 0.98rem;
-    border-radius: 64px;
-    text-align: center;
+    padding: 12px 20px;
+    font-size: 1rem;
+    border-radius: 20px;
   }
 `;
+
 const TabsWrap = styled.div`
   display: flex;
   justify-content: center;
-  gap: 8px;
-  margin-bottom: 32px;
+  gap: 12px;
+  margin-bottom: 40px;
   flex-wrap: wrap;
 `;
+
 const TabBtn = styled.button`
-  padding: 7px 16px;
+  padding: 10px 20px;
   border-radius: 24px;
-  border: none;
-  background: ${({ active, theme }) => active ? (theme.background === '#0a0a23' ? '#23234a' : '#fff') : 'transparent'};
-  color: ${({ active, theme }) => active ? (theme.background === '#0a0a23' ? '#fff' : '#23234a') : theme.text};
+  border: 2px solid ${({ active }) => active ? '#00b4d8' : 'transparent'};
+  background: ${({ active, theme }) => 
+    active 
+      ? 'linear-gradient(135deg, #00b4d8 0%, #e63946 100%)' 
+      : theme.background === '#ffffff' 
+        ? 'rgba(248, 249, 250, 0.8)' 
+        : 'rgba(26, 26, 26, 0.8)'
+  };
+  color: ${({ active }) => active ? '#fff' : 'inherit'};
   font-weight: 600;
-  font-size: 1.08rem;
-  box-shadow: ${({ active }) => active ? '0 2px 12px 0 rgba(30,42,120,0.08)' : 'none'};
-  border: ${({ active, theme }) => active ? '2px solid #3a7bd5' : '2px solid transparent'};
+  font-size: 1rem;
+  box-shadow: ${({ active }) => active ? '0 4px 12px rgba(0, 180, 216, 0.3)' : '0 2px 8px rgba(0, 0, 0, 0.1)'};
   cursor: pointer;
-  transition: background 0.18s, color 0.18s, border 0.18s;
+  transition: all 0.2s ease;
+  
   &:hover {
-    background: ${({ theme }) => theme.background === '#0a0a23' ? '#23234a' : '#e3e8fa'};
-    color: ${({ theme }) => theme.background === '#0a0a23' ? '#b3c0f7' : '#1e2a78'};
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 180, 216, 0.2);
   }
 `;
 
 const StudentBanner = styled.div`
   display: flex;
   align-items: center;
-  gap: 18px;
-  background: linear-gradient(90deg, #2a4a8c 0%, #3a7bd5 50%, #1e2a78 100%);
+  gap: 14px;
+  background: linear-gradient(135deg, #00b4d8 0%, #e63946 100%);
   color: #fff;
-  border-radius: 18px;
-  padding: 22px 32px;
-  margin: 32px 0 24px 0;
-  font-size: 1.25rem;
+  border-radius: 16px;
+  padding: 16px 24px;
+  margin: 24px 0 16px 0;
+  font-size: 1rem;
   font-weight: 600;
-  box-shadow: 0 4px 24px 0 rgba(30,42,120,0.13);
+  box-shadow: 0 6px 24px rgba(0, 180, 216, 0.2);
   position: relative;
-  background-size: 200% 100%;
-  animation: studentGradientShift 7s ease-in-out infinite;
-  @keyframes studentGradientShift {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
-  }
+  
   @media (max-width: 900px) {
     flex-direction: column;
-    font-size: 0.9rem;
-    padding: 10px 12px;
+    font-size: 0.85rem;
+    padding: 14px 20px;
     gap: 10px;
     text-align: center;
   }
 `;
+
 const StudentIcon = styled(FaGraduationCap)`
-  font-size: 2.5rem;
+  font-size: 2rem;
   color: #fff;
 `;
+
 const StudentBtn = styled.button`
-  margin-left: 32px;
+  margin-left: 24px;
   background: #fff;
-  color: #3a7bd5;
+  color: #00b4d8;
   border: none;
-  border-radius: 24px;
-  padding: 10px 22px;
-  font-size: 1.08rem;
+  border-radius: 20px;
+  padding: 10px 20px;
+  font-size: 0.9rem;
   font-weight: 700;
   cursor: pointer;
-  box-shadow: 0 2px 12px 0 rgba(30,42,120,0.10);
-  transition: background 0.22s, color 0.22s, box-shadow 0.22s, transform 0.18s;
+  box-shadow: 0 4px 12px rgba(0, 180, 216, 0.2);
+  transition: all 0.2s ease;
   position: relative;
   overflow: hidden;
+  
   &:hover {
-    background: #e3e8fa;
-    color: #1e2a78;
-    box-shadow: 0 6px 24px 0 rgba(58,123,213,0.18);
-    transform: scale(1.06) translateY(-2px);
+    background: rgba(255, 255, 255, 0.9);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 180, 216, 0.3);
   }
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(58,123,213,0.13), transparent);
-    transition: left 0.5s;
-    pointer-events: none;
-  }
-  &:hover::before {
-    left: 100%;
-  }
+  
   @media (max-width: 700px) {
     margin-left: 0;
-    margin-top: 12px;
+    margin-top: 10px;
     width: 100%;
-    padding: 12px 0;
-    font-size: 1rem;
+    padding: 10px 18px;
+    font-size: 0.85rem;
   }
 `;
+
 const RecommendRibbon = styled.div`
   position: absolute;
   top: 16px;
   right: -28px;
   transform: rotate(45deg);
-  background: linear-gradient(135deg, #4e5eff 0%, #9c0998 50%, #151d65 100%);
-  background-size: 200% 100%;
-  animation: recommendGradientShift 3s ease-in-out infinite;
+  background: linear-gradient(135deg, #00b4d8 0%, #e63946 100%);
   color: #fff;
   font-weight: 800;
   font-size: 0.68rem;
   padding: 8px 28px;
   border-radius: 4px;
-  box-shadow: 0 2px 12px 0 rgb(21, 29, 101);
+  box-shadow: 0 4px 12px rgba(0, 180, 216, 0.3);
   letter-spacing: 0.05em;
   z-index: 10;
   user-select: none;
   text-align: center;
   text-transform: uppercase;
-  @keyframes recommendGradientShift {
-    0% {
-      background-position: 0% 50%;
-    }
-    50% {
-      background-position: 100% 50%;
-    }
-    100% {
-      background-position: 0% 50%;
-    }
-  }
+  
   @media (max-width: 900px) {
     font-size: 0.72rem;
     padding: 6px 22px;
@@ -341,43 +364,61 @@ const RecommendRibbon = styled.div`
     transform: rotate(45deg);
   }
 `;
+
 const StudentModalOverlay = styled.div`
-  position: fixed;
-  z-index: 9999;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(10,16,40,0.55);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  position: fixed !important;
+  z-index: 2147483647 !important;
+  top: 0 !important; 
+  left: 0 !important; 
+  right: 0 !important; 
+  bottom: 0 !important;
+  background: rgba(0, 0, 0, 0.6) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  backdrop-filter: blur(4px) !important;
+  pointer-events: auto !important;
+  transform: translateZ(0) !important;
+  will-change: transform !important;
 `;
+
 const StudentModalContent = styled.div`
-  background: ${({ theme }) => theme.background};
-  color: ${({ theme }) => theme.text};
-  border-radius: 18px;
-  box-shadow: 0 8px 32px 0 rgba(30,42,120,0.18);
-  padding: 32px 24px 24px 24px;
-  max-width: 420px;
-  width: 96vw;
-  position: relative;
-  text-align: left;
+  background: ${({ theme }) => theme.card} !important;
+  color: ${({ theme }) => theme.text} !important;
+  border-radius: 20px !important;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2) !important;
+  padding: 32px 24px 24px 24px !important;
+  max-width: 420px !important;
+  width: 96vw !important;
+  position: relative !important;
+  text-align: left !important;
+  border: 1px solid ${({ theme }) => theme.border} !important;
+  z-index: 2147483647 !important;
+  transform: translateZ(0) !important;
+  will-change: transform !important;
+  
   @media (max-width: 700px) {
-    padding: 18px 8px 12px 8px;
-    font-size: 0.98rem;
+    padding: 24px 20px 20px 20px !important;
+    font-size: 0.98rem !important;
   }
 `;
+
 const StudentModalTitle = styled.h3`
   font-size: 1.35rem;
   font-weight: 800;
-  margin-bottom: 14px;
-  color: #3a7bd5;
+  margin-bottom: 16px;
+  color: #00b4d8;
   text-align: center;
 `;
+
 const StudentModalList = styled.ul`
-  margin: 0 0 18px 0;
+  margin: 0 0 20px 0;
   padding-left: 20px;
   list-style-position: inside;
   text-align: left;
+  line-height: 1.6;
 `;
+
 const StudentModalClose = styled.button`
   position: absolute;
   top: 12px; right: 18px;
@@ -386,7 +427,11 @@ const StudentModalClose = styled.button`
   font-size: 2rem;
   color: ${({ theme }) => theme.text};
   cursor: pointer;
-  &:hover { color: #3a7bd5; }
+  transition: color 0.2s ease;
+  
+  &:hover { 
+    color: #00b4d8; 
+  }
 `;
 
 const prices = [
@@ -632,6 +677,31 @@ const getSections = (prices) => {
   return Array.from(set);
 };
 
+const StudentModal = ({ isOpen, onClose }) => {
+  if (!isOpen) return null;
+  
+  return createPortal(
+    <StudentModalOverlay onClick={onClose}>
+      <StudentModalContent onClick={e => e.stopPropagation()}>
+        <StudentModalClose onClick={onClose} aria-label="Закрыть">×</StudentModalClose>
+        <StudentModalTitle>Условия студенческой скидки 25%</StudentModalTitle>
+        <StudentModalList>
+          <li>Скидка действует только на тарифы "Базовый" во всех категориях услуг.</li>
+          <li>Для получения скидки необходимо приложить фото или скан действующего студенческого билета при оформлении заявки.</li>
+          <li>Мы проверим действительность студенческого (годен ли, совпадает ли ФИО).</li>
+          <li>Скидка не суммируется с другими акциями и спецпредложениями.</li>
+          <li>Срок действия скидки — до окончания обучения (или до отмены акции).</li>
+          <li>В случае сомнений мы можем запросить дополнительное подтверждение статуса студента.</li>
+        </StudentModalList>
+        <div style={{ textAlign: 'center', color: '#00b4d8', fontWeight: 700, fontSize: '1.08rem' }}>
+          Начни свой путь в IT с выгодой!
+        </div>
+      </StudentModalContent>
+    </StudentModalOverlay>,
+    document.body
+  );
+};
+
 const Prices = () => {
   const [active, setActive] = useState(prices[0].section);
   const [studentOpen, setStudentOpen] = useState(false);
@@ -645,10 +715,10 @@ const Prices = () => {
           ([entry]) => {
             if (entry.isIntersecting) {
               controls[index].start({ opacity: 1, y: 0 });
-              observer.unobserve(ref.current); // Stop observing once animated
+              observer.unobserve(ref.current);
             }
           },
-          { threshold: 0.2 }
+          { threshold: 0.1 }
       );
 
       if (ref.current) observer.observe(ref.current);
@@ -658,9 +728,8 @@ const Prices = () => {
     return () => observers.forEach(observer => observer.disconnect());
   }, [controls, refs, active]);
 
-  // Reset animations when switching tabs
   useEffect(() => {
-    controls.forEach(control => control.set({ opacity: 0, y: 30 }));
+    controls.forEach(control => control.set({ opacity: 0, y: 20 }));
   }, [active, controls]);
 
   return (
@@ -668,6 +737,7 @@ const Prices = () => {
         <Section>
           <Container>
             <Title>Тарифы и цены</Title>
+            <Subtitle>Выберите подходящий тариф для вашего проекта</Subtitle>
             <TabsWrap>
               {sections.map(section => (
                   <TabBtn
@@ -685,13 +755,13 @@ const Prices = () => {
                       key={p.title}
                       ref={refs[prices.findIndex(price => price.title === p.title)]}
                       className={p.title === 'Стандарт' ? 'standard' : ''}
-                      initial={{ opacity: 0, y: 30 }}
+                                              initial={{ opacity: 0, y: 20 }}
                       animate={controls[i]}
                       transition={{ duration: 0.7, ease: 'easeOut' }}
                   >
                     {p.popular && <RecommendRibbon>Советуем</RecommendRibbon>}
                     <CardContent>
-                      <div style={{ fontWeight: 700, color: '#7a88c9', marginBottom: 4, fontSize: '1.02rem' }}>{p.section}</div>
+                      <div style={{ fontWeight: 700, color: '#00b4d8', marginBottom: 4, fontSize: '1.02rem' }}>{p.section}</div>
                       <h3 style={{ marginBottom: 8 }}>{p.title}</h3>
                       <Price>{p.price}</Price>
                       {p.subtitle && <div style={{ color: '#b3b3b3', fontSize: '1.08rem', marginBottom: 18 }}>{p.subtitle}</div>}
@@ -718,25 +788,7 @@ const Prices = () => {
                 Подробнее об условиях
               </StudentBtn>
             </StudentBanner>
-            {studentOpen && (
-              <StudentModalOverlay onClick={() => setStudentOpen(false)}>
-                <StudentModalContent onClick={e => e.stopPropagation()}>
-                  <StudentModalClose onClick={() => setStudentOpen(false)} aria-label="Закрыть">×</StudentModalClose>
-                  <StudentModalTitle>Условия студенческой скидки 25%</StudentModalTitle>
-                  <StudentModalList>
-                    <li>Скидка действует только на тарифы “Базовый” во всех категориях услуг.</li>
-                    <li>Для получения скидки необходимо приложить фото или скан действующего студенческого билета при оформлении заявки.</li>
-                    <li>Мы проверим действительность студенческого (годен ли, совпадает ли ФИО).</li>
-                    <li>Скидка не суммируется с другими акциями и спецпредложениями.</li>
-                    <li>Срок действия скидки — до окончания обучения (или до отмены акции).</li>
-                    <li>В случае сомнений мы можем запросить дополнительное подтверждение статуса студента.</li>
-                  </StudentModalList>
-                  <div style={{ textAlign: 'center', color: '#3a7bd5', fontWeight: 700, fontSize: '1.08rem' }}>
-                    Начни свой путь в IT с выгодой!
-                  </div>
-                </StudentModalContent>
-              </StudentModalOverlay>
-            )}
+            <StudentModal isOpen={studentOpen} onClose={() => setStudentOpen(false)} />
           </Container>
         </Section>
       </>

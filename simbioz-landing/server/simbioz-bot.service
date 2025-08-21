@@ -1,0 +1,27 @@
+[Unit]
+Description=Simbioz Telegram Bot
+After=network.target
+Wants=network.target
+
+[Service]
+Type=simple
+User=www-data
+Group=www-data
+WorkingDirectory=/var/www/your-domain.ru/server
+Environment=PATH=/usr/bin:/usr/local/bin
+ExecStart=/usr/bin/python3 start_bot.py
+Restart=always
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=simbioz-bot
+
+# Безопасность
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/www/your-domain.ru/server
+
+[Install]
+WantedBy=multi-user.target
