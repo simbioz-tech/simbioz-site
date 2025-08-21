@@ -25,7 +25,7 @@ echo "✅ Переменные окружения настроены"
 
 # Останавливаем существующий процесс бота
 echo "🛑 Останавливаем существующий процесс бота..."
-pkill -f "python3.*start_bot.py" || echo "Процесс не найден"
+pkill -f "$PYTHON_CMD.*start_bot.py" || echo "Процесс не найден"
 
 # Ждем завершения процесса
 sleep 3
@@ -33,28 +33,32 @@ sleep 3
 # Проверяем наличие Python и pip
 echo "🐍 Проверяем наличие Python и pip..."
 
-# Проверяем Python
-if ! command -v python3 &> /dev/null; then
-    echo "❌ Ошибка: Python3 не найден"
-    echo "💡 Установите Python3: sudo apt-get install python3 python3-pip"
-    echo "💡 Или используйте legacy скрипт: ./deploy_legacy.sh"
+# Проверяем Python (пробуем разные варианты)
+PYTHON_CMD=""
+if command -v python3 &> /dev/null; then
+    PYTHON_CMD="python3"
+elif command -v python &> /dev/null; then
+    PYTHON_CMD="python"
+else
+    echo "❌ Ошибка: Python не найден"
+    echo "💡 Установите Python: sudo apt-get install python3 python3-pip"
     exit 1
 fi
 
-echo "✅ Python3 найден: $(python3 --version)"
+echo "✅ Python найден: $($PYTHON_CMD --version)"
 
-# Проверяем pip
-if ! command -v pip3 &> /dev/null; then
-    echo "⚠️  pip3 не найден, пытаемся использовать python3 -m pip"
-    if ! python3 -m pip --version &> /dev/null; then
-        echo "❌ Ошибка: python3 -m pip тоже не работает"
-        echo "💡 Установите pip: sudo apt-get install python3-pip"
-        echo "💡 Или используйте legacy скрипт: ./deploy_legacy.sh"
-        exit 1
-    fi
-    PIP_CMD="python3 -m pip"
-else
+# Проверяем pip (пробуем разные варианты)
+PIP_CMD=""
+if command -v pip3 &> /dev/null; then
     PIP_CMD="pip3"
+elif command -v pip &> /dev/null; then
+    PIP_CMD="pip"
+elif $PYTHON_CMD -m pip --version &> /dev/null; then
+    PIP_CMD="$PYTHON_CMD -m pip"
+else
+    echo "❌ Ошибка: pip не найден"
+    echo "💡 Установите pip: sudo apt-get install python3-pip"
+    exit 1
 fi
 
 echo "✅ pip найден: $PIP_CMD"
@@ -72,13 +76,13 @@ fi
 
 # Запускаем бота в фоне
 echo "🤖 Запускаем Telegram бота..."
-nohup python3 start_bot.py > bot.log 2>&1 &
+nohup $PYTHON_CMD start_bot.py > bot.log 2>&1 &
 
 # Ждем немного для запуска
 sleep 5
 
 # Проверяем, что бот запустился
-if pgrep -f "python3.*start_bot.py" > /dev/null; then
+if pgrep -f "$PYTHON_CMD.*start_bot.py" > /dev/null; then
     echo "✅ Telegram бот успешно запущен!"
     echo "📋 Логи: tail -f bot.log"
     echo "🔍 Статус: ./check_bot.sh"

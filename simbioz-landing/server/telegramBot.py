@@ -1,7 +1,8 @@
 import os
 import logging
-from telegram import Update
-from telegram.ext import Application, CommandHandler, MessageHandler, filters, ContextTypes
+import requests
+from telegram import Update, ParseMode
+from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackContext
 from dotenv import load_dotenv
 
 # Настройка логирования
@@ -18,7 +19,8 @@ load_dotenv()
 TOKEN = os.getenv('VITE_TELEGRAM_TOKEN')
 CREATOR_CHAT_ID = '8022779606'
 
-async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+def start(update: Update, context: CallbackContext):
+    """Обработчик команды /start"""
     try:
         chat_id = update.effective_chat.id
         welcome_message = (
@@ -32,7 +34,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
             "• DevOps\n"
             "• Поддержке и сопровождении"
         )
-        await context.bot.send_message(chat_id=chat_id, text=welcome_message)
+        context.bot.send_message(chat_id=chat_id, text=welcome_message)
 
         user = update.effective_user
         user_info = (
@@ -41,20 +43,21 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
             f"Username: {f'@{user.username}' if user.username else 'Отсутствует'}\n"
             f"Имя: {user.first_name or ''} {user.last_name or ''}"
         )
-        await context.bot.send_message(chat_id=CREATOR_CHAT_ID, text=user_info)
+        context.bot.send_message(chat_id=CREATOR_CHAT_ID, text=user_info)
         logger.info(f"New user started bot: {chat_id} - {user.username or 'No username'}")
     except Exception as e:
         logger.error(f"Error in start command: {e}")
-        await context.bot.send_message(chat_id=chat_id, text="Произошла ошибка. Попробуйте позже.")
+        context.bot.send_message(chat_id=chat_id, text="Произошла ошибка. Попробуйте позже.")
 
-async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
+def handle_message(update: Update, context: CallbackContext):
+    """Обработчик текстовых сообщений"""
     try:
         if update.message.text != '/start':
             chat_id = update.effective_chat.id
             user = update.effective_user
             
             # Отправляем подтверждение пользователю
-            await context.bot.send_message(
+            context.bot.send_message(
                 chat_id=chat_id, 
                 text="✅ Спасибо за ваше сообщение! Мы получили его и свяжемся с вами в ближайшее время."
             )
@@ -66,27 +69,90 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 f"Имя: {user.first_name or ''} {user.last_name or ''}\n"
                 f"Сообщение:\n{update.message.text}"
             )
-            await context.bot.send_message(chat_id=CREATOR_CHAT_ID, text=user_message)
+            context.bot.send_message(chat_id=CREATOR_CHAT_ID, text=user_message)
             logger.info(f"Message received from {chat_id} - {user.username or 'No username'}")
     except Exception as e:
         logger.error(f"Error handling message: {e}")
-        await context.bot.send_message(chat_id=chat_id, text="Произошла ошибка при отправке сообщения. Попробуйте позже.")
+        context.bot.send_message(chat_id=chat_id, text="Произошла ошибка при отправке сообщения. Попробуйте позже.")
+
+def handle_file(update: Update, context: CallbackContext):
+    """Обработчик файлов"""
+    try:
+        chat_id = update.effective_chat.id
+        user = update.effective_user
+        
+        # Получаем информацию о файле
+        if update.message.document:
+            file_info = update.message.document
+            file_name = file_info.file_name
+            file_size = file_info.file_size
+            file_id = file_info.file_id
+        elif update.message.photo:
+            file_info = update.message.photo[-1]  # Берем самое большое фото
+            file_name = "photo.jpg"
+            file_size = file_info.file_size
+            file_id = file_info.file_id
+        else:
+            return
+        
+        # Отправляем подтверждение пользователю
+        context.bot.send_message(
+            chat_id=chat_id, 
+            text="✅ Спасибо за ваш файл! Мы получили его и свяжемся с вами в ближайшее время."
+        )
+        
+        # Отправляем информацию о файле создателю
+        file_message = (
+            f"📎 Новый файл:\n"
+            f"От: {f'@{user.username}' if user.username else f'ID {chat_id}'}\n"
+            f"Имя: {user.first_name or ''} {user.last_name or ''}\n"
+            f"Файл: {file_name}\n"
+            f"Размер: {file_size} байт"
+        )
+        context.bot.send_message(chat_id=CREATOR_CHAT_ID, text=file_message)
+        
+        # Пересылаем файл создателю
+        context.bot.forward_message(
+            chat_id=CREATOR_CHAT_ID,
+            from_chat_id=chat_id,
+            message_id=update.message.message_id
+        )
+        
+        logger.info(f"File received from {chat_id} - {user.username or 'No username'}: {file_name}")
+    except Exception as e:
+        logger.error(f"Error handling file: {e}")
+        context.bot.send_message(chat_id=chat_id, text="Произошла ошибка при отправке файла. Попробуйте позже.")
+
+def error_handler(update: Update, context: CallbackContext):
+    """Обработчик ошибок"""
+    logger.error(f"Update {update} caused error {context.error}")
 
 def main():
+    """Основная функция запуска бота"""
     if not TOKEN:
         logger.error("Ошибка: VITE_TELEGRAM_TOKEN не указан в .env")
         return
 
     try:
-        application = Application.builder().token(TOKEN).build()
+        # Создаем updater
+        updater = Updater(token=TOKEN, use_context=True)
+        dispatcher = updater.dispatcher
 
-        # Register handlers
-        application.add_handler(CommandHandler("start", start))
-        application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
+        # Регистрируем обработчики
+        dispatcher.add_handler(CommandHandler("start", start))
+        dispatcher.add_handler(MessageHandler(Filters.text & ~Filters.command, handle_message))
+        dispatcher.add_handler(MessageHandler(Filters.document | Filters.photo, handle_file))
+        
+        # Обработчик ошибок
+        dispatcher.add_error_handler(error_handler)
 
         logger.info("Telegram bot is starting...")
         print("🤖 Telegram bot is running...")
-        application.run_polling()
+        
+        # Запускаем бота
+        updater.start_polling()
+        updater.idle()
+        
     except Exception as e:
         logger.error(f"Error starting bot: {e}")
         print(f"❌ Error starting bot: {e}")
