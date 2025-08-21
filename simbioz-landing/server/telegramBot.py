@@ -10,7 +10,7 @@
 ✅ Админская панель со статистикой
 ✅ Детальная информация об услугах
 ✅ Контактная информация
-✅ Система уведомлений для админов
+✅ Уведомления о новых заявках для админов
 
 Команды:
 /start - Главное меню
@@ -48,6 +48,9 @@ CHOOSING_SERVICE, ENTERING_NAME, ENTERING_EMAIL, ENTERING_MESSAGE, CONFIRMING = 
 # Хранение данных пользователей (временное, без БД)
 user_data = {}
 
+# Хранение активных заявок для админской панели
+active_applications = {}
+
 # Счетчики для админов
 stats = {
     'total_users': 0,
@@ -56,27 +59,101 @@ stats = {
     'last_reset': datetime.now().date()
 }
 
+# Множество для отслеживания уникальных пользователей (без уведомлений админу)
+unique_users = set()
+
+def is_admin_chat(chat_id):
+    """Проверяет, является ли чат админским"""
+    return str(chat_id) == CREATOR_CHAT_ID
+
+def cleanup_old_applications():
+    """Очистка старых заявок (старше 7 дней)"""
+    current_time = datetime.now()
+    to_remove = []
+    
+    for app_id, app_data in active_applications.items():
+        try:
+            app_time = datetime.strptime(app_data['timestamp'], '%d.%m.%Y %H:%M')
+            if (current_time - app_time).days > 7:
+                to_remove.append(app_id)
+        except:
+            # Если не удается распарсить время, удаляем заявку
+            to_remove.append(app_id)
+    
+    for app_id in to_remove:
+        del active_applications[app_id]
+    
+    if to_remove:
+        logger.info(f"Cleaned up {len(to_remove)} old applications")
+
 def start(update: Update, context: CallbackContext):
     """Обработчик команды /start"""
     try:
         chat_id = update.effective_chat.id
         user = update.effective_user
         
-        # Обновляем статистику
-        if chat_id not in user_data:
+        # Обновляем статистику только для новых пользователей
+        if chat_id not in unique_users:
+            unique_users.add(chat_id)
             stats['total_users'] += 1
+            logger.info(f"New user started bot: {chat_id} - {user.username or 'No username'}")
         
-        # Создаем главное меню
-        keyboard = [
-            [InlineKeyboardButton("📝 Оставить заявку", callback_data='new_application')],
-            [InlineKeyboardButton("ℹ️ О нас", callback_data='about_us')],
-            [InlineKeyboardButton("🛠 Наши услуги", callback_data='services')],
-            [InlineKeyboardButton("📞 Связаться", callback_data='contact')]
-        ]
+        # Показываем главное меню
+        show_main_menu(update, context, is_new_user=False)
         
-        # Добавляем админскую панель для админов
-        if str(chat_id) == CREATOR_CHAT_ID:
-            keyboard.append([InlineKeyboardButton("🔧 Админская панель", callback_data='admin_panel')])
+    except Exception as e:
+        logger.error(f"Error in start command: {e}")
+        context.bot.send_message(chat_id=chat_id, text="Произошла ошибка. Попробуйте позже.")
+
+def show_main_menu(update, context, is_new_user=True):
+    """Показать главное меню"""
+    try:
+        # Определяем chat_id и user в зависимости от типа обновления
+        if hasattr(update, 'callback_query'):
+            # Если это callback query (кнопка)
+            chat_id = update.callback_query.from_user.id
+            user = update.callback_query.from_user
+            is_callback = True
+        else:
+            # Если это обычное сообщение
+            chat_id = update.effective_chat.id
+            user = update.effective_user
+            is_callback = False
+        
+        # Проверяем, является ли это админским чатом
+        if is_admin_chat(chat_id):
+            # Для админского чата показываем только админскую панель
+            keyboard = [
+                [InlineKeyboardButton("📊 Статистика", callback_data='admin_stats')],
+                [InlineKeyboardButton("📝 Последние заявки", callback_data='admin_applications')],
+                [InlineKeyboardButton("🔄 Обновить", callback_data='admin_panel')]
+            ]
+            welcome_message = (
+                "🔧 **Админская панель Simbioz Tech Bot**\n\n"
+                "Добро пожаловать в панель управления ботом!\n\n"
+                "Выберите действие для мониторинга и управления:"
+            )
+        else:
+            # Для обычных пользователей показываем стандартное меню
+            keyboard = [
+                [InlineKeyboardButton("📝 Оставить заявку", callback_data='new_application')],
+                [InlineKeyboardButton("ℹ️ О нас", callback_data='about_us')],
+                [InlineKeyboardButton("🛠 Наши услуги", callback_data='services')],
+                [InlineKeyboardButton("📞 Связаться", callback_data='contact')]
+            ]
+            
+            welcome_message = (
+                f"👋 Привет, {user.first_name or 'друг'}!\n\n"
+                "Добро пожаловать в **Simbioz Tech** 🤖\n\n"
+                "Мы — команда из Java-разработчика и ML-инженера. Создаём современные, надёжные и масштабируемые решения для бизнеса:\n"
+                "• 💻 Frontend и клиентская логика\n"
+                "• ⚙️ Backend и архитектура\n"
+                "• 🔧 DevOps и инфраструктура\n"
+                "• 🤖 Машинное обучение и AI\n"
+                "• 🔌 Интеграции и поддержка\n"
+                "• 📊 Консалтинг и аудит\n\n"
+                "Выберите действие:"
+            )
         
         reply_markup = InlineKeyboardMarkup(keyboard)
         
@@ -93,31 +170,28 @@ def start(update: Update, context: CallbackContext):
             "Выберите действие:"
         )
         
-        context.bot.send_message(
-            chat_id=chat_id, 
-            text=welcome_message,
-            reply_markup=reply_markup,
-            parse_mode=ParseMode.MARKDOWN
-        )
-
-        # Уведомление для админа
-        user_info = (
-            f"🎉 Новый пользователь в боте:\n"
-            f"👤 ID: `{chat_id}`\n"
-            f"📝 Username: {f'@{user.username}' if user.username else 'Отсутствует'}\n"
-            f"👨‍💼 Имя: {user.first_name or ''} {user.last_name or ''}\n"
-            f"📊 Всего пользователей: {stats['total_users']}"
-        )
-        context.bot.send_message(
-            chat_id=CREATOR_CHAT_ID, 
-            text=user_info,
-            parse_mode=ParseMode.MARKDOWN
-        )
-        logger.info(f"New user started bot: {chat_id} - {user.username or 'No username'}")
-        
+        if is_callback:
+            # Если это callback, редактируем сообщение
+            update.callback_query.edit_message_text(
+                text=welcome_message,
+                reply_markup=reply_markup,
+                parse_mode=ParseMode.MARKDOWN
+            )
+        else:
+            # Если это обычное сообщение, отправляем новое
+            context.bot.send_message(
+                chat_id=chat_id, 
+                text=welcome_message,
+                reply_markup=reply_markup,
+                parse_mode=ParseMode.MARKDOWN
+            )
+            
     except Exception as e:
-        logger.error(f"Error in start command: {e}")
-        context.bot.send_message(chat_id=chat_id, text="Произошла ошибка. Попробуйте позже.")
+        logger.error(f"Error in show_main_menu: {e}")
+        if is_callback:
+            update.callback_query.answer("Произошла ошибка. Попробуйте позже.")
+        else:
+            context.bot.send_message(chat_id=chat_id, text="Произошла ошибка. Попробуйте позже.")
 
 def button_handler(update: Update, context: CallbackContext):
     """Обработчик нажатий на кнопки"""
@@ -135,7 +209,7 @@ def button_handler(update: Update, context: CallbackContext):
     elif query.data.startswith('service_'):
         handle_service_selection(query, context)
     elif query.data == 'back_to_main':
-        start(update, context)
+        show_main_menu(update, context)
     elif query.data == 'confirm_application':
         confirm_application(query, context)
     elif query.data == 'admin_stats':
@@ -144,27 +218,29 @@ def button_handler(update: Update, context: CallbackContext):
         show_admin_applications(query, context)
     elif query.data == 'admin_panel':
         show_admin_panel(query, context)
+    elif query.data == 'admin_stats':
+        show_admin_stats(query, context)
 
 def show_admin_panel(query, context):
     """Показать админскую панель"""
     chat_id = query.from_user.id
     
     # Проверяем, является ли пользователь админом
-    if str(chat_id) != CREATOR_CHAT_ID:
+    if not is_admin_chat(chat_id):
         query.answer("❌ Доступ запрещен")
         return
     
     keyboard = [
         [InlineKeyboardButton("📊 Статистика", callback_data='admin_stats')],
         [InlineKeyboardButton("📝 Последние заявки", callback_data='admin_applications')],
-        [InlineKeyboardButton("🔄 Обновить", callback_data='admin_panel')],
-        [InlineKeyboardButton("🔙 Главное меню", callback_data='back_to_main')]
+        [InlineKeyboardButton("🔄 Обновить", callback_data='admin_panel')]
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
     
     message = (
-        "🔧 **Админская панель**\n\n"
-        "Выберите действие для управления ботом:"
+        "🔧 **Админская панель Simbioz Tech Bot**\n\n"
+        "Добро пожаловать в панель управления ботом!\n\n"
+        "Выберите действие для мониторинга и управления:"
     )
     
     query.edit_message_text(
@@ -178,28 +254,32 @@ def show_admin_stats(query, context):
     chat_id = query.from_user.id
     
     # Проверяем, является ли пользователь админом
-    if str(chat_id) != CREATOR_CHAT_ID:
+    if not is_admin_chat(chat_id):
         query.answer("❌ Доступ запрещен")
         return
     
     keyboard = [
-        [InlineKeyboardButton("🔙 Назад к панели", callback_data='admin_panel')],
-        [InlineKeyboardButton("🏠 Главное меню", callback_data='back_to_main')]
+        [InlineKeyboardButton("🔙 Назад к панели", callback_data='admin_panel')]
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
+    
+    # Очищаем старые заявки перед подсчетом
+    cleanup_old_applications()
     
     # Рассчитываем статистику
     total_users = stats['total_users']
     total_applications = stats['total_applications']
     applications_today = stats['applications_today']
+    active_applications_count = len(active_applications)
     
     conversion_rate = (total_applications / total_users * 100) if total_users > 0 else 0
     
     message = (
         "📊 **Статистика бота**\n\n"
         f"👥 **Пользователи:** {total_users}\n"
-        f"📝 **Заявки:** {total_applications}\n"
+        f"📝 **Всего заявок:** {total_applications}\n"
         f"📅 **Заявок сегодня:** {applications_today}\n"
+        f"⏳ **Активных заявок:** {active_applications_count}\n"
         f"📈 **Конверсия:** {conversion_rate:.1f}%\n\n"
         f"🕒 **Обновлено:** {datetime.now().strftime('%d.%m.%Y %H:%M')}\n\n"
         "💡 Конверсия показывает процент пользователей, которые оставили заявку."
@@ -216,29 +296,51 @@ def show_admin_applications(query, context):
     chat_id = query.from_user.id
     
     # Проверяем, является ли пользователь админом
-    if str(chat_id) != CREATOR_CHAT_ID:
+    if not is_admin_chat(chat_id):
         query.answer("❌ Доступ запрещен")
         return
     
     keyboard = [
-        [InlineKeyboardButton("🔙 Назад к панели", callback_data='admin_panel')],
-        [InlineKeyboardButton("🏠 Главное меню", callback_data='back_to_main')]
+        [InlineKeyboardButton("🔙 Назад к панели", callback_data='admin_panel')]
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
     
-    # Показываем последние заявки (из временного хранилища)
-    if not user_data:
+    # Очищаем старые заявки перед показом
+    cleanup_old_applications()
+    
+    # Показываем активные заявки
+    if not active_applications:
         message = (
-            "📝 **Последние заявки**\n\n"
-            "Нет активных заявок в памяти.\n\n"
-            "💡 Заявки хранятся только в памяти и очищаются после отправки."
+            "📝 **Активные заявки**\n\n"
+            "Нет активных заявок.\n\n"
+            "💡 Здесь отображаются заявки, которые еще не обработаны."
         )
     else:
-        message = (
-            "📝 **Активные заявки в памяти**\n\n"
-            f"Количество незавершенных заявок: {len(user_data)}\n\n"
-            "💡 Заявки автоматически очищаются после отправки."
+        # Сортируем заявки по времени (новые сверху)
+        sorted_applications = sorted(
+            active_applications.values(), 
+            key=lambda x: x['timestamp'], 
+            reverse=True
         )
+        
+        # Показываем последние 5 заявок
+        recent_applications = sorted_applications[:5]
+        
+        message = f"📝 **Активные заявки** ({len(active_applications)})\n\n"
+        
+        for i, app in enumerate(recent_applications, 1):
+            message += (
+                f"**#{i} {app['id']}** - {app['timestamp']}\n"
+                f"👤 {app['name']} ({app['email']})\n"
+                f"🛠 {app['service']}\n"
+                f"💬 {app['message'][:50]}{'...' if len(app['message']) > 50 else ''}\n"
+                f"📱 {app['username'] or 'Без username'}\n\n"
+            )
+        
+        if len(active_applications) > 5:
+            message += f"💡 Показано последних 5 из {len(active_applications)} заявок.\n\n"
+        
+        message += "💡 Заявки автоматически очищаются при перезапуске бота."
     
     query.edit_message_text(
         text=message,
@@ -619,6 +721,21 @@ def confirm_application(query, context):
         parse_mode=ParseMode.MARKDOWN
     )
     
+    # Сохраняем заявку в активные для админской панели
+    application_id = f"app_{stats['total_applications']}"
+    active_applications[application_id] = {
+        'id': application_id,
+        'user_id': chat_id,
+        'username': user.username,
+        'user_name': f"{user.first_name or ''} {user.last_name or ''}".strip(),
+        'name': data.get('name', 'Не указано'),
+        'email': data.get('email', 'Не указан'),
+        'service': service_names.get(data.get('service', ''), data.get('service', 'Не выбрана')),
+        'message': data.get('message', 'Не указано'),
+        'timestamp': datetime.now().strftime('%d.%m.%Y %H:%M'),
+        'status': 'new'
+    }
+    
     # Очищаем данные пользователя
     if chat_id in user_data:
         del user_data[chat_id]
@@ -682,7 +799,7 @@ def admin_command(update: Update, context: CallbackContext):
     """Команда для доступа к админской панели"""
     chat_id = update.effective_chat.id
     
-    if str(chat_id) != CREATOR_CHAT_ID:
+    if not is_admin_chat(chat_id):
         update.message.reply_text("❌ Доступ запрещен")
         return
     
@@ -690,14 +807,14 @@ def admin_command(update: Update, context: CallbackContext):
     keyboard = [
         [InlineKeyboardButton("📊 Статистика", callback_data='admin_stats')],
         [InlineKeyboardButton("📝 Последние заявки", callback_data='admin_applications')],
-        [InlineKeyboardButton("🔄 Обновить", callback_data='admin_panel')],
-        [InlineKeyboardButton("🔙 Главное меню", callback_data='back_to_main')]
+        [InlineKeyboardButton("🔄 Обновить", callback_data='admin_panel')]
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
     
     message = (
-        "🔧 **Админская панель**\n\n"
-        "Выберите действие для управления ботом:"
+        "🔧 **Админская панель Simbioz Tech Bot**\n\n"
+        "Добро пожаловать в панель управления ботом!\n\n"
+        "Выберите действие для мониторинга и управления:"
     )
     
     update.message.reply_text(
