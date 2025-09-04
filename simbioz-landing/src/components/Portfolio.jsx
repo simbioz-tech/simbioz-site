@@ -22,6 +22,12 @@ const Section = styled.section`
       radial-gradient(circle at 80% 20%, rgba(230, 57, 70, 0.04) 0%, rgba(230, 57, 70, 0.04) 5%, rgba(230, 57, 70, 0.04) 30%, transparent 70%);
     filter: blur(15px);
     pointer-events: none;
+    
+    /* Отключаем blur на мобильных для производительности */
+    @media (max-width: 768px) {
+      filter: none;
+      opacity: 0.5;
+    }
   }
 `;
 
@@ -143,13 +149,18 @@ const Card = styled.div`
   width: 100%;
   border: 1px solid ${({ theme }) => theme.border};
   
-  // Glassmorphism эффект
+  // Glassmorphism эффект - отключаем на мобильных
   backdrop-filter: blur(10px);
   background: ${({ theme }) => 
     theme.background === '#ffffff' 
       ? 'rgba(255, 255, 255, 0.9)' 
       : 'rgba(26, 26, 26, 0.9)'
   };
+  
+  @media (max-width: 768px) {
+    backdrop-filter: none;
+    background: ${({ theme }) => theme.card};
+  }
   opacity: 0;
   transform: translateY(30px);
   
@@ -462,7 +473,7 @@ const Portfolio = () => {
         </Subtitle>
         
         <TechCarouselWrap>
-          <InfiniteCarousel speed={70} gap={16}>
+          <InfiniteCarousel speed={window.innerWidth <= 768 ? 35 : 70} gap={16}>
             {techs.map((tech, i) => (
               <TechCard key={tech + i}>{tech}</TechCard>
             ))}

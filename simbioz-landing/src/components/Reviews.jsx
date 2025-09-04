@@ -56,14 +56,15 @@ const Title = styled.h2`
 `;
 
 const Card = styled.div`
-  min-width: 320px;
-  max-width: 340px;
+  width: 340px;
+  height: 200px;
   background: ${({ theme }) => theme.card};
   border-radius: 20px;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
   padding: 32px 24px;
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
   align-items: flex-start;
   flex-shrink: 0;
   margin-right: 20px;
@@ -99,8 +100,8 @@ const Card = styled.div`
   }
   
   @media (max-width: 700px) {
-    min-width: 90vw;
-    max-width: 95vw;
+    width: 90vw;
+    height: 180px;
     padding: 24px 20px;
   }
 `;
@@ -126,6 +127,10 @@ const ReviewText = styled.p`
   line-height: 1.6;
   color: ${({ theme }) => theme.text};
   opacity: 0.9;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
 `;
 
 const reviews = [
@@ -158,7 +163,7 @@ const Reviews = () => {
     <Section id="reviews" ref={sectionRef}>
       <Container>
         <Title>Отзывы</Title>
-        <InfiniteCarousel speed={60} gap={20}>
+        <InfiniteCarousel speed={window.innerWidth <= 768 ? 30 : 60} gap={20}>
           {reviews.map((r, i) => (
             <Card 
               key={r.name + i}

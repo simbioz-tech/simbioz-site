@@ -25,6 +25,12 @@ const Section = styled.section`
       radial-gradient(circle at 80% 20%, rgba(230, 57, 70, 0.04) 0%, rgba(230, 57, 70, 0.04) 5%, rgba(230, 57, 70, 0.04) 30%, transparent 70%);
     filter: blur(15px);
     pointer-events: none;
+    
+    /* Отключаем blur на мобильных для производительности */
+    @media (max-width: 768px) {
+      filter: none;
+      opacity: 0.5;
+    }
   }
 `;
 
@@ -147,11 +153,14 @@ const MainButton = styled.a`
   font-size: 1.1rem;
   text-decoration: none;
   border: none;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: 0 4px 16px rgba(0, 180, 216, 0.3);
   position: relative;
   min-width: 240px;
   overflow: hidden;
+  
+  /* Оптимизированные переходы для мобильных */
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  will-change: transform;
   
   &::before {
     content: '';
@@ -161,7 +170,7 @@ const MainButton = styled.a`
     width: 100%;
     height: 100%;
     background: linear-gradient(135deg, #e63946, #00b4d8);
-    transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: left 0.2s ease;
     z-index: -1;
   }
   
@@ -172,19 +181,22 @@ const MainButton = styled.a`
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: transform 0.2s ease;
   }
   
-  &:hover {
-    transform: translateY(-3px) scale(1.02);
-    box-shadow: 0 12px 32px rgba(0, 180, 216, 0.4);
-    
-    &::before {
-      left: 0;
-    }
-    
-    svg {
-      transform: translateX(4px) scale(1.1);
+  /* Упрощенные hover эффекты для мобильных */
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      transform: translateY(-3px) scale(1.02);
+      box-shadow: 0 12px 32px rgba(0, 180, 216, 0.4);
+      
+      &::before {
+        left: 0;
+      }
+      
+      svg {
+        transform: translateX(4px) scale(1.1);
+      }
     }
   }
   
@@ -199,9 +211,17 @@ const MainButton = styled.a`
     width: 100%;
     max-width: 320px;
     
+    /* Отключаем сложные анимации на мобильных */
+    transition: transform 0.15s ease;
+    
     svg {
       width: 16px;
       height: 16px;
+    }
+    
+    /* Упрощенный hover для touch устройств */
+    &:active {
+      transform: scale(0.95);
     }
   }
 `;
@@ -220,10 +240,13 @@ const OutlineButton = styled.a`
   font-weight: 700;
   font-size: 1.1rem;
   text-decoration: none;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
   min-width: 240px;
   overflow: hidden;
+  
+  /* Оптимизированные переходы */
+  transition: transform 0.2s ease, box-shadow 0.2s ease, color 0.2s ease;
+  will-change: transform;
   
   &::before {
     content: '';
@@ -233,7 +256,7 @@ const OutlineButton = styled.a`
     width: 100%;
     height: 100%;
     background: linear-gradient(135deg, #00b4d8, #e63946);
-    transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: left 0.2s ease;
     z-index: -1;
   }
   
@@ -244,20 +267,23 @@ const OutlineButton = styled.a`
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: transform 0.2s ease;
   }
   
-  &:hover {
-    transform: translateY(-3px) scale(1.02);
-    color: white;
-    box-shadow: 0 8px 24px rgba(0, 180, 216, 0.3);
-    
-    &::before {
-      left: 0;
-    }
-    
-    svg {
-      transform: translateX(4px) scale(1.1);
+  /* Упрощенные hover эффекты для мобильных */
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      transform: translateY(-3px) scale(1.02);
+      color: white;
+      box-shadow: 0 8px 24px rgba(0, 180, 216, 0.3);
+      
+      &::before {
+        left: 0;
+      }
+      
+      svg {
+        transform: translateX(4px) scale(1.1);
+      }
     }
   }
   
@@ -272,9 +298,17 @@ const OutlineButton = styled.a`
     width: 100%;
     max-width: 320px;
     
+    /* Отключаем сложные анимации на мобильных */
+    transition: transform 0.15s ease;
+    
     svg {
       width: 16px;
       height: 16px;
+    }
+    
+    /* Упрощенный hover для touch устройств */
+    &:active {
+      transform: scale(0.95);
     }
   }
 `;

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback, useRef } from 'react';
 import { ThemeProvider } from 'styled-components';
 import GlobalStyle, { darkTheme, lightTheme } from './styles/theme';
 import { Helmet } from 'react-helmet';
@@ -16,7 +16,25 @@ import { Routes, Route } from 'react-router-dom';
 
 function App() {
   const [theme, setTheme] = useState('dark');
-  const handleTheme = () => setTheme(theme === 'dark' ? 'light' : 'dark');
+  const isTransitioning = useRef(false);
+  
+  // Оптимизированное переключение тем с debounce
+  const handleTheme = useCallback(() => {
+    if (isTransitioning.current) return;
+    
+    isTransitioning.current = true;
+    
+    // Добавляем класс для отключения переходов во время смены темы
+    document.body.classList.add('theme-transitioning');
+    
+    setTheme(prev => prev === 'dark' ? 'light' : 'dark');
+    
+    // Убираем класс после завершения перехода
+    setTimeout(() => {
+      document.body.classList.remove('theme-transitioning');
+      isTransitioning.current = false;
+    }, 150);
+  }, []);
 
   return (
     <ThemeProvider theme={theme === 'dark' ? darkTheme : lightTheme}>

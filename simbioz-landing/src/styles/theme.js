@@ -46,12 +46,18 @@ const GlobalStyle = createGlobalStyle`
     color: ${({ theme }) => theme.text};
     margin: 0;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
-    transition: background 0.2s ease, color 0.2s ease;
+    /* Оптимизированные переходы только для основных свойств */
+    transition: background-color 0.15s ease, color 0.15s ease;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     line-height: 1.6;
     position: relative;
     overflow-x: hidden;
+    
+    /* Отключаем переходы на мобильных для производительности */
+    @media (max-width: 768px) {
+      transition: none;
+    }
   }
   
 
@@ -133,7 +139,13 @@ const GlobalStyle = createGlobalStyle`
     transition: all 0.2s ease;
   }
   
-  /* Glassmorphism */
+  /* Отключаем все переходы во время смены темы */
+  .theme-transitioning * {
+    transition: none !important;
+    animation: none !important;
+  }
+  
+  /* Glassmorphism - отключаем на мобильных для производительности */
   .glass {
     backdrop-filter: blur(8px);
     background: ${({ theme }) => 
@@ -141,6 +153,12 @@ const GlobalStyle = createGlobalStyle`
         ? 'rgba(255, 255, 255, 0.8)' 
         : 'rgba(26, 26, 26, 0.8)'
     };
+    
+    /* Отключаем backdrop-filter на мобильных */
+    @media (max-width: 768px) {
+      backdrop-filter: none;
+      background: ${({ theme }) => theme.card};
+    }
   }
   
   /* Gradient text */

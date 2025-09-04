@@ -25,12 +25,16 @@ const Container = styled.div`
   border-radius: 35px;
   border: 1px solid ${({ theme }) => theme.border};
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
-  transition: all 0.2s ease;
-  backdrop-filter: blur(16px);
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
   
-  &:hover {
-    box-shadow: 0 8px 24px rgba(0, 180, 216, 0.1);
-    border-color: rgba(0, 180, 216, 0.2);
+  /* Отключаем backdrop-filter для производительности */
+  
+  /* Hover эффект только для десктопа */
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      box-shadow: 0 8px 24px rgba(0, 180, 216, 0.1);
+      border-color: rgba(0, 180, 216, 0.2);
+    }
   }
   
   @media (max-width: 768px) {
@@ -38,6 +42,9 @@ const Container = styled.div`
     margin: 12px 16px 0 16px;
     height: 56px;
     border-radius: 28px;
+    
+    /* Отключаем сложные анимации на мобильных */
+    transition: none;
   }
 `;
 
@@ -49,17 +56,29 @@ const Logo = styled.a`
   font-weight: 800;
   color: ${({ theme }) => theme.text};
   text-decoration: none;
-  transition: all 0.2s ease;
   outline: none;
   
-  &:hover {
-    transform: scale(1.02);
+  /* Простые переходы */
+  transition: transform 0.1s ease;
+  
+  /* Hover эффект только для десктопа */
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      transform: scale(1.02);
+    }
+  }
+  
+  &:active {
+    transform: scale(0.98);
   }
   
   @media (max-width: 768px) {
     font-size: 1rem;
     gap: 6px;
     font-weight: 700;
+    
+    /* Отключаем сложные анимации на мобильных */
+    transition: transform 0.1s ease;
   }
   
   @media (max-width: 480px) {
@@ -74,10 +93,10 @@ const LogoImg = styled.img`
   object-fit: contain;
   border-radius: 10px;
   background: transparent;
-  transition: all 0.2s ease;
+  transition: transform 0.1s ease;
   
   &:hover {
-    transform: rotate(3deg) scale(1.05);
+    transform: scale(1.05);
   }
   
   @media (max-width: 768px) {
@@ -108,7 +127,7 @@ const NavLink = styled.a`
   font-weight: 600;
   text-decoration: none;
   position: relative;
-  transition: all 0.2s ease;
+  transition: color 0.1s ease;
   padding: 8px 16px;
   border-radius: 20px;
   outline: none;
@@ -159,7 +178,7 @@ const OutlineBtn = styled.button`
   font-weight: 600;
   font-size: 0.9rem;
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.2s ease;
   outline: none;
   position: relative;
   overflow: hidden;
@@ -172,14 +191,13 @@ const OutlineBtn = styled.button`
     width: 100%;
     height: 100%;
     background: linear-gradient(135deg, #00b4d8, #e63946);
-    transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: left 0.2s ease;
     z-index: -1;
   }
   
   &:hover {
-    transform: translateY(-2px) scale(1.02);
+    transform: scale(1.02);
     color: white;
-    box-shadow: 0 6px 20px rgba(0, 180, 216, 0.3);
     
     &::before {
       left: 0;
@@ -216,7 +234,7 @@ const FillBtn = styled.button`
   font-size: 0.9rem;
   border: none;
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.2s ease;
   box-shadow: 0 4px 12px rgba(0, 180, 216, 0.3);
   outline: none;
   position: relative;
@@ -230,7 +248,7 @@ const FillBtn = styled.button`
     width: 100%;
     height: 100%;
     background: linear-gradient(135deg, #e63946, #00b4d8);
-    transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: left 0.2s ease;
     z-index: -1;
   }
   
@@ -335,8 +353,7 @@ const MobileMenu = styled.div`
     padding: 0 0 32px 0;
     gap: 32px;
     align-items: flex-start;
-    animation: slideIn 0.3s ease;
-    backdrop-filter: blur(16px);
+    animation: slideIn 0.2s ease;
   }
   
   @keyframes slideIn {
@@ -393,9 +410,8 @@ const Popover = styled.div`
   display: flex;
   flex-direction: column;
   gap: 4px;
-  animation: fadeInY 0.2s ease;
+  animation: fadeInY 0.1s ease;
   pointer-events: all;
-  backdrop-filter: blur(16px);
   
   @keyframes fadeInY {
     from { opacity: 0; transform: translateX(-50%) translateY(-8px); }

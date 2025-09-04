@@ -40,16 +40,34 @@ const InfiniteCarousel = ({ children, speed = 40, gap = 20, style }) => {
   useEffect(() => {
     let raf;
     let last = performance.now();
+    let isVisible = true;
+    
+    // Проверяем видимость элемента для оптимизации
+    const checkVisibility = () => {
+      if (wrapRef.current) {
+        const rect = wrapRef.current.getBoundingClientRect();
+        isVisible = rect.top < window.innerHeight && rect.bottom > 0;
+      }
+    };
+    
     function animate(now) {
-      const dt = (now - last) / 1000;
-      last = now;
-      setOffset(prev => {
-        let next = prev + speed * dt;
-        if (contentWidth && next >= contentWidth) next -= contentWidth;
-        return next;
-      });
+      checkVisibility();
+      
+      if (isVisible) {
+        const dt = (now - last) / 1000;
+        last = now;
+        setOffset(prev => {
+          let next = prev + speed * dt;
+          if (contentWidth && next >= contentWidth) next -= contentWidth;
+          return next;
+        });
+      } else {
+        last = now; // Синхронизируем время даже когда не анимируем
+      }
+      
       raf = requestAnimationFrame(animate);
     }
+    
     raf = requestAnimationFrame(animate);
     return () => cancelAnimationFrame(raf);
   }, [contentWidth, speed]);

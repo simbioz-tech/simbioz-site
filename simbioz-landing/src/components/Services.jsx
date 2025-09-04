@@ -20,6 +20,12 @@ const Section = styled.section`
       radial-gradient(circle at 80% 80%, rgba(230, 57, 70, 0.04) 0%, rgba(230, 57, 70, 0.04) 5%, rgba(230, 57, 70, 0.04) 30%, transparent 70%);
     filter: blur(15px);
     pointer-events: none;
+    
+    /* Отключаем blur на мобильных для производительности */
+    @media (max-width: 768px) {
+      filter: none;
+      opacity: 0.5;
+    }
   }
 `;
 
@@ -100,8 +106,12 @@ const Card = styled.div`
   opacity: 0;
   transform: translateY(30px);
   
-  // Glassmorphism эффект
+  // Glassmorphism эффект - отключаем на мобильных
   backdrop-filter: blur(12px);
+  
+  @media (max-width: 768px) {
+    backdrop-filter: none;
+  }
   
   &.animate {
     animation: fadeInUp 0.8s ease forwards;
